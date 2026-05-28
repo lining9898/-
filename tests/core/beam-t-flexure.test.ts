@@ -179,6 +179,16 @@ describe('T形梁正截面受弯承载力计算', () => {
     });
   });
 
+  describe('最小配筋面积', () => {
+    it('T形截面应按 b·h 计算 As,min = 200 mm²', () => {
+      const result = calculateBeamTFlexure(flangeCase);
+      const minResult = result.results.find(r => r.label === '最小配筋面积 As,min');
+
+      expect(minResult).toBeDefined();
+      expect(minResult!.value).toBe(200);
+    });
+  });
+
   describe('规范依据', () => {
     it('所有规范依据应标记为 REVIEW_REQUIRED', () => {
       const result = calculateBeamTFlexure(flangeCase);

@@ -351,10 +351,10 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   // 步骤：最小配筋面积
   // 规范 8.5.1：受弯构件最小配筋率 ρmin = max(0.20%, 45ft/fy%)
   // 注5：配筋率按全截面面积扣除受压翼缘面积后的截面面积计算
-  // 即 As,min = ρmin · [b·h + (bf-b)·hf]
+  // 即 As,min = ρmin · b·h
   const rhoMinPercent = Math.max(0.20, 45 * concrete.ft / steel.fy);
   const rhoMin = rhoMinPercent / 100;
-  const effectiveArea = input.b * input.h + (input.bf - input.b) * input.hf;
+  const effectiveArea = input.b * input.h;
   const AsMin = rhoMin * effectiveArea;
 
   const AsMinEvidence = [
@@ -363,9 +363,9 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   allEvidence.push(...AsMinEvidence);
   steps.push({
     name: '计算最小配筋面积',
-    description: 'As,min = max(0.2%, 45ft/fy%) · [b·h + (bf-b)·hf]',
-    formula: 'A_s,min = ρ_min · [b · h + (b_f - b) · h_f]',
-    substitutedFormula: `A_s,min = ${rhoMinPercent.toFixed(3)}% × [${input.b} × ${input.h} + (${input.bf} - ${input.b}) × ${input.hf}] / 100`,
+    description: 'As,min = max(0.2%, 45ft/fy%) · b·h',
+    formula: 'A_s,min = ρ_min · b · h',
+    substitutedFormula: `A_s,min = ${rhoMinPercent.toFixed(3)}% × ${input.b} × ${input.h} / 100`,
     result: Math.round(AsMin * 100) / 100,
     unit: 'mm²',
     evidence: AsMinEvidence,
