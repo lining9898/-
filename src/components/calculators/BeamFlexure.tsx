@@ -9,7 +9,7 @@ import CalculationReportView from '../report/CalculationReportView';
 const CONCRETE_GRADES = ['C20', 'C25', 'C30', 'C35', 'C40', 'C45', 'C50'];
 const STEEL_GRADES = ['HPB300', 'HRB335', 'HRB400', 'HRB500'];
 
-const BeamFlexure: React.FC = () => {
+const BeamFlexure: React.FC<{ onLookupClause?: (clause: string) => void }> = ({ onLookupClause }) => {
   const [input, setInput] = useState<BeamFlexureInput>({
     b: 250,
     h: 500,
@@ -293,7 +293,7 @@ const BeamFlexure: React.FC = () => {
           {/* 规范依据 */}
           {activeTab === 'evidence' && (
             <div className="bg-white rounded-b-lg shadow-sm border border-gray-200 p-5">
-              <EvidencePanel evidence={result.allEvidence} />
+              <EvidencePanel evidence={result.allEvidence} onLookupClause={onLookupClause} />
             </div>
           )}
         </div>

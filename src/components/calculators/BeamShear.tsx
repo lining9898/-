@@ -79,7 +79,7 @@ const BeamShearSVG: React.FC<{ b: number; h: number; h0: number; stirrupDiameter
   );
 };
 
-const BeamShear: React.FC = () => {
+const BeamShear: React.FC<{ onLookupClause?: (clause: string) => void }> = ({ onLookupClause }) => {
   const [input, setInput] = useState<BeamShearInput>({
     b: 250,
     h: 500,
@@ -414,7 +414,7 @@ const BeamShear: React.FC = () => {
           {/* 规范依据 */}
           {activeTab === 'evidence' && (
             <div className="bg-white rounded-b-lg shadow-sm border border-gray-200 p-5">
-              <EvidencePanel evidence={result.allEvidence} />
+              <EvidencePanel evidence={result.allEvidence} onLookupClause={onLookupClause} />
             </div>
           )}
         </div>

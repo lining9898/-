@@ -4,20 +4,29 @@ import BeamFlexure from './components/calculators/BeamFlexure';
 import BeamShear from './components/calculators/BeamShear';
 import BeamTFlexure from './components/calculators/BeamTFlexure';
 import Placeholder from './components/calculators/Placeholder';
+import CodeSearch from './components/codes/CodeSearch';
 
 type ModuleId = string;
 
 const App: React.FC = () => {
   const [activeModule, setActiveModule] = useState<ModuleId>('beam-flexure');
+  const [clauseQuery, setClauseQuery] = useState('');
+
+  const lookupClause = (clause: string) => {
+    setClauseQuery(clause);
+    setActiveModule('code-search');
+  };
 
   const renderContent = () => {
     switch (activeModule) {
       case 'beam-flexure':
-        return <BeamFlexure />;
+        return <BeamFlexure onLookupClause={lookupClause} />;
       case 'beam-shear':
-        return <BeamShear />;
+        return <BeamShear onLookupClause={lookupClause} />;
       case 'beam-t-flexure':
-        return <BeamTFlexure />;
+        return <BeamTFlexure onLookupClause={lookupClause} />;
+      case 'code-search':
+        return <CodeSearch query={clauseQuery} onQueryChange={setClauseQuery} />;
       case 'beam-continuous':
       case 'column-axial':
       case 'column-eccentric':
