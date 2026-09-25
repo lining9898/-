@@ -1,4 +1,4 @@
-name: Deploy to Netlify
+name: Test and build
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
