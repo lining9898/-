@@ -18,7 +18,7 @@ const menuItems: MenuItem[] = [
     children: [
       { id: 'beam-flexure', label: '矩形梁正截面受弯', available: true },
       { id: 'beam-shear', label: '矩形梁斜截面受剪', available: true },
-      { id: 'beam-t-flexure', label: 'T形梁正截面受弯', available: false },
+      { id: 'beam-t-flexure', label: 'T形梁正截面受弯', available: true },
       { id: 'beam-continuous', label: '连续梁内力计算', available: false },
     ],
   },
