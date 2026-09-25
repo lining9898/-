@@ -10,19 +10,19 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
   const unique = evidence.filter(
     (e, i, arr) => arr.findIndex(x => x.clause === e.clause && x.codeNumber === e.codeNumber) === i
   );
+  const pendingCount = unique.filter(e => e.verificationStatus !== 'VERIFIED').length;
 
   return (
     <div>
       <h3 className="text-sm font-bold text-gray-700 mb-4">规范依据</h3>
 
-      <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg mb-4">
-        <p className="text-sm text-orange-700 font-medium">
-          当前所有规范依据均标记为"待规范原文校核"
-        </p>
-        <p className="text-xs text-orange-600 mt-1">
-          待提供 GB 50010 规范 PDF 后，将逐条校核条文号、条文原文和页码。
-        </p>
-      </div>
+      {pendingCount > 0 && (
+        <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg mb-4">
+          <p className="text-sm text-orange-700 font-medium">
+            {pendingCount} 条规范依据尚未完成原文校核
+          </p>
+        </div>
+      )}
 
       {unique.length === 0 ? (
         <p className="text-sm text-gray-400">暂无规范依据记录</p>
@@ -46,8 +46,8 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
               <div className="text-xs text-gray-500 space-y-1">
                 <div>规范名称：{e.codeName}</div>
                 <div>版本：{e.edition || '待填写'}</div>
-                <div>条文原文：{e.originalText}</div>
-                <div>PDF 页码：{e.pdfPage ?? '待填写'}</div>
+                <div>{e.verificationStatus === 'VERIFIED' ? '条文原文' : '待核验依据摘录'}：{e.originalText}</div>
+                <div>{e.verificationStatus === 'VERIFIED' ? 'PDF 页码' : '待核验 PDF 页码'}：{e.pdfPage ?? '待填写'}</div>
                 <div>来源文件：{e.sourceFile ?? '未导入'}</div>
               </div>
             </div>

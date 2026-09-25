@@ -117,9 +117,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onSelectModule }) => {
           </div>
         ))}
       </nav>
-      <div className="p-3 border-t border-gray-200 text-xs text-gray-400">
-        <div>规范状态：待导入</div>
-        <div className="mt-1 text-orange-500">所有计算结果未经规范原文校核</div>
+      <div className="p-3 border-t border-gray-200 text-xs text-gray-500">
+        各模块的规范校核状态以计算结果为准
       </div>
     </aside>
   );

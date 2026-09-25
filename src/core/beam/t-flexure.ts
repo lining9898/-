@@ -4,7 +4,7 @@
  * 状态：REVIEW_REQUIRED
  *
  * 公式依据：GB 50010-2010(2015年版) 第6.2.11条
- * 翼缘计算宽度：第5.2.4条 表5.2.4
+ * 翼缘计算宽度：第6.2.12条，按表5.2.4取值
  *
  * 适用范围：翼缘位于受压区的T形、I形截面受弯构件，仅配置受拉钢筋
  * 不适用于：双筋截面、预应力梁、倒L形截面
@@ -103,6 +103,15 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   const allEvidence: Evidence[] = [];
 
   // === 输入校验 ===
+  if (![input.b, input.h, input.hf, input.bf, input.cover, input.barDiameter, input.barCount, input.moment].every(Number.isFinite)) {
+    result.advisories.push({
+      severity: 'error',
+      code: 'INVALID_INPUT',
+      message: '数值输入必须为有限数',
+    });
+    return result;
+  }
+
   if (input.b <= 0 || input.h <= 0 || input.hf <= 0 || input.bf <= 0) {
     result.advisories.push({
       severity: 'error',
@@ -130,11 +139,11 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
     return result;
   }
 
-  if (input.cover <= 0 || input.barDiameter <= 0 || input.barCount <= 0) {
+  if (input.cover <= 0 || input.barDiameter <= 0 || input.barCount <= 0 || !Number.isInteger(input.barCount)) {
     result.advisories.push({
       severity: 'error',
       code: 'INVALID_INPUT',
-      message: '配筋参数必须大于零',
+      message: '保护层和钢筋直径必须大于零，钢筋根数必须为正整数',
     });
     return result;
   }
@@ -171,6 +180,14 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   // === 基本参数计算 ===
   const As = input.barCount * Math.PI * Math.pow(input.barDiameter, 2) / 4;
   const h0 = input.h - input.cover - input.barDiameter / 2;
+  if (h0 <= 0) {
+    result.advisories.push({
+      severity: 'error',
+      code: 'INVALID_INPUT',
+      message: '有效高度 h0 必须大于零',
+    });
+    return result;
+  }
 
   // === 记录输入参数 ===
   result.inputs = [
@@ -435,6 +452,11 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   };
 
   // 全局 advisory
+  result.advisories.push({
+    severity: 'warning',
+    code: 'FLANGE_WIDTH_UNCHECKED',
+    message: '翼缘计算宽度 bf 由用户输入；本工具未按第6.2.12条及表5.2.4验算其取值。',
+  });
   result.advisories.push({
     severity: 'warning',
     code: 'REVIEW_REQUIRED',

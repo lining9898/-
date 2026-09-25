@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { calculateBeamShear, BeamShearInput } from '../../core/beam/shear';
 import { generateReport } from '../../report/generator';
 import EvidencePanel from '../evidence/EvidencePanel';
+import VerificationBadge from '../evidence/VerificationBadge';
 import CalculationReportView from '../report/CalculationReportView';
 
 const CONCRETE_GRADES = ['C20', 'C25', 'C30', 'C35', 'C40', 'C45', 'C50'];
@@ -109,9 +110,7 @@ const BeamShear: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-800">矩形梁斜截面受剪</h2>
         <p className="text-sm text-gray-500 mt-1">
           GB 50010 混凝土梁斜截面受剪承载力计算
-          <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">
-            VERIFIED
-          </span>
+          <VerificationBadge status={result.overallStatus} className="ml-2" />
         </p>
       </div>
 
@@ -312,9 +311,7 @@ const BeamShear: React.FC = () => {
                   }`}>
                     {result.conclusion.passed ? '✓ 验算通过' : '✗ 验算不通过'}
                   </span>
-                  <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">
-                    VERIFIED
-                  </span>
+                  <VerificationBadge status={result.overallStatus} />
                 </div>
                 <p className="text-sm text-gray-600 mt-1">{result.conclusion.summary}</p>
               </div>
@@ -410,7 +407,7 @@ const BeamShear: React.FC = () => {
           {/* 详细计算书 */}
           {activeTab === 'report' && (
             <div className="bg-white rounded-b-lg shadow-sm border border-gray-200 p-5">
-              <CalculationReportView report={report} />
+              <CalculationReportView report={report} status={result.overallStatus} />
             </div>
           )}
 

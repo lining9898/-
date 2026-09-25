@@ -76,6 +76,21 @@ describe('T形梁正截面受弯承载力计算', () => {
       expect(result.advisories.some(a => a.code === 'INVALID_INPUT')).toBe(true);
     });
 
+    it('应拒绝非整数钢筋根数', () => {
+      const result = calculateBeamTFlexure({ ...flangeCase, barCount: 2.5 });
+      expect(result.advisories.some(a => a.code === 'INVALID_INPUT')).toBe(true);
+    });
+
+    it('应拒绝非正的有效高度', () => {
+      const result = calculateBeamTFlexure({ ...flangeCase, cover: 490 });
+      expect(result.advisories.some(a => a.code === 'INVALID_INPUT')).toBe(true);
+    });
+
+    it('应拒绝非有限数值', () => {
+      const result = calculateBeamTFlexure({ ...flangeCase, bf: Number.NaN });
+      expect(result.advisories.some(a => a.code === 'INVALID_INPUT')).toBe(true);
+    });
+
     it('应拒绝零弯矩', () => {
       const result = calculateBeamTFlexure({ ...flangeCase, moment: 0 });
       expect(result.advisories.some(a => a.code === 'INVALID_INPUT')).toBe(true);
@@ -187,6 +202,36 @@ describe('T形梁正截面受弯承载力计算', () => {
       expect(minResult).toBeDefined();
       expect(minResult!.value).toBe(200);
     });
+
+    it('翼缘尺寸变化不应改变按 b·h 计算的 As,min', () => {
+      const result = calculateBeamTFlexure({ ...flangeCase, bf: 800, hf: 120 });
+      expect(result.results.find(r => r.label === '最小配筋面积 As,min')?.value).toBe(200);
+    });
+  });
+
+  describe('分支和承载力边界', () => {
+    it('钢筋拉力跨过受压翼缘承载力时应切换计算分支', () => {
+      const as = flangeCase.barCount * Math.PI * flangeCase.barDiameter ** 2 / 4;
+      const thresholdBf = 360 * as / (14.3 * flangeCase.hf);
+      const inWeb = calculateBeamTFlexure({ ...flangeCase, bf: thresholdBf - 0.01 });
+      const inFlange = calculateBeamTFlexure({ ...flangeCase, bf: thresholdBf + 0.01 });
+
+      expect(inWeb.results.find(r => r.label === '中和轴位置')?.value).toBe('腹板内');
+      expect(inFlange.results.find(r => r.label === '中和轴位置')?.value).toBe('翼缘内');
+      const webMu = Number(inWeb.results.find(r => r.label === '受弯承载力 Mu')?.value);
+      const flangeMu = Number(inFlange.results.find(r => r.label === '受弯承载力 Mu')?.value);
+      expect(Math.abs(webMu - flangeMu)).toBeLessThan(0.1);
+    });
+
+    it('设计弯矩跨过承载力时验算结果应翻转', () => {
+      const baseline = calculateBeamTFlexure(flangeCase);
+      const mu = Number(baseline.results.find(r => r.label === '受弯承载力 Mu')?.value);
+      const lower = calculateBeamTFlexure({ ...flangeCase, moment: mu - 1 });
+      const higher = calculateBeamTFlexure({ ...flangeCase, moment: mu + 1 });
+
+      expect(lower.checks.find(c => c.name === '承载力验算')?.passed).toBe(true);
+      expect(higher.checks.find(c => c.name === '承载力验算')?.passed).toBe(false);
+    });
   });
 
   describe('规范依据', () => {
@@ -201,6 +246,12 @@ describe('T形梁正截面受弯承载力计算', () => {
     it('应包含 REVIEW_REQUIRED 警告', () => {
       const result = calculateBeamTFlexure(flangeCase);
       expect(result.advisories.some(a => a.code === 'REVIEW_REQUIRED')).toBe(true);
+    });
+
+    it('应提示翼缘计算宽度尚未由工具验算', () => {
+      const result = calculateBeamTFlexure(flangeCase);
+      expect(result.advisories.some(a => a.code === 'FLANGE_WIDTH_UNCHECKED')).toBe(true);
+      expect(result.overallStatus).toBe('REVIEW_REQUIRED');
     });
 
     it('应包含 6.2.11 条文依据', () => {

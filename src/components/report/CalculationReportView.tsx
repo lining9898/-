@@ -1,18 +1,19 @@
 import React from 'react';
 import { ReportSection } from '../../report/generator';
+import { VerificationStatus } from '../../types/evidence';
+import VerificationBadge from '../evidence/VerificationBadge';
 
 interface CalculationReportViewProps {
   report: ReportSection[];
+  status: VerificationStatus;
 }
 
-const CalculationReportView: React.FC<CalculationReportViewProps> = ({ report }) => {
+const CalculationReportView: React.FC<CalculationReportViewProps> = ({ report, status }) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-gray-700">详细计算书</h3>
-        <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">
-          REVIEW_REQUIRED
-        </span>
+        <VerificationBadge status={status} />
       </div>
 
       <div className="space-y-6">

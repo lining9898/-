@@ -3,6 +3,7 @@ import { calculateBeamFlexure, BeamFlexureInput } from '../../core/beam/flexure'
 import { generateReport } from '../../report/generator';
 import BeamSectionSVG from '../svg/BeamSectionSVG';
 import EvidencePanel from '../evidence/EvidencePanel';
+import VerificationBadge from '../evidence/VerificationBadge';
 import CalculationReportView from '../report/CalculationReportView';
 
 const CONCRETE_GRADES = ['C20', 'C25', 'C30', 'C35', 'C40', 'C45', 'C50'];
@@ -36,9 +37,7 @@ const BeamFlexure: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-800">矩形梁正截面受弯</h2>
         <p className="text-sm text-gray-500 mt-1">
           GB 50010 混凝土梁正截面受弯承载力计算
-          <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">
-            REVIEW_REQUIRED
-          </span>
+          <VerificationBadge status={result.overallStatus} className="ml-2" />
         </p>
       </div>
 
@@ -191,9 +190,7 @@ const BeamFlexure: React.FC = () => {
                   }`}>
                     {result.conclusion.passed ? '✓ 验算通过' : '✗ 验算不通过'}
                   </span>
-                  <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">
-                    REVIEW_REQUIRED
-                  </span>
+                  <VerificationBadge status={result.overallStatus} />
                 </div>
                 <p className="text-sm text-gray-600 mt-1">{result.conclusion.summary}</p>
               </div>
@@ -289,7 +286,7 @@ const BeamFlexure: React.FC = () => {
           {/* 详细计算书 */}
           {activeTab === 'report' && (
             <div className="bg-white rounded-b-lg shadow-sm border border-gray-200 p-5">
-              <CalculationReportView report={report} />
+              <CalculationReportView report={report} status={result.overallStatus} />
             </div>
           )}
 
