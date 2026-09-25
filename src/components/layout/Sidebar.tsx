@@ -78,7 +78,7 @@ const menuItems: MenuItem[] = [
     id: 'tools',
     label: '常用工具',
     children: [
-      { id: 'tools-rebar', label: '钢筋公称面积', available: false },
+      { id: 'tools-rebar', label: '钢筋公称面积', available: true },
       { id: 'tools-weight', label: '材料重度', available: false },
       { id: 'tools-params', label: '常用结构参数', available: false },
     ],
