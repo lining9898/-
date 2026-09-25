@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import BeamFlexure from './components/calculators/BeamFlexure';
+import BeamShear from './components/calculators/BeamShear';
 import Placeholder from './components/calculators/Placeholder';
 
 type ModuleId = string;
@@ -13,6 +14,7 @@ const App: React.FC = () => {
       case 'beam-flexure':
         return <BeamFlexure />;
       case 'beam-shear':
+        return <BeamShear />;
       case 'beam-t-flexure':
       case 'beam-continuous':
       case 'column-axial':
