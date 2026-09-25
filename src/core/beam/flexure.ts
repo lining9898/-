@@ -79,7 +79,7 @@ function verifiedEvidence(
     clause: clause,
     originalText: originalText,
     pdfPage: pdfPage,
-    status: 'current',
+    status: 'superseded',
     verificationStatus: 'VERIFIED',
     sourceFile: 'GB50010-2010_2015_.pdf',
   };
@@ -307,20 +307,20 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   result.conclusion = {
     passed: allPassed,
     summary: allPassed
-      ? '各项验算通过，截面满足要求（计算公式已根据 GB 50010-2010(2015年版) 原文校核）'
+      ? '所列验算项满足 2015 年版计算式；尚未完成 2024 年修订差异核查'
       : '存在不满足的验算项，请调整参数（计算公式已根据 GB 50010-2010(2015年版) 原文校核）',
     evidence: [verifiedEvidence('6.2.10', '第6章', '综合验算结论', 54)],
   };
 
   // 全局 advisory
   result.advisories.push({
-    severity: 'info',
-    code: 'VERIFIED',
-    message: '本计算所有公式和限值均已根据 GB 50010-2010(2015年版) 规范原文校核。',
+    severity: 'warning',
+    code: 'NORM_UPDATE_REQUIRED',
+    message: '历史条文证据已按 2015 年版核对，但未完成 2024 年局部修订及现行通用规范复核。',
   });
 
   result.allEvidence = allEvidence;
-  result.overallStatus = 'VERIFIED';
+  result.overallStatus = 'REVIEW_REQUIRED';
 
   return result;
 }

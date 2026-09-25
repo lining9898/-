@@ -93,7 +93,7 @@ function verifiedEvidence(
     clause: clause,
     originalText: originalText,
     pdfPage: pdfPage,
-    status: 'current',
+    status: 'superseded',
     verificationStatus: 'VERIFIED',
     sourceFile: 'GB50010-2010_2015_.pdf',
   };
@@ -451,16 +451,16 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   result.conclusion = {
     passed: allPassed,
     summary: allPassed
-      ? '各项验算通过，斜截面受剪承载力满足要求'
+      ? '所列验算项满足 2015 年版计算式；尚未完成 2024 年修订差异核查'
       : '存在不满足的验算项，请调整箍筋配置或截面尺寸',
     evidence: [verifiedEvidence('6.3.4', '第6章', '综合验算结论', 71)],
   };
 
   // 全局 advisory
   result.advisories.push({
-    severity: 'info',
-    code: 'VERIFIED',
-    message: '本计算所有公式和限值已经过规范原文核验，状态为 VERIFIED。',
+    severity: 'warning',
+    code: 'NORM_UPDATE_REQUIRED',
+    message: '历史条文证据已按 2015 年版核对，但未完成 2024 年局部修订及现行通用规范复核。',
   });
 
   // 适用范围提示
@@ -473,7 +473,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   }
 
   result.allEvidence = allEvidence;
-  result.overallStatus = 'VERIFIED';
+  result.overallStatus = 'REVIEW_REQUIRED';
 
   return result;
 }

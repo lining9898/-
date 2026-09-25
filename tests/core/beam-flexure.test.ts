@@ -59,7 +59,7 @@ describe('矩形梁正截面受弯计算', () => {
 
     it('所有规范依据应标记为 VERIFIED', () => {
       const result = calculateBeamFlexure(defaultInput);
-      expect(result.overallStatus).toBe('VERIFIED');
+      expect(result.overallStatus).toBe('REVIEW_REQUIRED');
       result.allEvidence.forEach(e => {
         expect(e.verificationStatus).toBe('VERIFIED');
       });
@@ -67,7 +67,7 @@ describe('矩形梁正截面受弯计算', () => {
 
     it('应包含 VERIFIED 警告', () => {
       const result = calculateBeamFlexure(defaultInput);
-      expect(result.advisories.some(a => a.code === 'VERIFIED')).toBe(true);
+      expect(result.advisories.some(a => a.code === 'NORM_UPDATE_REQUIRED')).toBe(true);
     });
 
     // REFERENCE_CASE_REQUIRED

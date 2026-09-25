@@ -5,15 +5,16 @@ import App from '../../src/App';
 afterEach(cleanup);
 
 describe('计算页面规范校核状态', () => {
-  it('矩形梁受弯的结果、计算书和依据不再显示相反的待校核状态', () => {
+  it('矩形梁受弯保留历史条文证据，但总状态等待 2024 版本复核', () => {
     render(<App />);
 
-    expect(screen.getAllByText('VERIFIED')).toHaveLength(2);
-    expect(screen.queryByText('REVIEW_REQUIRED')).toBeNull();
+    expect(screen.getAllByText('REVIEW_REQUIRED')).toHaveLength(2);
+    expect(screen.queryByText('VERIFIED')).toBeNull();
+    expect(screen.getByText('所列验算满足（待复核）')).not.toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: '详细计算书' }));
-    expect(screen.getAllByText('VERIFIED')).toHaveLength(2);
-    expect(screen.queryByText('REVIEW_REQUIRED')).toBeNull();
+    expect(screen.getAllByText('REVIEW_REQUIRED')).toHaveLength(2);
+    expect(screen.queryByText('VERIFIED')).toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: '规范依据' }));
     expect(screen.queryByText(/条规范依据尚未完成原文校核/)).toBeNull();
@@ -37,11 +38,11 @@ describe('计算页面规范校核状态', () => {
     expect(screen.getAllByText(/待核验依据摘录：/).length).toBeGreaterThan(0);
   });
 
-  it('矩形梁受剪仍显示其原有的 VERIFIED 状态', () => {
+  it('矩形梁受剪也等待 2024 版本复核', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /矩形梁斜截面受剪/ }));
 
-    expect(screen.getAllByText('VERIFIED')).toHaveLength(2);
-    expect(screen.queryByText('REVIEW_REQUIRED')).toBeNull();
+    expect(screen.getAllByText('REVIEW_REQUIRED')).toHaveLength(2);
+    expect(screen.queryByText('VERIFIED')).toBeNull();
   });
 });

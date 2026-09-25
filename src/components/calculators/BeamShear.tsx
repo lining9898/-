@@ -301,15 +301,18 @@ const BeamShear: React.FC<{ onLookupClause?: (clause: string) => void }> = ({ on
             <div className="bg-white rounded-b-lg shadow-sm border border-gray-200 p-5 space-y-5">
               {/* 结论 */}
               <div className={`p-4 rounded-lg border ${
-                result.conclusion.passed
-                  ? 'bg-green-50 border-green-200'
-                  : 'bg-red-50 border-red-200'
+                !result.conclusion.passed ? 'bg-red-50 border-red-200'
+                  : result.overallStatus === 'VERIFIED' ? 'bg-green-50 border-green-200'
+                  : 'bg-amber-50 border-amber-200'
               }`}>
                 <div className="flex items-center gap-2">
                   <span className={`text-lg font-bold ${
-                    result.conclusion.passed ? 'text-green-700' : 'text-red-700'
+                    !result.conclusion.passed ? 'text-red-700'
+                      : result.overallStatus === 'VERIFIED' ? 'text-green-700' : 'text-amber-800'
                   }`}>
-                    {result.conclusion.passed ? '✓ 验算通过' : '✗ 验算不通过'}
+                    {result.conclusion.passed
+                      ? result.overallStatus === 'VERIFIED' ? '✓ 验算通过' : '所列验算满足（待复核）'
+                      : '✗ 验算不通过'}
                   </span>
                   <VerificationBadge status={result.overallStatus} />
                 </div>

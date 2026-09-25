@@ -7,6 +7,7 @@ afterEach(cleanup);
 describe('clause search', () => {
   it('searches by clause and shows the source page without presenting verified text', () => {
     render(<App />);
+    expect(screen.getByRole('note').textContent).toContain('2024 年局部修订');
     fireEvent.click(screen.getByRole('button', { name: /条文检索/ }));
     fireEvent.change(screen.getByRole('searchbox', { name: '条文号或关键词' }), { target: { value: '8.5.1' } });
 

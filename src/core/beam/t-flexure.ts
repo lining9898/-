@@ -87,7 +87,7 @@ function reviewEvidence(
     clause: clause,
     originalText: originalText,
     pdfPage: pdfPage,
-    status: 'current',
+    status: 'superseded',
     verificationStatus: 'REVIEW_REQUIRED',
     sourceFile: 'GB50010-2010_2015_.pdf',
   };
