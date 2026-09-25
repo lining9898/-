@@ -1,0 +1,31 @@
+{
+  "codeName": "混凝土结构设计规范",
+  "codeNumber": "GB 50010",
+  "edition": "2010(2015)",
+  "pdfFileName": "GB50010-2010_2015_.pdf",
+  "fileHash": "a3916190cb9ef0f9da74f02f067c6db9",
+  "totalPages": 441,
+  "importDate": "2026-09-25",
+  "evidenceStatus": "ACTIVE",
+  "description": "GB 50010-2010 混凝土结构设计规范（2015年版），包含441页完整内容",
+  "relatedModules": [
+    "beam-flexure",
+    "beam-shear"
+  ],
+  "verifiedClauses": {
+    "beam-flexure": [
+      "4.1.4",
+      "4.2.3",
+      "6.2.1",
+      "6.2.6",
+      "6.2.7",
+      "6.2.10",
+      "8.5.1"
+    ],
+    "beam-shear": [
+      "6.3.1",
+      "6.3.4",
+      "9.2.9"
+    ]
+  }
+}

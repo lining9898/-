@@ -5,7 +5,7 @@ describe('矩形梁斜截面受剪承载力计算', () => {
   const defaultInput: BeamShearInput = {
     b: 250,
     h: 500,
-    cover: 25,
+    h0: 460,
     stirrupDiameter: 8,
     concreteGrade: 'C30',
     stirrupGrade: 'HPB300',
@@ -23,6 +23,16 @@ describe('矩形梁斜截面受剪承载力计算', () => {
 
     it('应拒绝负高度', () => {
       const result = calculateBeamShear({ ...defaultInput, h: -100 });
+      expect(result.advisories.some(a => a.code === 'INVALID_INPUT')).toBe(true);
+    });
+
+    it('应拒绝零有效高度', () => {
+      const result = calculateBeamShear({ ...defaultInput, h0: 0 });
+      expect(result.advisories.some(a => a.code === 'INVALID_INPUT')).toBe(true);
+    });
+
+    it('应拒绝 h0 >= h', () => {
+      const result = calculateBeamShear({ ...defaultInput, h0: 500 });
       expect(result.advisories.some(a => a.code === 'INVALID_INPUT')).toBe(true);
     });
 
@@ -79,17 +89,17 @@ describe('矩形梁斜截面受剪承载力计算', () => {
       expect(result.advisories.length).toBeGreaterThan(0);
     });
 
-    it('所有规范依据应标记为 VERIFIED', () => {
+    it('所有规范依据应标记为 REVIEW_REQUIRED', () => {
       const result = calculateBeamShear(defaultInput);
-      expect(result.overallStatus).toBe('VERIFIED');
+      expect(result.overallStatus).toBe('REVIEW_REQUIRED');
       result.allEvidence.forEach(e => {
-        expect(e.verificationStatus).toBe('VERIFIED');
+        expect(e.verificationStatus).toBe('REVIEW_REQUIRED');
       });
     });
 
-    it('应包含 VERIFIED 警告', () => {
+    it('应包含 REVIEW_REQUIRED 警告', () => {
       const result = calculateBeamShear(defaultInput);
-      expect(result.advisories.some(a => a.code === 'VERIFIED')).toBe(true);
+      expect(result.advisories.some(a => a.code === 'REVIEW_REQUIRED')).toBe(true);
     });
 
     it('均布荷载不应计算剪跨比步骤', () => {
@@ -176,6 +186,7 @@ describe('矩形梁斜截面受剪承载力计算', () => {
         ...defaultInput,
         b: 150,
         h: 200,
+        h0: 170,
         stirrupDiameter: 6,
         stirrupLegs: 2,
         stirrupSpacing: 150,
@@ -190,6 +201,7 @@ describe('矩形梁斜截面受剪承载力计算', () => {
         ...defaultInput,
         b: 600,
         h: 1200,
+        h0: 1140,
         stirrupDiameter: 12,
         stirrupLegs: 4,
         stirrupSpacing: 100,
@@ -225,6 +237,7 @@ describe('矩形梁斜截面受剪承载力计算', () => {
       const result = calculateBeamShear({
         ...defaultInput,
         h: 900,
+        h0: 850,
       });
       expect(result.advisories.some(a => a.code === 'LARGE_SECTION')).toBe(true);
     });

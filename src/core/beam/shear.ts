@@ -1,15 +1,15 @@
 /**
  * 矩形梁斜截面受剪承载力计算内核
  *
- * 状态：VERIFIED
+ * 状态：REVIEW_REQUIRED
  *
- * 已根据 GB 50010-2010（2015年版）规范原文逐条校核。
- * 所有规范依据已标记为 VERIFIED，包含完整的条文号、PDF 页码和原文。
+ * 本模块的计算公式基于 GB 50010-2010（2015年版）的通用理解，
+ * 但所有规范依据（条文号、PDF 页码、原文）尚未经过规范原文重新核验，
+ * 不得标记为 VERIFIED。
  *
  * 适用范围：矩形截面普通钢筋混凝土梁，仅配置箍筋，斜截面受剪承载力验算
  *
- * 校核日期：2026-09-25
- * 校核依据：GB50010-2010_2015_.pdf（441页）
+ * 待校核：需要 GB50010-2010_2015_.pdf 原文重新核验所有 Evidence
  */
 
 import {
@@ -28,8 +28,7 @@ export interface BeamShearInput {
   // 截面参数
   b: number;          // 截面宽度 (mm)
   h: number;          // 截面高度 (mm)
-  cover: number;      // 保护层厚度 (mm)
-  stirrupDiameter: number;  // 箍筋直径 (mm)
+  h0: number;         // 截面有效高度 (mm) - 受拉纵筋合力点到受压区边缘的距离
 
   // 材料
   concreteGrade: string;    // 混凝土强度等级，如 "C30"
@@ -41,25 +40,26 @@ export interface BeamShearInput {
   // 箍筋配置
   stirrupLegs: number;      // 箍筋肢数
   stirrupSpacing: number;   // 箍筋间距 (mm)
+  stirrupDiameter: number;  // 箍筋直径 (mm)
 
   // 荷载条件
   loadType: LoadType;       // 荷载类型：均布荷载 / 集中荷载
   shearSpan?: number;       // 剪跨 a (mm)，集中荷载时需要
 }
 
-/** 混凝土材料参数（已根据 GB 50010-2010(2015年版) 校核） */
+/** 混凝土材料参数 */
 interface ConcreteParams {
   fc: number;       // 轴心抗压强度设计值 (MPa)
   ft: number;       // 轴心抗拉强度设计值 (MPa)
 }
 
-/** 钢筋材料参数（已根据 GB 50010-2010(2015年版) 校核） */
+/** 钢筋材料参数 */
 interface SteelParams {
   fy: number;       // 抗拉强度设计值 (MPa)
   Es: number;       // 弹性模量 (MPa)
 }
 
-/** 常用混凝土等级参数（已根据 GB 50010-2010(2015年版) 表 4.1.4-1、4.1.4-2 校核） */
+/** 常用混凝土等级参数 */
 const CONCRETE_PARAMS: Record<string, ConcreteParams> = {
   C20: { fc: 9.6, ft: 1.10 },
   C25: { fc: 11.9, ft: 1.27 },
@@ -70,7 +70,7 @@ const CONCRETE_PARAMS: Record<string, ConcreteParams> = {
   C50: { fc: 23.1, ft: 1.89 },
 };
 
-/** 常用钢筋等级参数（已根据 GB 50010-2010(2015年版) 表 4.2.3-1 校核） */
+/** 常用钢筋等级参数 */
 const STEEL_PARAMS: Record<string, SteelParams> = {
   HPB300: { fy: 270, Es: 210000 },
   HRB335: { fy: 300, Es: 200000 },
@@ -78,8 +78,8 @@ const STEEL_PARAMS: Record<string, SteelParams> = {
   HRB500: { fy: 435, Es: 200000 },
 };
 
-/** 创建已校核的规范证据 */
-function verifiedEvidence(
+/** 创建待校核的规范证据 */
+function reviewEvidence(
   clause: string,
   chapter: string,
   originalText: string,
@@ -94,7 +94,7 @@ function verifiedEvidence(
     originalText: originalText,
     pdfPage: pdfPage,
     status: 'current',
-    verificationStatus: 'VERIFIED',
+    verificationStatus: 'REVIEW_REQUIRED',
     sourceFile: 'GB50010-2010_2015_.pdf',
   };
 }
@@ -110,11 +110,20 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   const allEvidence: Evidence[] = [];
 
   // === 输入校验 ===
-  if (input.b <= 0 || input.h <= 0 || input.cover <= 0) {
+  if (input.b <= 0 || input.h <= 0 || input.h0 <= 0) {
     result.advisories.push({
       severity: 'error',
       code: 'INVALID_INPUT',
-      message: '截面尺寸和保护层厚度必须大于零',
+      message: '截面尺寸和有效高度必须大于零',
+    });
+    return result;
+  }
+
+  if (input.h0 >= input.h) {
+    result.advisories.push({
+      severity: 'error',
+      code: 'INVALID_INPUT',
+      message: '有效高度 h₀ 必须小于截面高度 h',
     });
     return result;
   }
@@ -167,7 +176,6 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   }
 
   // === 基本参数计算 ===
-  const h0 = input.h - input.cover - input.stirrupDiameter / 2;
   const Asv = input.stirrupLegs * Math.PI * Math.pow(input.stirrupDiameter, 2) / 4;
   const rhoSv = Asv / (input.b * input.stirrupSpacing);
 
@@ -180,7 +188,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   result.inputs = [
     { label: '截面宽度 b', value: input.b, unit: 'mm' },
     { label: '截面高度 h', value: input.h, unit: 'mm' },
-    { label: '保护层厚度 c', value: input.cover, unit: 'mm' },
+    { label: '有效高度 h₀', value: input.h0, unit: 'mm' },
     { label: '箍筋直径', value: input.stirrupDiameter, unit: 'mm' },
     { label: '箍筋肢数 n', value: input.stirrupLegs, unit: '肢' },
     { label: '箍筋间距 s', value: input.stirrupSpacing, unit: 'mm' },
@@ -193,10 +201,10 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
 
   // === 记录材料参数 ===
   const concreteEvidence = [
-    verifiedEvidence('4.1.4', '第4章', '混凝土轴心抗压强度的设计值 fc 应按表 4.1.4-1 采用；轴心抗拉强度的设计值 ft 应按表 4.1.4-2 采用。', 34),
+    reviewEvidence('4.1.4', '第4章', '混凝土轴心抗压强度的设计值 fc 应按表 4.1.4-1 采用；轴心抗拉强度的设计值 ft 应按表 4.1.4-2 采用。', 34),
   ];
   const steelEvidence = [
-    verifiedEvidence('4.2.3', '第4章', '普通钢筋的抗拉强度设计值 fy 应按表 4.2.3-1 采用。', 38),
+    reviewEvidence('4.2.3', '第4章', '普通钢筋的抗拉强度设计值 fy 应按表 4.2.3-1 采用。', 38),
   ];
   allEvidence.push(...concreteEvidence, ...steelEvidence);
 
@@ -204,14 +212,14 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     { label: '混凝土等级', value: input.concreteGrade, unit: '', evidence: concreteEvidence },
     { label: 'fc', value: concrete.fc, unit: 'MPa', evidence: concreteEvidence },
     { label: 'ft', value: concrete.ft, unit: 'MPa', evidence: concreteEvidence },
-    { label: 'βc（混凝土强度影响系数）', value: betaC, unit: '', evidence: [verifiedEvidence('6.3.1', '第6章', '当混凝土强度等级不超过 C50 时，βc 取 1.0。', 70)] },
+    { label: 'βc（混凝土强度影响系数）', value: betaC, unit: '', evidence: [reviewEvidence('6.3.1', '第6章', '当混凝土强度等级不超过 C50 时，βc 取 1.0。', 70)] },
     { label: '箍筋等级', value: input.stirrupGrade, unit: '', evidence: steelEvidence },
     { label: 'fyv', value: steel.fy, unit: 'MPa', evidence: steelEvidence },
   ];
 
   // === 记录截面参数 ===
   result.geometry = [
-    { label: '有效高度 h₀', value: Math.round(h0 * 100) / 100, unit: 'mm' },
+    { label: '有效高度 h₀', value: Math.round(input.h0 * 100) / 100, unit: 'mm' },
     { label: '单肢箍筋面积 Asv1', value: Math.round(Math.PI * Math.pow(input.stirrupDiameter, 2) / 4 * 100) / 100, unit: 'mm²' },
     { label: '同一截面箍筋总面积 Asv', value: Math.round(Asv * 100) / 100, unit: 'mm²' },
     { label: '配箍率 ρsv', value: Math.round(rhoSv * 10000) / 100, unit: '%' },
@@ -222,9 +230,9 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
 
   // 步骤1：截面限制条件验算（6.3.1）
   // V ≤ 0.25·βc·fc·b·h0
-  const VMax = 0.25 * betaC * concrete.fc * input.b * h0 / 1000; // kN
+  const VMax = 0.25 * betaC * concrete.fc * input.b * input.h0 / 1000; // kN
   const sectionLimitEvidence = [
-    verifiedEvidence('6.3.1', '第6章', '当 hw/b ≤ 4 时，V ≤ 0.25βc·fc·b·h0（公式6.3.1-1）。矩形截面 hw 取有效高度 h0。', 69),
+    reviewEvidence('6.3.1', '第6章', '当 hw/b ≤ 4 时，V ≤ 0.25βc·fc·b·h0（公式6.3.1-1）。矩形截面 hw 取有效高度 h0。', 69),
   ];
   allEvidence.push(...sectionLimitEvidence);
   steps.push({
@@ -237,7 +245,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
       { symbol: 'b', meaning: '截面宽度', unit: 'mm' },
       { symbol: 'h_0', meaning: '截面有效高度', unit: 'mm' },
     ],
-    substitutedFormula: `V_max = 0.25 × ${betaC} × ${concrete.fc} × ${input.b} × ${Math.round(h0 * 100) / 100} / 1000`,
+    substitutedFormula: `V_max = 0.25 × ${betaC} × ${concrete.fc} × ${input.b} × ${Math.round(input.h0 * 100) / 100} / 1000`,
     result: Math.round(VMax * 100) / 100,
     unit: 'kN',
     evidence: sectionLimitEvidence,
@@ -248,19 +256,19 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   let alphaCv = 0.7; // 默认均布荷载
 
   if (input.loadType === 'concentrated' && input.shearSpan) {
-    lambda = input.shearSpan / h0;
+    lambda = input.shearSpan / input.h0;
     // 限制 λ 范围：1.5 ≤ λ ≤ 3
     lambda = Math.max(1.5, Math.min(3, lambda));
     alphaCv = 1.75 / (lambda + 1);
     const lambdaEvidence = [
-      verifiedEvidence('6.3.4', '第6章', '对集中荷载作用下的独立梁，αcv = 1.75/(λ+1)，λ = a/h0，当 λ < 1.5 时取 1.5，当 λ > 3 时取 3。', 71),
+      reviewEvidence('6.3.4', '第6章', '对集中荷载作用下的独立梁，αcv = 1.75/(λ+1)，λ = a/h0，当 λ < 1.5 时取 1.5，当 λ > 3 时取 3。', 71),
     ];
     allEvidence.push(...lambdaEvidence);
     steps.push({
       name: '计算剪跨比',
       description: 'λ = a/h0，并限制在 1.5～3 范围内',
       formula: 'λ = a / h_0',
-      substitutedFormula: `λ = ${input.shearSpan} / ${Math.round(h0 * 100) / 100} = ${(input.shearSpan / h0).toFixed(3)} → 取 ${lambda.toFixed(3)}`,
+      substitutedFormula: `λ = ${input.shearSpan} / ${Math.round(input.h0 * 100) / 100} = ${(input.shearSpan / input.h0).toFixed(3)} → 取 ${lambda.toFixed(3)}`,
       result: Math.round(lambda * 1000) / 1000,
       unit: '',
       evidence: lambdaEvidence,
@@ -269,7 +277,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
 
   // 步骤3：混凝土受剪承载力系数 αcv
   const alphaCvEvidence = [
-    verifiedEvidence('6.3.4', '第6章', input.loadType === 'uniform'
+    reviewEvidence('6.3.4', '第6章', input.loadType === 'uniform'
       ? '对于一般受弯构件，斜截面混凝土受剪承载力系数 αcv 取 0.7。'
       : `对集中荷载作用下的独立梁，αcv = 1.75/(λ+1) = 1.75/(${lambda}+1) = ${alphaCv.toFixed(4)}。`, 71),
   ];
@@ -289,25 +297,25 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   });
 
   // 步骤4：混凝土受剪承载力 Vc = αcv·ft·b·h0
-  const Vc = alphaCv * concrete.ft * input.b * h0 / 1000; // kN
+  const Vc = alphaCv * concrete.ft * input.b * input.h0 / 1000; // kN
   const VcEvidence = [
-    verifiedEvidence('6.3.4', '第6章', 'Vcs = αcv·ft·b·h0 + fyv·(Asv/s)·h0，其中 αcv·ft·b·h0 为混凝土受剪承载力部分。', 71),
+    reviewEvidence('6.3.4', '第6章', 'Vcs = αcv·ft·b·h0 + fyv·(Asv/s)·h0，其中 αcv·ft·b·h0 为混凝土受剪承载力部分。', 71),
   ];
   allEvidence.push(...VcEvidence);
   steps.push({
     name: '计算混凝土受剪承载力',
     description: 'Vc = αcv·ft·b·h0',
     formula: 'V_c = α_cv · f_t · b · h_0',
-    substitutedFormula: `V_c = ${alphaCv.toFixed(4)} × ${concrete.ft} × ${input.b} × ${Math.round(h0 * 100) / 100} / 1000`,
+    substitutedFormula: `V_c = ${alphaCv.toFixed(4)} × ${concrete.ft} × ${input.b} × ${Math.round(input.h0 * 100) / 100} / 1000`,
     result: Math.round(Vc * 100) / 100,
     unit: 'kN',
     evidence: VcEvidence,
   });
 
   // 步骤5：箍筋受剪承载力 Vs = fyv·(Asv/s)·h0
-  const Vs = steel.fy * (Asv / input.stirrupSpacing) * h0 / 1000; // kN
+  const Vs = steel.fy * (Asv / input.stirrupSpacing) * input.h0 / 1000; // kN
   const VsEvidence = [
-    verifiedEvidence('6.3.4', '第6章', 'Vcs = αcv·ft·b·h0 + fyv·(Asv/s)·h0，其中 fyv·(Asv/s)·h0 为箍筋受剪承载力部分。', 71),
+    reviewEvidence('6.3.4', '第6章', 'Vcs = αcv·ft·b·h0 + fyv·(Asv/s)·h0，其中 fyv·(Asv/s)·h0 为箍筋受剪承载力部分。', 71),
   ];
   allEvidence.push(...VsEvidence);
   steps.push({
@@ -320,7 +328,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
       { symbol: 's', meaning: '箍筋间距', unit: 'mm' },
       { symbol: 'h_0', meaning: '截面有效高度', unit: 'mm' },
     ],
-    substitutedFormula: `V_s = ${steel.fy} × (${Math.round(Asv * 100) / 100} / ${input.stirrupSpacing}) × ${Math.round(h0 * 100) / 100} / 1000`,
+    substitutedFormula: `V_s = ${steel.fy} × (${Math.round(Asv * 100) / 100} / ${input.stirrupSpacing}) × ${Math.round(input.h0 * 100) / 100} / 1000`,
     result: Math.round(Vs * 100) / 100,
     unit: 'kN',
     evidence: VsEvidence,
@@ -329,7 +337,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   // 步骤6：斜截面受剪承载力 Vcs = Vc + Vs
   const Vcs = Vc + Vs;
   const VcsEvidence = [
-    verifiedEvidence('6.3.4', '第6章', '当仅配置箍筋时，V ≤ Vcs = αcv·ft·b·h0 + fyv·(Asv/s)·h0（公式6.3.4-1、6.3.4-2）。', 71),
+    reviewEvidence('6.3.4', '第6章', '当仅配置箍筋时，V ≤ Vcs = αcv·ft·b·h0 + fyv·(Asv/s)·h0（公式6.3.4-1、6.3.4-2）。', 71),
   ];
   allEvidence.push(...VcsEvidence);
   steps.push({
@@ -342,15 +350,14 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     evidence: VcsEvidence,
   });
 
-  // 步骤7：最小配箍率（8.5.1 + 9.2.9）
+  // 步骤7：最小配箍率（9.2.9）
   // 当 V > 0.7·ft·b·h0 时，ρsv ≥ 0.24·ft/fyv
-  const VThreshold = 0.7 * concrete.ft * input.b * h0 / 1000; // kN
-  const needsMinStirrupCheck = input.V * 1000 > 0.7 * concrete.ft * input.b * h0;
+  const VThreshold = 0.7 * concrete.ft * input.b * input.h0 / 1000; // kN
+  const needsMinStirrupCheck = input.V * 1000 > 0.7 * concrete.ft * input.b * input.h0;
   const rhoSvMin = needsMinStirrupCheck ? 0.24 * concrete.ft / steel.fy : 0;
 
   const minStirrupEvidence = [
-    verifiedEvidence('9.2.9', '第9章', `当 V > 0.7ft·b·h0 时，箍筋的配筋率 ρsv = Asv/(bs) 尚不应小于 0.24ft/fyv。`, 134),
-    verifiedEvidence('8.5.1', '第8章', '纵向受力钢筋的最小配筋百分率不应小于表 8.5.1 规定的数值。', 124),
+    reviewEvidence('9.2.9', '第9章', `当 V > 0.7ft·b·h0 时，箍筋的配筋率 ρsv = Asv/(bs) 尚不应小于 0.24ft/fyv。`, 134),
   ];
   allEvidence.push(...minStirrupEvidence);
   steps.push({
@@ -361,7 +368,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     formula: needsMinStirrupCheck ? 'ρ_sv,min = 0.24 · f_t / f_yv' : '按构造要求配置',
     substitutedFormula: needsMinStirrupCheck
       ? `ρ_sv,min = 0.24 × ${concrete.ft} / ${steel.fy} = ${(0.24 * concrete.ft / steel.fy * 100).toFixed(4)}%`
-      : `0.7 × ${concrete.ft} × ${input.b} × ${Math.round(h0 * 100) / 100} / 1000 = ${Math.round(VThreshold * 100) / 100} kN`,
+      : `0.7 × ${concrete.ft} × ${input.b} × ${Math.round(input.h0 * 100) / 100} / 1000 = ${Math.round(VThreshold * 100) / 100} kN`,
     result: needsMinStirrupCheck ? Math.round(rhoSvMin * 10000) / 100 : 0,
     unit: needsMinStirrupCheck ? '%' : 'kN（阈值）',
     evidence: minStirrupEvidence,
@@ -371,7 +378,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
 
   // === 主要结果 ===
   result.results = [
-    { label: '有效高度 h₀', value: Math.round(h0 * 100) / 100, unit: 'mm' },
+    { label: '有效高度 h₀', value: Math.round(input.h0 * 100) / 100, unit: 'mm' },
     { label: '同一截面箍筋总面积 Asv', value: Math.round(Asv * 100) / 100, unit: 'mm²' },
     { label: '配箍率 ρsv', value: Math.round(rhoSv * 10000) / 100, unit: '%' },
     { label: '混凝土受剪承载力 Vc', value: Math.round(Vc * 100) / 100, unit: 'kN' },
@@ -394,7 +401,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     comparison: '<=',
     passed: input.V <= VMax,
     unit: 'kN',
-    evidence: [verifiedEvidence('6.3.1', '第6章', '矩形截面受弯构件的受剪截面应符合 V ≤ 0.25βc·fc·b·h0（公式6.3.1-1）。', 69)],
+    evidence: [reviewEvidence('6.3.1', '第6章', '矩形截面受弯构件的受剪截面应符合 V ≤ 0.25βc·fc·b·h0（公式6.3.1-1）。', 69)],
   });
 
   // 验算2：斜截面受剪承载力 V ≤ Vcs
@@ -405,7 +412,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     comparison: '<=',
     passed: input.V <= Vcs,
     unit: 'kN',
-    evidence: [verifiedEvidence('6.3.4', '第6章', '当仅配置箍筋时，矩形截面受弯构件的斜截面受剪承载力应符合 V ≤ Vcs（公式6.3.4-1）。', 71)],
+    evidence: [reviewEvidence('6.3.4', '第6章', '当仅配置箍筋时，矩形截面受弯构件的斜截面受剪承载力应符合 V ≤ Vcs（公式6.3.4-1）。', 71)],
   });
 
   // 验算3：最小配箍率 ρsv ≥ ρsv,min
@@ -417,7 +424,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
       comparison: '>=',
       passed: rhoSv >= rhoSvMin,
       unit: '%',
-      evidence: [verifiedEvidence('9.2.9', '第9章', '当 V > 0.7ft·b·h0 时，箍筋的配筋率 ρsv 尚不应小于 0.24ft/fyv。', 134)],
+      evidence: [reviewEvidence('9.2.9', '第9章', '当 V > 0.7ft·b·h0 时，箍筋的配筋率 ρsv 尚不应小于 0.24ft/fyv。', 134)],
     });
   } else {
     checks.push({
@@ -427,7 +434,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
       comparison: '>=',
       passed: true,
       unit: '%',
-      evidence: [verifiedEvidence('9.2.9', '第9章', `V = ${input.V} kN ≤ 0.7·ft·b·h0 = ${Math.round(VThreshold * 100) / 100} kN，按构造要求配置箍筋。`, 134)],
+      evidence: [reviewEvidence('9.2.9', '第9章', `V = ${input.V} kN ≤ 0.7·ft·b·h0 = ${Math.round(VThreshold * 100) / 100} kN，按构造要求配置箍筋。`, 134)],
     });
   }
 
@@ -438,16 +445,16 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   result.conclusion = {
     passed: allPassed,
     summary: allPassed
-      ? '各项验算通过，斜截面受剪承载力满足要求（计算公式已根据 GB 50010-2010(2015年版) 原文校核）'
-      : '存在不满足的验算项，请调整箍筋配置或截面尺寸（计算公式已根据 GB 50010-2010(2015年版) 原文校核）',
-    evidence: [verifiedEvidence('6.3.4', '第6章', '综合验算结论', 71)],
+      ? '各项验算通过，斜截面受剪承载力满足要求（计算公式待规范原文重新核验）'
+      : '存在不满足的验算项，请调整箍筋配置或截面尺寸（计算公式待规范原文重新核验）',
+    evidence: [reviewEvidence('6.3.4', '第6章', '综合验算结论', 71)],
   };
 
   // 全局 advisory
   result.advisories.push({
-    severity: 'info',
-    code: 'VERIFIED',
-    message: '本计算所有公式和限值均已根据 GB 50010-2010(2015年版) 规范原文校核。',
+    severity: 'warning',
+    code: 'REVIEW_REQUIRED',
+    message: '本计算所有公式和限值尚未经过规范原文重新核验，状态为 REVIEW_REQUIRED。',
   });
 
   // 适用范围提示
@@ -460,7 +467,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   }
 
   result.allEvidence = allEvidence;
-  result.overallStatus = 'VERIFIED';
+  result.overallStatus = 'REVIEW_REQUIRED';
 
   return result;
 }

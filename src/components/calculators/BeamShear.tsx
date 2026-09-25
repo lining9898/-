@@ -8,8 +8,8 @@ const CONCRETE_GRADES = ['C20', 'C25', 'C30', 'C35', 'C40', 'C45', 'C50'];
 const STEEL_GRADES = ['HPB300', 'HRB335', 'HRB400', 'HRB500'];
 
 /** 梁截面 + 箍筋示意图 */
-const BeamShearSVG: React.FC<{ b: number; h: number; cover: number; stirrupDiameter: number; stirrupLegs: number }> = ({
-  b, h, cover, stirrupDiameter, stirrupLegs,
+const BeamShearSVG: React.FC<{ b: number; h: number; h0: number; stirrupDiameter: number; stirrupLegs: number }> = ({
+  b, h, h0, stirrupDiameter, stirrupLegs,
 }) => {
   const svgW = 300;
   const svgH = 240;
@@ -18,13 +18,13 @@ const BeamShearSVG: React.FC<{ b: number; h: number; cover: number; stirrupDiame
   const drawH = h * scale;
   const ox = (svgW - drawW) / 2;
   const oy = (svgH - drawH) / 2 + 10;
-  const cOff = cover * scale;
-
-  // 箍筋位置
-  const stirrupX1 = ox + cOff;
-  const stirrupX2 = ox + drawW - cOff;
-  const stirrupY1 = oy + cOff;
-  const stirrupY2 = oy + drawH - cOff;
+  
+  // 根据 h0 计算受拉钢筋位置
+  const cover = h - h0;
+  const stirrupX1 = ox + cover * scale;
+  const stirrupX2 = ox + drawW - cover * scale;
+  const stirrupY1 = oy + cover * scale;
+  const stirrupY2 = oy + drawH - cover * scale;
 
   // 箍筋肢的 x 坐标
   const legPositions: number[] = [];
@@ -82,7 +82,7 @@ const BeamShear: React.FC = () => {
   const [input, setInput] = useState<BeamShearInput>({
     b: 250,
     h: 500,
-    cover: 25,
+    h0: 460,
     stirrupDiameter: 8,
     concreteGrade: 'C30',
     stirrupGrade: 'HRB400',
@@ -109,8 +109,8 @@ const BeamShear: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-800">矩形梁斜截面受剪</h2>
         <p className="text-sm text-gray-500 mt-1">
           GB 50010 混凝土梁斜截面受剪承载力计算
-          <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">
-            VERIFIED
+          <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">
+            REVIEW_REQUIRED
           </span>
         </p>
       </div>
@@ -143,11 +143,11 @@ const BeamShear: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">保护层厚度 c (mm)</label>
+                <label className="block text-xs text-gray-500 mb-1">有效高度 h₀ (mm)</label>
                 <input
                   type="number"
-                  value={input.cover}
-                  onChange={e => updateInput('cover', Number(e.target.value))}
+                  value={input.h0}
+                  onChange={e => updateInput('h0', Number(e.target.value))}
                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
@@ -254,7 +254,7 @@ const BeamShear: React.FC = () => {
             <BeamShearSVG
               b={input.b}
               h={input.h}
-              cover={input.cover}
+              h0={input.h0}
               stirrupDiameter={input.stirrupDiameter}
               stirrupLegs={input.stirrupLegs}
             />
@@ -312,8 +312,8 @@ const BeamShear: React.FC = () => {
                   }`}>
                     {result.conclusion.passed ? '✓ 验算通过' : '✗ 验算不通过'}
                   </span>
-                  <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">
-                    VERIFIED
+                  <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">
+                    REVIEW_REQUIRED
                   </span>
                 </div>
                 <p className="text-sm text-gray-600 mt-1">{result.conclusion.summary}</p>
