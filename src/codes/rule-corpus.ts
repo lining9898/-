@@ -6,6 +6,13 @@ export interface RuleChunk {
   pdfPages: readonly number[];
   calculator: string;
   contentStatus: 'REVIEW_REQUIRED';
+  source?: {
+    codeNumber: string;
+    edition: string;
+    totalPages: number;
+    pdfUrl: string;
+  };
+  auditKey?: string;
 }
 
 // Short engineering summaries checked against the scanned pages. They are not quotations.
@@ -64,4 +71,30 @@ export const ruleCorpus: readonly RuleChunk[] = [
     calculator: 'beam-t-flexure',
     contentStatus: 'REVIEW_REQUIRED',
   },
+  ...([
+    {
+      clause: '6.1.1', title: '钢梁受弯强度',
+      summary: '主平面受弯的实腹构件按弯矩、截面模量和截面塑性发展系数验算抗弯强度；当前计算器仅采用弹性系数 1。',
+      keywords: ['钢梁', '钢结构', '受弯', '弯矩', '抗弯强度'], pdfPages: [54],
+    },
+    {
+      clause: '6.1.3', title: '钢梁受剪强度',
+      summary: '不考虑腹板屈曲后强度时，腹板剪应力按剪力、面积矩、惯性矩及腹板厚度计算，并与抗剪强度设计值比较。',
+      keywords: ['钢梁', '钢结构', '受剪', '剪力', '腹板'], pdfPages: [55],
+    },
+    {
+      clause: '6.2.2', title: '钢梁整体稳定',
+      summary: '受弯构件整体稳定验算使用弯矩、受压最大纤维处截面模量、钢材强度设计值及按附录 C 确定的整体稳定系数。',
+      keywords: ['钢梁', '钢结构', '整体稳定', '侧向支承', '稳定系数'], pdfPages: [57],
+    },
+  ] as const).map(rule => ({
+    ...rule,
+    calculator: 'steel-beam',
+    contentStatus: 'REVIEW_REQUIRED' as const,
+    auditKey: `GB50017:${rule.clause}`,
+    source: {
+      codeNumber: 'GB 50017', edition: '2017', totalPages: 309,
+      pdfUrl: 'https://jncc.jinan.gov.cn/attach/0/c24799cca3194d3ba1d87c72caa1c3ef.pdf',
+    },
+  })),
 ];

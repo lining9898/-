@@ -5,6 +5,7 @@ import BeamShear from './components/calculators/BeamShear';
 import BeamTFlexure from './components/calculators/BeamTFlexure';
 import Placeholder from './components/calculators/Placeholder';
 import CodeSearch from './components/codes/CodeSearch';
+import SteelBeam from './components/calculators/SteelBeam';
 
 type ModuleId = string;
 
@@ -27,6 +28,8 @@ const App: React.FC = () => {
         return <BeamTFlexure onLookupClause={lookupClause} />;
       case 'code-search':
         return <CodeSearch query={clauseQuery} onQueryChange={setClauseQuery} />;
+      case 'steel-beam':
+        return <SteelBeam />;
       case 'beam-continuous':
       case 'column-axial':
       case 'column-eccentric':
@@ -38,7 +41,6 @@ const App: React.FC = () => {
       case 'foundation-independent':
       case 'staircase-plate':
       case 'wall-shear':
-      case 'steel':
       case 'tools-rebar':
       case 'tools-weight':
       case 'tools-params':

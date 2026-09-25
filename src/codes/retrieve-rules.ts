@@ -25,8 +25,10 @@ export function retrieveRules(query: string, limit = 5): RetrievedRule[] {
 
   const clause = trimmed.match(/\d+\.\d+\.\d+/)?.[0];
   if (clause) {
-    const exact = ruleCorpus.find(rule => rule.clause === clause);
-    return exact ? [{ rule: exact, score: 100 }] : [];
+    const codeNumber = trimmed.match(/GB\s*\d{5}/i)?.[0].replace(/\s+/g, '').toUpperCase();
+    return ruleCorpus.filter(rule => rule.clause === clause &&
+      (!codeNumber || (rule.source?.codeNumber ?? 'GB 50010').replace(/\s+/g, '') === codeNumber))
+      .slice(0, limit).map(rule => ({ rule, score: 100 }));
   }
   const queryTerms = [...new Set(tokens(trimmed))];
   return documents.map(({ rule, terms }) => {

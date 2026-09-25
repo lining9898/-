@@ -11,15 +11,16 @@ interface CodeSearchProps {
 
 const CodeSearch: React.FC<CodeSearchProps> = ({ query, onQueryChange }) => {
   const retrieved = retrieveRules(query, ruleCorpus.length);
-  const enrichedClauses = new Set(retrieved.map(item => item.rule.clause));
-  const locatorOnly = searchClauses(query).filter(item => !enrichedClauses.has(item.clause));
+  const enrichedClauses = new Set(retrieved.filter(item => !item.rule.source).map(item => item.rule.clause));
+  const otherCode = /GB\s*\d{5}/i.test(query) && !/GB\s*50010/i.test(query);
+  const locatorOnly = otherCode ? [] : searchClauses(query).filter(item => !enrichedClauses.has(item.clause));
   const resultCount = retrieved.length + locatorOnly.length;
 
   return (
     <section className="max-w-5xl mx-auto">
       <header className="mb-6">
         <h2 className="text-2xl font-bold text-gray-800">规范检索与函数反查</h2>
-        <p className="text-sm text-gray-500 mt-1">{sourceCode.name} {sourceCode.number}-{sourceCode.edition}</p>
+        <p className="text-sm text-gray-500 mt-1">多规范条文索引 · {sourceCode.name} {sourceCode.number}-{sourceCode.edition}</p>
       </header>
 
       <label htmlFor="clause-query" className="block text-sm font-medium text-gray-700 mb-2">条文号或关键词</label>
@@ -41,21 +42,25 @@ const CodeSearch: React.FC<CodeSearchProps> = ({ query, onQueryChange }) => {
       ) : (
         <div className="divide-y divide-gray-200 border-y border-gray-200 bg-white">
           {retrieved.map(({ rule }) => {
-            const probes = auditRule(rule.clause);
+            const probes = auditRule(rule.auditKey ?? rule.clause);
+            const code = rule.source?.codeNumber ?? sourceCode.number;
+            const edition = rule.source?.edition ?? sourceCode.edition;
+            const totalPages = rule.source?.totalPages ?? sourceCode.totalPages;
+            const pdfUrl = rule.source ? `${rule.source.pdfUrl}#page=${rule.pdfPages[0]}` : sourcePdfUrl(rule.pdfPages[0]);
             const status = probes.some(probe => probe.status === 'mismatch') ? '发现偏差'
               : probes.some(probe => probe.status === 'not-covered') ? '未覆盖' : '样例一致';
             return (
               <article key={rule.clause} className="px-4 py-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h3 className="font-semibold text-gray-800">第 {rule.clause} 条 · {rule.title}</h3>
+                    <h3 className="font-semibold text-gray-800">{code}-{edition} 第 {rule.clause} 条 · {rule.title}</h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      源 PDF 起始页：{rule.pdfPages[0]} / {sourceCode.totalPages}
+                      源 PDF 起始页：{rule.pdfPages[0]} / {totalPages}
                       {rule.pdfPages.length > 1 && `（续页 ${rule.pdfPages.slice(1).join('、')}）`} · 摘要非规范原文
                     </p>
                   </div>
                   <a
-                    href={sourcePdfUrl(rule.pdfPages[0])}
+                    href={pdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`打开第 ${rule.clause} 条源 PDF`}

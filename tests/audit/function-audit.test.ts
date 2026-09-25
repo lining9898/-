@@ -34,6 +34,13 @@ describe('retrieval-backed function audit', () => {
     expect(auditRule('6.2.12')[0].status).toBe('not-covered');
   });
 
+  it('audits all three steel beam equations while retaining coefficient caveat', () => {
+    for (const clause of ['6.1.1', '6.1.3', '6.2.2']) {
+      expect(auditRule(`GB50017:${clause}`)[0].status).toBe('matched');
+    }
+    expect(auditRule('GB50017:6.2.2')[0].note).toContain('尚未自动审计');
+  });
+
   it('detects the old effective-height denominator in rectangular reinforcement ratio', () => {
     const probes = auditRule('8.5.1', {
       shear: calculateBeamShear,

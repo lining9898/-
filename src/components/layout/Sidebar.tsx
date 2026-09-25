@@ -71,7 +71,7 @@ const menuItems: MenuItem[] = [
     id: 'steel',
     label: '钢结构',
     children: [
-      { id: 'steel', label: '待开发', available: false },
+      { id: 'steel-beam', label: '钢梁受弯/受剪/稳定', available: true },
     ],
   },
   {

@@ -2,6 +2,7 @@ import { calculateBeamShear, BeamShearInput } from '../core/beam/shear';
 import { calculateBeamFlexure, BeamFlexureInput } from '../core/beam/flexure';
 import { calculateBeamTFlexure, BeamTFlexureInput } from '../core/beam/t-flexure';
 import { CalculationResult } from '../types/calculation';
+import { calculateSteelBeam } from '../core/steel/beam';
 
 export interface AuditProbe {
   name: string;
@@ -53,6 +54,28 @@ const defaultCalculators: AuditCalculators = {
 
 export function auditRule(clause: string, calculators: AuditCalculators = defaultCalculators): AuditProbe[] {
   switch (clause) {
+    case 'GB50017:6.1.1':
+    case 'GB50017:6.1.3':
+    case 'GB50017:6.2.2': {
+      const result = calculateSteelBeam({
+        h: 400, bf: 200, tf: 12, tw: 8, moment: 120, shear: 80,
+        bendingStrength: 215, shearStrength: 125, stabilityFactor: 0.8,
+      });
+      const I = 216148650.66666666;
+      const W = I / 200;
+      const S = 606976;
+      if (clause === 'GB50017:6.1.1') {
+        return [compare('钢梁弹性受弯应力', 'h=400, bf=200, tf=12, tw=8, M=120',
+          120e6 / W, result.bendingStress, 'N/mm²')];
+      }
+      if (clause === 'GB50017:6.1.3') {
+        return [compare('钢梁腹板中和轴剪应力', 'h=400, bf=200, tf=12, tw=8, V=80',
+          80e3 * S / (I * 8), result.shearStress, 'N/mm²')];
+      }
+      return [compare('钢梁整体稳定应力', 'M=120, W=1080743.25, φb=0.8（用户给定）',
+        120e6 / (0.8 * W), result.stabilityStress, 'N/mm²',
+        '仅核对公式代入；φb 的附录 C 取值及侧向支承条件尚未自动审计。')];
+    }
     case '6.2.10': {
       const input = flexureBase;
       const As = input.barCount * Math.PI * input.barDiameter ** 2 / 4;
