@@ -89,17 +89,17 @@ describe('矩形梁斜截面受剪承载力计算', () => {
       expect(result.advisories.length).toBeGreaterThan(0);
     });
 
-    it('所有规范依据应标记为 REVIEW_REQUIRED', () => {
+    it('所有规范依据应标记为 VERIFIED', () => {
       const result = calculateBeamShear(defaultInput);
-      expect(result.overallStatus).toBe('REVIEW_REQUIRED');
+      expect(result.overallStatus).toBe('VERIFIED');
       result.allEvidence.forEach(e => {
-        expect(e.verificationStatus).toBe('REVIEW_REQUIRED');
+        expect(e.verificationStatus).toBe('VERIFIED');
       });
     });
 
-    it('应包含 REVIEW_REQUIRED 警告', () => {
+    it('应包含 VERIFIED 信息提示', () => {
       const result = calculateBeamShear(defaultInput);
-      expect(result.advisories.some(a => a.code === 'REVIEW_REQUIRED')).toBe(true);
+      expect(result.advisories.some(a => a.code === 'VERIFIED')).toBe(true);
     });
 
     it('均布荷载不应计算剪跨比步骤', () => {

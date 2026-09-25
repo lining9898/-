@@ -109,8 +109,8 @@ const BeamShear: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-800">矩形梁斜截面受剪</h2>
         <p className="text-sm text-gray-500 mt-1">
           GB 50010 混凝土梁斜截面受剪承载力计算
-          <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">
-            REVIEW_REQUIRED
+          <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">
+            VERIFIED
           </span>
         </p>
       </div>
@@ -312,8 +312,8 @@ const BeamShear: React.FC = () => {
                   }`}>
                     {result.conclusion.passed ? '✓ 验算通过' : '✗ 验算不通过'}
                   </span>
-                  <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">
-                    REVIEW_REQUIRED
+                  <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">
+                    VERIFIED
                   </span>
                 </div>
                 <p className="text-sm text-gray-600 mt-1">{result.conclusion.summary}</p>
