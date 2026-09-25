@@ -25,6 +25,7 @@ export const clauseLocators: readonly ClauseLocator[] = [
   { clause: '6.2.10', pdfPage: 54, keywords: ['T形梁', '受弯'], verificationStatus: 'REVIEW_REQUIRED' },
   { clause: '6.2.11', pdfPage: 56, keywords: ['T形梁', '受弯'], verificationStatus: 'REVIEW_REQUIRED' },
   { clause: '6.2.12', pdfPage: 57, keywords: ['T形梁', '受弯'], verificationStatus: 'REVIEW_REQUIRED' },
+  { clause: '6.2.15', pdfPage: 57, keywords: ['轴心受压柱', '稳定系数', '箍筋'], verificationStatus: 'REVIEW_REQUIRED' },
   { clause: '6.3.1', pdfPage: 69, keywords: ['受剪', '截面限制', '高宽比'], verificationStatus: 'REVIEW_REQUIRED' },
   { clause: '6.3.4', pdfPage: 71, keywords: ['受剪', '箍筋', '承载力'], verificationStatus: 'REVIEW_REQUIRED' },
   { clause: '8.5.1', pdfPage: 124, keywords: ['最小配筋', '配筋率', 'T形梁'], verificationStatus: 'REVIEW_REQUIRED' },

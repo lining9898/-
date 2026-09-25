@@ -31,7 +31,7 @@ const menuItems: MenuItem[] = [
     id: 'column',
     label: '柱',
     children: [
-      { id: 'column-axial', label: '轴心受压柱', available: false },
+      { id: 'column-axial', label: '轴心受压柱', available: true },
       { id: 'column-eccentric', label: '偏心受压柱', available: false },
     ],
   },

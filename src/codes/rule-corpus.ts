@@ -71,6 +71,15 @@ export const ruleCorpus: readonly RuleChunk[] = [
     calculator: 'beam-t-flexure',
     contentStatus: 'REVIEW_REQUIRED',
   },
+  {
+    clause: '6.2.15',
+    title: '箍筋柱轴心受压承载力',
+    summary: '矩形箍筋柱按稳定系数、混凝土和全部纵筋的抗压贡献计算轴压承载力；纵筋率大于 3% 时扣除纵筋面积，并按表 6.2.15 确定稳定系数。',
+    keywords: ['轴心受压柱', '矩形柱', '稳定系数', '箍筋', '纵筋率', '承载力'],
+    pdfPages: [57, 58],
+    calculator: 'column-axial',
+    contentStatus: 'REVIEW_REQUIRED',
+  },
   ...([
     {
       clause: '6.1.1', title: '钢梁受弯强度',

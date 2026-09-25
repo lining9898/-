@@ -20,6 +20,7 @@ describe('source-backed rule retrieval', () => {
     expect(retrieveRules('GB 50010 第6.2.12条')[0].rule.clause).toBe('6.2.12');
     expect(retrieveRules('GB 50017 第6.1.3条')[0].rule.source?.codeNumber).toBe('GB 50017');
     expect(retrieveRules('钢梁整体稳定')[0].rule.clause).toBe('6.2.2');
+    expect(retrieveRules('轴心受压柱稳定系数')[0].rule.clause).toBe('6.2.15');
     expect(retrieveRules('完全不存在的规则')).toEqual([]);
   });
 });

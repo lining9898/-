@@ -3,6 +3,7 @@ import { calculateBeamFlexure, BeamFlexureInput } from '../core/beam/flexure';
 import { calculateBeamTFlexure, BeamTFlexureInput } from '../core/beam/t-flexure';
 import { CalculationResult } from '../types/calculation';
 import { calculateSteelBeam } from '../core/steel/beam';
+import { calculateAxialColumn } from '../core/column/axial';
 
 export interface AuditProbe {
   name: string;
@@ -46,6 +47,7 @@ export interface AuditCalculators {
   shear: typeof calculateBeamShear;
   flexure: typeof calculateBeamFlexure;
   tFlexure: typeof calculateBeamTFlexure;
+  axialColumn?: typeof calculateAxialColumn;
 }
 
 const defaultCalculators: AuditCalculators = {
@@ -54,6 +56,22 @@ const defaultCalculators: AuditCalculators = {
 
 export function auditRule(clause: string, calculators: AuditCalculators = defaultCalculators): AuditProbe[] {
   switch (clause) {
+    case '6.2.15': {
+      const calculate = calculators.axialColumn ?? calculateAxialColumn;
+      const base = {
+        width: 400, depth: 500, effectiveLength: 3200, reinforcementArea: 2400,
+        axialForce: 2200, concreteStrength: 14.3, steelCompressionStrength: 360,
+      };
+      const ordinary = calculate(base);
+      const dense = calculate({ ...base, effectiveLength: 3600, reinforcementArea: 8000 });
+      return [
+        compare('纵筋率 1.2%，l₀/b = 8', 'A=200000, A′s=2400, fc=14.3, f′y=360',
+          0.9 * (14.3 * 200000 + 360 * 2400) / 1000, ordinary.capacity, 'kN'),
+        compare('纵筋率 4%，l₀/b = 9', 'A净=192000, A′s=8000, φ=0.98（向上取 10 档）',
+          0.9 * 0.98 * (14.3 * 192000 + 360 * 8000) / 1000, dense.capacity, 'kN',
+          '只反查旧版公式及表值；2024 修订、计算长度和构造条件仍需人工核对。'),
+      ];
+    }
     case 'GB50017:6.1.1':
     case 'GB50017:6.1.3':
     case 'GB50017:6.2.2': {
