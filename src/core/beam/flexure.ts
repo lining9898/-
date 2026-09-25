@@ -234,7 +234,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
 
   // 步骤5：最小配筋面积
   // 规范 8.5.1：受弯构件最小配筋率 ρmin = max(0.20%, 45ft/fy%)
-  // 规范 8.5.1 注5：配筋率按全截面面积 b×h 计算
+  // 矩形截面的最小配筋率面积按 b×h 计算。
   const rhoMinPercent = Math.max(0.20, 45 * concrete.ft / steel.fy);
   const rhoMin = rhoMinPercent / 100;
   const AsMin = rhoMin * input.b * input.h;
@@ -260,7 +260,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     { label: '界限相对受压区高度 ξb', value: Math.round(xiB * 10000) / 10000, unit: '' },
     { label: '受拉钢筋面积 As', value: Math.round(As * 100) / 100, unit: 'mm²' },
     { label: '最小配筋面积 As,min', value: Math.round(AsMin * 100) / 100, unit: 'mm²' },
-    { label: '配筋率 ρ', value: Math.round(As / (input.b * h0) * 10000) / 100, unit: '%' },
+    { label: '配筋率 ρ', value: Math.round(As / (input.b * input.h) * 10000) / 100, unit: '%' },
     { label: '受弯承载力 Mu', value: Math.round(Mu * 100) / 100, unit: 'kN·m' },
   ];
 

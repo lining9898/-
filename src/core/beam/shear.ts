@@ -228,24 +228,28 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   // === 计算步骤 ===
   const steps: CalculationStep[] = [];
 
-  // 步骤1：截面限制条件验算（6.3.1）
-  // V ≤ 0.25·βc·fc·b·h0
-  const VMax = 0.25 * betaC * concrete.fc * input.b * input.h0 / 1000; // kN
+  // 6.3.1: the section limit coefficient depends on the web height ratio.
+  const webHeightRatio = input.h0 / input.b;
+  const sectionLimitCoefficient = webHeightRatio <= 4 ? 0.25
+    : webHeightRatio >= 6 ? 0.20
+    : 0.25 - (webHeightRatio - 4) * 0.025;
+  const VMax = sectionLimitCoefficient * betaC * concrete.fc * input.b * input.h0 / 1000; // kN
   const sectionLimitEvidence = [
-    verifiedEvidence('6.3.1', '第6章', '当 hw/b ≤ 4 时，V ≤ 0.25βc·fc·b·h0（公式6.3.1-1）。矩形截面 hw 取有效高度 h0。', 69),
+    verifiedEvidence('6.3.1', '第6章', '矩形截面 hw 取 h0；hw/b 不大于 4 时系数为 0.25，不小于 6 时为 0.20，中间线性内插。', 69),
   ];
   allEvidence.push(...sectionLimitEvidence);
   steps.push({
     name: '截面限制条件验算',
-    description: '验算截面尺寸是否满足受剪截面限制条件：V ≤ 0.25·βc·fc·b·h0',
-    formula: 'V_max = 0.25 · β_c · f_c · b · h_0',
+    description: `h₀/b = ${webHeightRatio.toFixed(3)}，截面限制系数取 ${sectionLimitCoefficient.toFixed(3)}`,
+    formula: 'V_max = k · β_c · f_c · b · h_0',
     symbolDefinitions: [
+      { symbol: 'k', meaning: '按 h₀/b 确定的截面限制系数', unit: '' },
       { symbol: 'β_c', meaning: '混凝土强度影响系数', unit: '' },
       { symbol: 'f_c', meaning: '混凝土轴心抗压强度设计值', unit: 'MPa' },
       { symbol: 'b', meaning: '截面宽度', unit: 'mm' },
       { symbol: 'h_0', meaning: '截面有效高度', unit: 'mm' },
     ],
-    substitutedFormula: `V_max = 0.25 × ${betaC} × ${concrete.fc} × ${input.b} × ${Math.round(input.h0 * 100) / 100} / 1000`,
+    substitutedFormula: `V_max = ${sectionLimitCoefficient.toFixed(3)} × ${betaC} × ${concrete.fc} × ${input.b} × ${Math.round(input.h0 * 100) / 100} / 1000`,
     result: Math.round(VMax * 100) / 100,
     unit: 'kN',
     evidence: sectionLimitEvidence,
@@ -384,6 +388,8 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     { label: '混凝土受剪承载力 Vc', value: Math.round(Vc * 100) / 100, unit: 'kN' },
     { label: '箍筋受剪承载力 Vs', value: Math.round(Vs * 100) / 100, unit: 'kN' },
     { label: '斜截面受剪承载力 Vcs', value: Math.round(Vcs * 100) / 100, unit: 'kN' },
+    { label: '腹板高宽比 h₀/b', value: Math.round(webHeightRatio * 1000) / 1000, unit: '' },
+    { label: '截面限制系数 k', value: Math.round(sectionLimitCoefficient * 1000) / 1000, unit: '' },
     { label: '截面限制值 Vmax', value: Math.round(VMax * 100) / 100, unit: 'kN' },
     ...(needsMinStirrupCheck
       ? [{ label: '最小配箍率 ρsv,min', value: Math.round(rhoSvMin * 10000) / 100, unit: '%' }]
@@ -393,7 +399,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   // === 验算项 ===
   const checks: CheckItem[] = [];
 
-  // 验算1：截面限制条件 V ≤ 0.25·βc·fc·b·h0
+  // 验算1：截面限制条件 V ≤ k·βc·fc·b·h0
   checks.push({
     name: '截面限制条件验算',
     calculatedValue: input.V,
@@ -401,7 +407,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     comparison: '<=',
     passed: input.V <= VMax,
     unit: 'kN',
-    evidence: [verifiedEvidence('6.3.1', '第6章', '矩形截面受弯构件的受剪截面应符合 V ≤ 0.25βc·fc·b·h0（公式6.3.1-1）。', 69)],
+    evidence: [verifiedEvidence('6.3.1', '第6章', '受剪截面限制按 hw/b 分段取系数；矩形截面 hw 取 h0。', 69)],
   });
 
   // 验算2：斜截面受剪承载力 V ≤ Vcs

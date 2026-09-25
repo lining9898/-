@@ -181,6 +181,28 @@ describe('矩形梁斜截面受剪承载力计算', () => {
   });
 
   describe('边界值测试', () => {
+    it.each([
+      [3, 0.25],
+      [4, 0.25],
+      [5, 0.225],
+      [6, 0.20],
+      [7, 0.20],
+    ])('h0/b = %s 时按 6.3.1 取系数 %s', (ratio, coefficient) => {
+      const b = 200;
+      const h0 = ratio * b;
+      const result = calculateBeamShear({ ...defaultInput, b, h0, h: h0 + 100 });
+      const limit = result.results.find(item => item.label === '截面限制值 Vmax');
+      expect(result.results.find(item => item.label === '截面限制系数 k')?.value).toBe(coefficient);
+      expect(Number(limit?.value)).toBeCloseTo(coefficient * 14.3 * b * h0 / 1000, 2);
+    });
+
+    it('细长截面不能沿用 0.25 系数误判为通过', () => {
+      const result = calculateBeamShear({ ...defaultInput, b: 200, h: 1400, h0: 1300, V: 800 });
+      const limitCheck = result.checks.find(check => check.name === '截面限制条件验算');
+      expect(limitCheck?.limitValue).toBe(743.6);
+      expect(limitCheck?.passed).toBe(false);
+    });
+
     it('极小截面应能计算', () => {
       const result = calculateBeamShear({
         ...defaultInput,

@@ -25,6 +25,8 @@ export const clauseLocators: readonly ClauseLocator[] = [
   { clause: '6.2.10', pdfPage: 54, keywords: ['T形梁', '受弯'], verificationStatus: 'REVIEW_REQUIRED' },
   { clause: '6.2.11', pdfPage: 56, keywords: ['T形梁', '受弯'], verificationStatus: 'REVIEW_REQUIRED' },
   { clause: '6.2.12', pdfPage: 57, keywords: ['T形梁', '受弯'], verificationStatus: 'REVIEW_REQUIRED' },
+  { clause: '6.3.1', pdfPage: 69, keywords: ['受剪', '截面限制', '高宽比'], verificationStatus: 'REVIEW_REQUIRED' },
+  { clause: '6.3.4', pdfPage: 71, keywords: ['受剪', '箍筋', '承载力'], verificationStatus: 'REVIEW_REQUIRED' },
   { clause: '8.5.1', pdfPage: 124, keywords: ['最小配筋', '配筋率', 'T形梁'], verificationStatus: 'REVIEW_REQUIRED' },
 ];
 
@@ -37,6 +39,7 @@ export function searchClauses(query: string): ClauseLocator[] {
     .replace(/gb\s*50010\s*[-—]?\s*(?:2010)?(?:\s*\(2015\))?/i, '')
     .replace(/^第/, '').replace(/条$/, '').replace(/\s+/g, '');
   if (!term) return [...clauseLocators];
+  if (/^\d+\.\d+\.\d+$/.test(term)) return clauseLocators.filter(locator => locator.clause === term);
 
   return clauseLocators.filter(locator =>
     locator.clause.includes(term) || locator.keywords.some(keyword => keyword.toLowerCase().includes(term))
