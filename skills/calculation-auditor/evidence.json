@@ -1,0 +1,16 @@
+{
+  "records": [
+    {
+      "id": "auditor-scope",
+      "codeName": "项目计算 Skill 元数据",
+      "codeNumber": "INTERNAL-AUDIT",
+      "edition": "platform",
+      "chapter": "Skill quality contract",
+      "clause": "N/A",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "仅审查结构化元数据，不替代规范原文校核",
+      "verificationStatus": "REVIEW_REQUIRED"
+    }
+  ]
+}

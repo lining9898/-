@@ -1,0 +1,10 @@
+{
+  "cases": [
+    { "id": "complete-package", "category": "normal", "file": "tests/agent/calculation-auditor.test.ts", "description": "完整 Skill 包通过结构审查" },
+    { "id": "missing-unit", "category": "unit", "file": "tests/agent/calculation-auditor.test.ts", "description": "缺少单位时报告 UNIT_MISSING" },
+    { "id": "formula-mismatch", "category": "formula", "file": "tests/agent/calculation-auditor.test.ts", "description": "公式与 Evidence 不一致时报告映射错误" },
+    { "id": "missing-boundary", "category": "boundary", "file": "tests/agent/calculation-auditor.test.ts", "description": "缺少边界条件时报告审查错误" },
+    { "id": "missing-evidence", "category": "invalid", "file": "tests/agent/calculation-auditor.test.ts", "description": "缺少 Evidence 映射时报告审查错误" },
+    { "id": "audit-pass-fail", "category": "pass-fail", "file": "tests/agent/calculation-auditor.test.ts", "description": "审查结果通过状态与错误数量一致" }
+  ]
+}

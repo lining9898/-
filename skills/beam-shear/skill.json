@@ -1,0 +1,54 @@
+{
+  "id": "beam-shear",
+  "name": "矩形梁斜截面受剪",
+  "kind": "calculation",
+  "version": "1.0.0",
+  "description": "计算矩形普通钢筋混凝土梁、仅配置箍筋条件下的斜截面受剪承载力，并返回 CalculationResult。",
+  "component": "beam",
+  "calculatorEntry": "./calculator.ts",
+  "legacyEntry": "../../src/core/beam/shear.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/types/calculation.ts#CalculationResult",
+  "applicability": [
+    "矩形截面普通钢筋混凝土梁",
+    "非预应力、仅配置箍筋的斜截面受剪验算",
+    "均布荷载或集中荷载独立梁剪跨比分支"
+  ],
+  "boundaryChecks": [
+    "h0/b = 4 和 6 的截面限制系数分段",
+    "集中荷载剪跨比 lambda 限制为 1.5 到 3",
+    "V = 0.7*ft*b*h0 的最小配箍率触发边界",
+    "h > 800 mm 的构造提示",
+    "输入尺寸、荷载、箍筋参数和材料等级校验"
+  ],
+  "formulaMappings": [
+    {
+      "id": "section-limit",
+      "expression": "Vmax = k * betaC * fc * b * h0 / 1000",
+      "evidenceId": "clause-6.3.1",
+      "requiredInputFields": ["b", "h0", "concreteGrade"]
+    },
+    {
+      "id": "concentrated-alpha-cv",
+      "expression": "alphaCv = 1.75 / (lambda + 1)",
+      "evidenceId": "clause-6.3.4-concentrated",
+      "requiredInputFields": ["loadType", "shearSpan", "h0"]
+    },
+    {
+      "id": "shear-capacity",
+      "expression": "Vcs = alphaCv * ft * b * h0 / 1000 + fyv * (Asv / s) * h0 / 1000",
+      "evidenceId": "clause-6.3.4",
+      "requiredInputFields": ["b", "h0", "stirrupDiameter", "stirrupLegs", "stirrupSpacing", "concreteGrade", "stirrupGrade"]
+    },
+    {
+      "id": "minimum-stirrup-ratio",
+      "expression": "rhoSv = Asv / (b * s)",
+      "evidenceId": "clause-9.2.9",
+      "requiredInputFields": ["b", "stirrupDiameter", "stirrupLegs", "stirrupSpacing"]
+    }
+  ],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": ["mm", "mm²", "kN", "MPa", "%", "肢", "dimensionless"]
+}

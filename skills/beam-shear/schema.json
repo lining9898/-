@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["b", "h", "h0", "concreteGrade", "stirrupGrade", "V", "stirrupLegs", "stirrupSpacing", "stirrupDiameter", "loadType"],
+  "properties": {
+    "b": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "截面宽度" },
+    "h": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "截面高度" },
+    "h0": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "截面有效高度" },
+    "concreteGrade": { "type": "string", "enum": ["C20", "C25", "C30", "C35", "C40", "C45", "C50"], "unit": "grade" },
+    "stirrupGrade": { "type": "string", "enum": ["HPB300", "HRB335", "HRB400", "HRB500"], "unit": "grade" },
+    "V": { "type": "number", "exclusiveMinimum": 0, "unit": "kN", "description": "剪力设计值" },
+    "stirrupLegs": { "type": "integer", "exclusiveMinimum": 0, "unit": "肢", "description": "箍筋肢数" },
+    "stirrupSpacing": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "箍筋间距" },
+    "stirrupDiameter": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "箍筋直径" },
+    "loadType": { "type": "string", "enum": ["uniform", "concentrated"], "unit": "enum" },
+    "shearSpan": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "集中荷载剪跨" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "loadType": { "const": "concentrated" } } },
+      "then": { "required": ["shearSpan"] }
+    }
+  ]
+}

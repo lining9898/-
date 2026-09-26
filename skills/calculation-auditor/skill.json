@@ -1,0 +1,18 @@
+{
+  "id": "calculation-auditor",
+  "name": "Calculation Auditor",
+  "kind": "auditor",
+  "version": "1.0.0",
+  "description": "对计算 Skill 的公式映射、单位、边界条件、规范 Evidence 和测试登记进行确定性结构审查。它不替代规范原文复核，也不生成设计结论。",
+  "component": "platform",
+  "calculatorEntry": "../../src/agent/calculation-auditor.ts#auditSkillPackage",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/agent/calculation-auditor.ts#CalculationAuditResult",
+  "applicability": ["计算 Skill 包的静态元数据和测试登记审查"],
+  "boundaryChecks": ["缺少输入单位", "缺少公式 Evidence 映射", "缺少适用条件", "缺少六类测试登记"],
+  "formulaMappings": [],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": ["mm", "mm²", "m", "m²", "N", "kN", "N·m", "kN·m", "MPa", "%", "dimensionless"]
+}

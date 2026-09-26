@@ -1,0 +1,80 @@
+{
+  "records": [
+    {
+      "id": "clause-4.1.4",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第4章",
+      "clause": "4.1.4",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 34,
+      "applicability": "混凝土轴心抗压、轴心抗拉强度设计值",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-4.2.3",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第4章",
+      "clause": "4.2.3",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 38,
+      "applicability": "普通钢筋强度设计值",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.3.1",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.3.1",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 69,
+      "applicability": "受剪截面限制系数和矩形截面 hw 取值",
+      "formulaExpression": "Vmax = k * betaC * fc * b * h0 / 1000",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.3.4-concentrated",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.3.4",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 71,
+      "applicability": "集中荷载独立梁的剪跨比和 alphaCv",
+      "formulaExpression": "alphaCv = 1.75 / (lambda + 1)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.3.4",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.3.4",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 71,
+      "applicability": "仅配置箍筋的矩形梁斜截面受剪承载力",
+      "formulaExpression": "Vcs = alphaCv * ft * b * h0 / 1000 + fyv * (Asv / s) * h0 / 1000",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-9.2.9",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第9章",
+      "clause": "9.2.9",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 134,
+      "applicability": "梁箍筋最小配箍率和大截面箍筋提示",
+      "formulaExpression": "rhoSv = Asv / (b * s)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    }
+  ]
+}

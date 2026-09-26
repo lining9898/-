@@ -23,3 +23,15 @@ AI structural engineering agent (development and review only)
 ## Current Migration
 
 The rectangular and T-beam calculators currently assemble evidence in `src/core/beam`; continuous beam, axial column, and material weight use report adapters. Future modules should keep formula evaluation and evidence packaging separate. Migrate older calculators incrementally, preserving numerical regression tests and source traceability; do not rewrite all cores at once.
+
+## Skill Registry migration
+
+The first migration package is `skills/beam-shear/`. Its manifest, input schema, Evidence catalog, and test catalog are machine-readable. `skills/beam-shear/calculator.ts` is a compatibility wrapper around `src/core/beam/shear.ts`; it does not duplicate or replace the shear formulas.
+
+`src/agent/skill-registry.ts` provides three stable operations for an Agent integration:
+
+- `list()` returns discoverable calculation and audit Skill metadata;
+- `describe(id)` returns the manifest package, schema, Evidence catalog, and test catalog;
+- `calculate(id, input)` invokes a calculation Skill and returns the existing `CalculationResult` contract.
+
+`src/agent/calculation-auditor.ts` is deterministic metadata review. It checks formula-to-Evidence mappings, input units, applicability and boundary declarations, Evidence completeness, and six test categories. It reports missing or inconsistent declarations; it does not prove a formula against a standard PDF and never upgrades `REVIEW_REQUIRED` to `VERIFIED`.

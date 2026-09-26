@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["manifest", "schema", "evidence", "tests"],
+  "properties": {
+    "manifest": { "type": "object", "unit": "dimensionless", "description": "Skill manifest" },
+    "schema": { "type": "object", "unit": "dimensionless", "description": "输入 schema，属性应包含单位" },
+    "evidence": { "type": "object", "unit": "dimensionless", "description": "规范依据目录" },
+    "tests": { "type": "object", "unit": "dimensionless", "description": "测试案例目录" }
+  }
+}

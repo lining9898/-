@@ -1,0 +1,12 @@
+{
+  "cases": [
+    { "id": "normal-uniform", "category": "normal", "file": "tests/core/beam-shear.test.ts", "description": "均布荷载正常算例返回完整 CalculationResult" },
+    { "id": "boundary-section-ratio", "category": "boundary", "file": "tests/core/beam-shear.test.ts", "description": "h0/b = 4、6 及中间值的截面限制系数" },
+    { "id": "boundary-load-branch", "category": "boundary", "file": "tests/core/beam-shear.test.ts", "description": "集中荷载剪跨比 1.5 和 3 的限制" },
+    { "id": "invalid-input", "category": "invalid", "file": "tests/core/beam-shear.test.ts", "description": "尺寸、剪力、箍筋、材料和集中荷载剪跨输入校验" },
+    { "id": "unit-conversion", "category": "unit", "file": "tests/core/beam-shear.test.ts", "description": "MPa·mm²·mm 转换为 kN 的结果结构检查" },
+    { "id": "formula-steps", "category": "formula", "file": "tests/core/beam-shear.test.ts", "description": "截面限制、混凝土、箍筋和综合承载力计算步骤" },
+    { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/beam-shear.test.ts", "description": "截面限制、受剪承载力和最小配箍率验算项" },
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "Registry 调用结果与 legacy 入口核心结果一致" }
+  ]
+}
