@@ -34,9 +34,41 @@ describe('矩形梁正截面受弯计算', () => {
       const result = calculateBeamFlexure({ ...defaultInput, steelGrade: 'HRB999' });
       expect(result.advisories.some(a => a.code === 'UNKNOWN_STEEL')).toBe(true);
     });
+
+    it.each([
+      { barCount: 0 },
+      { barCount: 1.5 },
+      { barDiameter: 0 },
+      { moment: -1 },
+      { b: Number.NaN },
+      { h: Number.POSITIVE_INFINITY },
+      { cover: 490 },
+      { b: 50, cover: 20, barDiameter: 20 },
+    ])('应拒绝无效数值或放不下钢筋的截面：%o', override => {
+      const result = calculateBeamFlexure({ ...defaultInput, ...override });
+      expect(result.advisories.some(a => a.code === 'INVALID_INPUT')).toBe(true);
+      expect(result.steps).toHaveLength(0);
+      expect(result.checks).toHaveLength(0);
+      expect(result.conclusion.passed).toBe(false);
+    });
   });
 
   describe('正常算例框架', () => {
+    it('C30、HRB400 的独立数值基准应保持一致', () => {
+      const result = calculateBeamFlexure(defaultInput);
+      const value = (label: string) => result.results.find(item => item.label === label)?.value;
+
+      expect(value('有效高度 h₀')).toBe(465);
+      expect(value('受拉钢筋面积 As')).toBe(1256.64);
+      expect(value('受压区高度 x')).toBe(126.54);
+      expect(value('相对受压区高度 ξ')).toBe(0.2721);
+      expect(value('界限相对受压区高度 ξb')).toBe(0.5176);
+      expect(value('最小配筋面积 As,min')).toBe(250);
+      expect(value('受弯承载力 Mu')).toBe(181.74);
+      expect(result.checks.map(check => check.passed)).toEqual([true, true, true]);
+      expect(result.overallStatus).toBe('REVIEW_REQUIRED');
+    });
+
     it('8.5.1 配筋率显示按 b·h 而非 b·h0 计算', () => {
       const result = calculateBeamFlexure(defaultInput);
       const As = 4 * Math.PI * 20 ** 2 / 4;
@@ -70,12 +102,44 @@ describe('矩形梁正截面受弯计算', () => {
       expect(result.advisories.some(a => a.code === 'NORM_UPDATE_REQUIRED')).toBe(true);
     });
 
+    it('受弯公式证据应指向 PDF 第 55 页且不虚构结论条文', () => {
+      const result = calculateBeamFlexure(defaultInput);
+      const capacityStep = result.steps.find(step => step.name === '计算正截面受弯承载力');
+      expect(capacityStep?.evidence[0]).toMatchObject({
+        clause: '6.2.10',
+        pdfPage: 55,
+        verificationStatus: 'VERIFIED',
+      });
+      expect(result.conclusion.evidence).toEqual([]);
+    });
+
     // REFERENCE_CASE_REQUIRED
     // 待提供 GB 50010 规范原文或教材标准算例后，在此添加真实算例验证
     it.todo('真实算例验证（待规范原文）');
   });
 
   describe('边界值测试框架', () => {
+    it('跨越相对界限受压区高度时应改变验算结果', () => {
+      const xiB = 0.8 / (1 + 360 / (200000 * 0.0033));
+      const h0 = defaultInput.h - defaultInput.cover - defaultInput.barDiameter / 2;
+      const boundaryAs = xiB * h0 * 14.3 * defaultInput.b / 360;
+      const boundaryDiameter = Math.sqrt(4 * boundaryAs / Math.PI);
+      const check = (factor: number) => calculateBeamFlexure({
+        ...defaultInput,
+        barCount: 1,
+        barDiameter: boundaryDiameter * factor,
+      }).checks.find(item => item.name === '相对受压区高度验算')?.passed;
+
+      expect(check(0.9)).toBe(true);
+      expect(check(1.1)).toBe(false);
+    });
+
+    it('弯矩需求超过承载力时不应通过', () => {
+      const result = calculateBeamFlexure({ ...defaultInput, moment: 190 });
+      expect(result.checks.find(check => check.name === '承载力验算')?.passed).toBe(false);
+      expect(result.conclusion.passed).toBe(false);
+    });
+
     it('极小截面应能计算', () => {
       const result = calculateBeamFlexure({
         ...defaultInput,

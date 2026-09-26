@@ -88,7 +88,7 @@ const BeamFlexure: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">保护层厚度 c (mm)</label>
+                <label className="block text-xs text-gray-500 mb-1">受拉纵筋外缘距受拉边 c (mm)</label>
                 <input
                   type="number"
                   value={input.cover}

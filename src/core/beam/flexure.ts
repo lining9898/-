@@ -1,10 +1,10 @@
 /**
  * 矩形梁正截面受弯计算内核
  * 
- * 状态：VERIFIED
+ * 状态：REVIEW_REQUIRED（2015 年版公式已核对，现行规范差异待复核）
  * 
  * 本模块的计算公式已根据 GB 50010-2010（2015年版）规范原文逐条校核。
- * 所有规范依据已标记为 VERIFIED，包含完整的条文号、PDF 页码和原文。
+ * 已核对的证据引用仓库内 PDF；整体结论仍需复核规范版本与构造要求。
  * 
  * 校核日期：2026-09-24
  * 校核依据：GB50010-2010_2015_.pdf（441页）
@@ -24,13 +24,13 @@ export interface BeamFlexureInput {
   h: number;        // 截面高度 (mm)
   concreteGrade: string;  // 混凝土强度等级，如 "C30"
   steelGrade: string;     // 钢筋等级，如 "HRB400"
-  cover: number;    // 保护层厚度 (mm)
+  cover: number;    // 受拉纵筋外缘至受拉边的距离 (mm)
   barDiameter: number;    // 受拉钢筋直径 (mm)
   barCount: number;       // 受拉钢筋根数
   moment: number;   // 弯矩设计值 M (kN·m)
 }
 
-/** 混凝土材料参数（待规范校核） */
+/** 混凝土材料参数 */
 interface ConcreteParams {
   fc: number;       // 轴心抗压强度设计值 (MPa)
   ft: number;       // 轴心抗拉强度设计值 (MPa)
@@ -39,7 +39,7 @@ interface ConcreteParams {
   beta1: number;    // 等效矩形应力图系数
 }
 
-/** 钢筋材料参数（待规范校核） */
+/** 钢筋材料参数 */
 interface SteelParams {
   fy: number;       // 抗拉强度设计值 (MPa)
   Es: number;       // 弹性模量 (MPa)
@@ -95,11 +95,17 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   const allEvidence: Evidence[] = [];
 
   // 验证输入
-  if (input.b <= 0 || input.h <= 0 || input.cover <= 0) {
+  if (
+    ![input.b, input.h, input.cover, input.barDiameter, input.barCount, input.moment].every(Number.isFinite) ||
+    input.b <= 0 || input.h <= 0 || input.cover <= 0 ||
+    input.barDiameter <= 0 || !Number.isInteger(input.barCount) || input.barCount <= 0 ||
+    input.moment < 0 || input.cover + input.barDiameter / 2 >= input.h ||
+    2 * input.cover + input.barDiameter > input.b
+  ) {
     result.advisories.push({
       severity: 'error',
       code: 'INVALID_INPUT',
-      message: '截面尺寸和保护层厚度必须大于零',
+      message: '请输入有限且有效的截面、钢筋和弯矩参数，并确保钢筋位于截面内',
     });
     return result;
   }
@@ -132,7 +138,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   result.inputs = [
     { label: '截面宽度 b', value: input.b, unit: 'mm' },
     { label: '截面高度 h', value: input.h, unit: 'mm' },
-    { label: '保护层厚度 c', value: input.cover, unit: 'mm' },
+    { label: '受拉纵筋外缘距受拉边 c', value: input.cover, unit: 'mm' },
     { label: '受拉钢筋直径', value: input.barDiameter, unit: 'mm' },
     { label: '受拉钢筋根数', value: input.barCount, unit: '根' },
     { label: '弯矩设计值 M', value: input.moment, unit: 'kN·m' },
@@ -147,14 +153,16 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     verifiedEvidence('4.2.3', '第4章', '普通钢筋的抗拉强度设计值 fy、抗压强度设计值 fy\' 应按表 4.2.3-1 采用。', 38),
     verifiedEvidence('4.2.5', '第4章', '普通钢筋和预应力筋的弹性模量 Es 可按表 4.2.5 采用。', 40)
   ];
-  allEvidence.push(...concreteEvidence, ...steelEvidence);
+  const alphaEvidence = [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，α1 取为 1.0', 53)];
+  const betaEvidence = [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，β1 取为 0.80', 52)];
+  allEvidence.push(...concreteEvidence, ...steelEvidence, ...alphaEvidence, ...betaEvidence);
 
   result.materials = [
     { label: '混凝土等级', value: input.concreteGrade, unit: '', evidence: concreteEvidence },
     { label: 'fc', value: concrete.fc, unit: 'MPa', evidence: concreteEvidence },
     { label: 'ft', value: concrete.ft, unit: 'MPa', evidence: concreteEvidence },
-    { label: 'α1', value: concrete.alpha1, unit: '', evidence: [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，α1 取为 1.0。', 52)] },
-    { label: 'β1', value: concrete.beta1, unit: '', evidence: [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，β1 取为 0.80。', 52)] },
+    { label: 'α1', value: concrete.alpha1, unit: '', evidence: alphaEvidence },
+    { label: 'β1', value: concrete.beta1, unit: '', evidence: betaEvidence },
     { label: '钢筋等级', value: input.steelGrade, unit: '', evidence: steelEvidence },
     { label: 'fy', value: steel.fy, unit: 'MPa', evidence: steelEvidence },
     { label: 'Es', value: steel.Es, unit: 'MPa', evidence: steelEvidence },
@@ -171,11 +179,11 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
 
   // 步骤1：计算受压区高度 x
   const x = (steel.fy * As) / (concrete.alpha1 * concrete.fc * input.b);
-  const xEvidence = [verifiedEvidence('6.2.10', '第6章', '混凝土受压区高度应按下列公式确定：α1·fc·b·x = fy·As', 54)];
+  const xEvidence = [verifiedEvidence('6.2.10', '第6章', '混凝土受压区高度应按下列公式确定：', 55)];
   allEvidence.push(...xEvidence);
   steps.push({
     name: '计算受压区高度',
-    description: '由力的平衡条件 α1·fc·b·x = fy·As 求解受压区高度 x',
+    description: '按公式（6.2.10-2）取无受压钢筋、无预应力筋的简化情形，由 α1·fc·b·x = fy·As 求解 x',
     formula: 'x = f_y · A_s / (α_1 · f_c · b)',
     symbolDefinitions: [
       { symbol: 'f_y', meaning: '钢筋抗拉强度设计值', unit: 'MPa' },
@@ -192,7 +200,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
 
   // 步骤2：计算相对受压区高度 ξ
   const xi = x / h0;
-  const xiEvidence = [verifiedEvidence('6.2.10', '第6章', '相对受压区高度 ξ = x / h0', 54)];
+  const xiEvidence = [verifiedEvidence('6.2.10', '第6章', 'x ≤ ξb h0', 55)];
   allEvidence.push(...xiEvidence);
   steps.push({
     name: '计算相对受压区高度',
@@ -206,7 +214,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
 
   // 步骤3：界限相对受压区高度 ξb
   const xiB = concrete.beta1 / (1 + steel.fy / (steel.Es * 0.0033));
-  const xiBEvidence = [verifiedEvidence('6.2.7', '第6章', '有屈服点普通钢筋：ξb = β1 / (1 + fy / (Es · εcu))，其中 εcu = 0.0033（公式6.2.7-1）', 53)];
+  const xiBEvidence = [verifiedEvidence('6.2.7', '第6章', 'ξb = β1 / (1 + fy / (Es εcu))', 53)];
   allEvidence.push(...xiBEvidence);
   steps.push({
     name: '计算界限相对受压区高度',
@@ -220,11 +228,11 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
 
   // 步骤4：计算受弯承载力 Mu
   const Mu = concrete.alpha1 * concrete.fc * input.b * x * (h0 - x / 2) / 1e6;
-  const MuEvidence = [verifiedEvidence('6.2.10', '第6章', 'M ≤ α1·fc·b·x·(h0 - x/2)（公式6.2.10-1）', 54)];
+  const MuEvidence = [verifiedEvidence('6.2.10', '第6章', "M ≤ α1 fc b x (h0 - x/2) + f'y A's (h0 - a's) - (σ'p0 - f'py) A'p (h0 - a'p)", 55)];
   allEvidence.push(...MuEvidence);
   steps.push({
     name: '计算正截面受弯承载力',
-    description: 'Mu = α1·fc·b·x·(h0 - x/2)',
+    description: '按公式（6.2.10-1）取无受压钢筋、无预应力筋的简化情形，Mu = α1·fc·b·x·(h0 - x/2)',
     formula: 'M_u = α_1 · f_c · b · x · (h_0 - x/2)',
     substitutedFormula: `M_u = ${concrete.alpha1} × ${concrete.fc} × ${input.b} × ${Math.round(x * 100) / 100} × (${Math.round(h0 * 100) / 100} - ${Math.round(x * 100) / 100}/2) / 10⁶`,
     result: Math.round(Mu * 100) / 100,
@@ -238,7 +246,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   const rhoMinPercent = Math.max(0.20, 45 * concrete.ft / steel.fy);
   const rhoMin = rhoMinPercent / 100;
   const AsMin = rhoMin * input.b * input.h;
-  const AsMinEvidence = [verifiedEvidence('8.5.1', '第8章', '受弯构件一侧受拉钢筋的最小配筋百分率：0.20和45ft/fy中的较大值。注5：受弯构件一侧受拉钢筋的配筋率应按全截面面积扣除受压翼缘面积后的截面面积计算（矩形截面即b×h）。', 124)];
+  const AsMinEvidence = [verifiedEvidence('8.5.1', '第8章', '钢筋混凝土结构构件中纵向受力钢筋的配筋百分率 ρmin 不应小于表 8.5.1 规定的数值。', 124)];
   allEvidence.push(...AsMinEvidence);
   steps.push({
     name: '计算最小配筋面积',
@@ -275,7 +283,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     comparison: '<=',
     passed: xi <= xiB,
     unit: '',
-    evidence: [verifiedEvidence('6.2.10', '第6章', '混凝土受压区高度应符合下列条件：x ≤ ξb·h0（公式6.2.10-3）', 55)],
+    evidence: [verifiedEvidence('6.2.10', '第6章', 'x ≤ ξb h0', 55)],
   });
 
   // 验算2：As ≥ As,min
@@ -286,7 +294,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     comparison: '>=',
     passed: As >= AsMin,
     unit: 'mm²',
-    evidence: [verifiedEvidence('8.5.1', '第8章', '纵向受力钢筋的配筋百分率不应小于表 8.5.1 规定的数值。', 124)],
+    evidence: AsMinEvidence,
   });
 
   // 验算3：Mu ≥ M
@@ -297,7 +305,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     comparison: '>=',
     passed: Mu >= input.moment,
     unit: 'kN·m',
-    evidence: [verifiedEvidence('6.2.10', '第6章', '矩形截面受弯构件的正截面受弯承载力应符合本规范公式(6.2.10-1)的规定。', 54)],
+    evidence: MuEvidence,
   });
 
   result.checks = checks;
@@ -309,7 +317,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     summary: allPassed
       ? '所列验算项满足 2015 年版计算式；尚未完成 2024 年修订差异核查'
       : '存在不满足的验算项，请调整参数（计算公式已根据 GB 50010-2010(2015年版) 原文校核）',
-    evidence: [verifiedEvidence('6.2.10', '第6章', '综合验算结论', 54)],
+    evidence: [],
   };
 
   // 全局 advisory
