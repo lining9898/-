@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: { exclude: ['@ferscloud/fers-calculation-web'] },
   server: { port: 3000, host: '0.0.0.0' },
   test: {
     globals: true,

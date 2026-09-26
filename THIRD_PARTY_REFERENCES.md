@@ -2,6 +2,10 @@
 
 本项目（cn-structural-toolkit）为独立开发的开源项目，以下项目仅作为架构和实现方式的参考，未直接复制其代码。
 
+## 实际依赖
+
+连续梁内力模块使用 FERS WebAssembly 求解器（`@ferscloud/fers-calculation-web`），许可证为 BSD-3-Clause。随站点发布的许可证文本见 `public/FERS-LICENSE.txt`，计算结果页面保留求解器要求的署名链接。
+
 ## 参考项目列表
 
 ### 1. AS 3600 Structural Toolkit
