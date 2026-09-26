@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { clauseLocators, searchClauses, sourceCode, sourcePdfUrl } from '../../codes/clause-index';
 import { ruleCorpus } from '../../codes/rule-corpus';
 import { retrieveRules } from '../../codes/retrieve-rules';
 import { auditRule } from '../../audit/function-audit';
+import { loadLocalPages, LocalPageHit, rankLocalPages } from '../../codes/local-pages';
 
 interface CodeSearchProps {
   query: string;
@@ -10,11 +11,37 @@ interface CodeSearchProps {
 }
 
 const CodeSearch: React.FC<CodeSearchProps> = ({ query, onQueryChange }) => {
+  const [localHits, setLocalHits] = useState<LocalPageHit[]>([]);
+  const [localPageCount, setLocalPageCount] = useState(0);
+  useEffect(() => {
+    if (typeof indexedDB === 'undefined') return;
+    let active = true;
+    const refresh = async () => {
+      try {
+        const pages = await loadLocalPages();
+        if (active) {
+          setLocalPageCount(pages.length);
+          setLocalHits(rankLocalPages(query, pages));
+        }
+      } catch {
+        if (active) {
+          setLocalPageCount(0);
+          setLocalHits([]);
+        }
+      }
+    };
+    void refresh();
+    window.addEventListener('local-codes-updated', refresh);
+    return () => {
+      active = false;
+      window.removeEventListener('local-codes-updated', refresh);
+    };
+  }, [query]);
   const retrieved = retrieveRules(query, ruleCorpus.length);
   const enrichedClauses = new Set(retrieved.filter(item => !item.rule.source).map(item => item.rule.clause));
   const otherCode = /GB\s*\d{5}/i.test(query) && !/GB\s*50010/i.test(query);
   const locatorOnly = otherCode ? [] : searchClauses(query).filter(item => !enrichedClauses.has(item.clause));
-  const resultCount = retrieved.length + locatorOnly.length;
+  const resultCount = retrieved.length + locatorOnly.length + localHits.length;
 
   return (
     <section className="max-w-5xl mx-auto">
@@ -34,7 +61,7 @@ const CodeSearch: React.FC<CodeSearchProps> = ({ query, onQueryChange }) => {
       />
 
       <p className="text-sm text-gray-600 mt-4 mb-3">
-        {resultCount} 条结果 · {clauseLocators.length} 条页码定位，其中 {ruleCorpus.length} 条有规则摘要和样例审计；原文校核状态不因检索或样例通过而改变
+        {resultCount} 条结果 · {clauseLocators.length} 条页码定位，其中 {ruleCorpus.length} 条有规则摘要和样例审计 · 本机已导入 {localPageCount} 页；原文校核状态不因检索、OCR 或样例通过而改变
       </p>
 
       {resultCount === 0 ? (
@@ -106,6 +133,14 @@ const CodeSearch: React.FC<CodeSearchProps> = ({ query, onQueryChange }) => {
                 打开源 PDF ↗
               </a>
             </div>
+          ))}
+          {localHits.map(({ page }) => (
+            <article key={page.id} className="px-4 py-4">
+              <h3 className="font-semibold text-gray-800">{page.codeNumber} · {page.edition} · PDF 第 {page.page} 页</h3>
+              <p className="text-sm text-amber-800 mt-1">本机导入 · {page.method === 'ocr' ? 'OCR' : '文字层'} · REVIEW_REQUIRED · 无函数自动审计</p>
+              <p className="text-xs text-gray-500 mt-1 break-words">{page.fileName} · 文件 SHA-256：{page.documentId}</p>
+              <p className="text-sm text-gray-700 mt-3 whitespace-pre-wrap break-words">{page.text.slice(0, 600)}{page.text.length > 600 ? '…' : ''}</p>
+            </article>
           ))}
         </div>
       )}

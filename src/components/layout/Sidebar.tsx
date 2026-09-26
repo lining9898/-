@@ -15,7 +15,10 @@ const menuItems: MenuItem[] = [
   {
     id: 'codes',
     label: '规范',
-    children: [{ id: 'code-search', label: '条文检索', available: true }],
+    children: [
+      { id: 'code-search', label: '条文检索', available: true },
+      { id: 'code-import', label: '本地 PDF 识别', available: true },
+    ],
   },
   {
     id: 'beam',

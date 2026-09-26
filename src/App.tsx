@@ -8,6 +8,7 @@ import CodeSearch from './components/codes/CodeSearch';
 import SteelBeam from './components/calculators/SteelBeam';
 import RebarArea from './components/calculators/RebarArea';
 import AxialColumn from './components/calculators/AxialColumn';
+import LocalCodeImport from './components/codes/LocalCodeImport';
 
 type ModuleId = string;
 
@@ -30,6 +31,8 @@ const App: React.FC = () => {
         return <BeamTFlexure onLookupClause={lookupClause} />;
       case 'code-search':
         return <CodeSearch query={clauseQuery} onQueryChange={setClauseQuery} />;
+      case 'code-import':
+        return <LocalCodeImport onOpenSearch={() => setActiveModule('code-search')} />;
       case 'steel-beam':
         return <SteelBeam />;
       case 'tools-rebar':
