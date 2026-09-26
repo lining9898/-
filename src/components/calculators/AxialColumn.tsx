@@ -1,5 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { AxialColumnInput, calculateAxialColumn } from '../../core/column/axial';
+import { axialColumnReport } from '../../report/analysis-adapters';
+import ResultTabs from '../report/ResultTabs';
+import VerificationBadge from '../evidence/VerificationBadge';
 
 const initial: AxialColumnInput = {
   width: 400, depth: 500, effectiveLength: 3200, reinforcementArea: 2400,
@@ -29,11 +32,12 @@ const AxialColumn: React.FC = () => {
     }
   }, [input]);
   const { result, error } = calculation;
+  const report = result ? axialColumnReport(input, result) : null;
 
   return <section className="max-w-6xl mx-auto space-y-5">
     <header>
       <h2 className="text-2xl font-bold text-gray-800">轴心受压柱</h2>
-      <p className="text-sm text-gray-500 mt-1">矩形截面箍筋柱 · GB 50010-2010（2015 年版）6.2.15 · REVIEW_REQUIRED</p>
+      <p className="text-sm text-gray-500 mt-1">矩形截面箍筋柱 · GB 50010-2010（2015 年版）6.2.15 <VerificationBadge status="REVIEW_REQUIRED" /></p>
     </header>
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(260px,340px)_minmax(0,1fr)] gap-6">
       <div className="space-y-3">
@@ -47,7 +51,7 @@ const AxialColumn: React.FC = () => {
       </div>
       <div aria-live="polite" className="space-y-5">
         {error && <p role="alert" className="text-sm text-red-700 bg-red-50 p-3 border border-red-200">{error}</p>}
-        {result && <>
+        {result && report && <ResultTabs result={report}>
           <div className="border-b border-gray-200 pb-4">
             <h3 className="text-sm font-bold text-gray-700 mb-3">截面与稳定系数</h3>
             <dl className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
@@ -72,8 +76,8 @@ const AxialColumn: React.FC = () => {
           <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 p-3">
             示例输入不代表工程选材。计算长度、fc、f′y 须按实际项目确定；本页未验算最小偏心、弯矩、箍筋构造、配筋限值、抗震及现行 2024 修订条文。单项满足不是完整设计通过结论。
           </p>
-          <p className="text-xs text-gray-500">依据：仓库 references/codes/GB50010-2010_2015_.pdf，PDF 第 57–58 页（原书第 42–43 页）。</p>
-        </>}
+          <p className="text-xs text-gray-500">参考文件：仓库 references/codes/GB50010-2010_2015_.pdf；条文与页码仍待逐项复核。</p>
+        </ResultTabs>}
       </div>
     </div>
   </section>;

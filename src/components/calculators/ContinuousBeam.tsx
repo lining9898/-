@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { calculateContinuousBeam, ContinuousSpanInput, DiagramPoint } from '../../core/beam/continuous';
+import { continuousBeamReport } from '../../report/analysis-adapters';
+import ResultTabs from '../report/ResultTabs';
 
 const initialSpans: ContinuousSpanInput[] = [
   { length: 6, load: 10 }, { length: 6, load: 10 },
@@ -54,6 +56,7 @@ const ContinuousBeam: React.FC = () => {
     }
   }, [spans]);
   const { result, error } = calculation;
+  const report = result ? continuousBeamReport(spans, result) : null;
   const supportPositions = [0];
   for (const span of spans) supportPositions.push(supportPositions[supportPositions.length - 1] + span.length);
 
@@ -99,7 +102,7 @@ const ContinuousBeam: React.FC = () => {
       </section>
       <section aria-live="polite" className="min-w-0 space-y-5">
         {error && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-        {result && <>
+        {result && report && <ResultTabs result={report}>
           <div className="border-b border-gray-200 pb-2"><h3 className="text-sm font-bold text-gray-700">分析结果</h3></div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-3">
             {result.reactions.map((reaction, index) => <div key={index} className="border-b border-gray-200 pb-2">
@@ -133,7 +136,7 @@ const ContinuousBeam: React.FC = () => {
           </p>
           {result.attribution?.url && <a href={result.attribution.url} target="_blank" rel="noreferrer"
             className="inline-block text-xs text-blue-700 underline">{result.attribution.text}</a>}
-        </>}
+        </ResultTabs>}
       </section>
     </div>
   </section>;

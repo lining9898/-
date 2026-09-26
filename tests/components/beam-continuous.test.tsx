@@ -13,6 +13,12 @@ describe('continuous beam calculator', () => {
     expect(screen.getAllByText('-45').length).toBeGreaterThan(0);
     expect(screen.getByRole('img', { name: /弯矩图/ })).not.toBeNull();
     expect(screen.getByRole('img', { name: /剪力图/ })).not.toBeNull();
+    fireEvent.click(screen.getByRole('tab', { name: '详细计算书' }));
+    expect(screen.getByText(/M\(x\) = M左/)).not.toBeNull();
+    expect(screen.getByText('未进行设计验算')).not.toBeNull();
+    fireEvent.click(screen.getByRole('tab', { name: '规范依据' }));
+    expect(screen.getByText(/尚无可关联的中国规范条文/)).not.toBeNull();
+    fireEvent.click(screen.getByRole('tab', { name: '计算结果' }));
     fireEvent.click(screen.getByRole('radio', { name: '3 跨' }));
     expect(screen.getByText('第 3 跨')).not.toBeNull();
     fireEvent.change(screen.getAllByRole('spinbutton', { name: '均布荷载 q (kN/m)' })[0],

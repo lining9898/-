@@ -79,7 +79,7 @@ export function generateReport(result: CalculationResult): ReportSection[] {
   }).join('\n\n');
   sections.push({
     title: '七、验算结果',
-    content: checkContent,
+    content: checkContent || '未进行设计验算',
     evidence: result.checks.flatMap(c => c.evidence),
   });
 
