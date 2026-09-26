@@ -1,13 +1,11 @@
 import React from 'react';
 import { Evidence } from '../../types/evidence';
-import { findClauseLocator } from '../../codes/clause-index';
 
 interface EvidencePanelProps {
   evidence: Evidence[];
-  onLookupClause?: (clause: string) => void;
 }
 
-const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, onLookupClause }) => {
+const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
   // 去重
   const unique = evidence.filter(
     (e, i, arr) => arr.findIndex(x => x.clause === e.clause && x.codeNumber === e.codeNumber) === i
@@ -52,15 +50,6 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, onLookupClause 
                 <div>{e.verificationStatus === 'VERIFIED' ? 'PDF 页码' : '待核验 PDF 页码'}：{e.pdfPage ?? '待填写'}</div>
                 <div>来源文件：{e.sourceFile ?? '未导入'}</div>
               </div>
-              {onLookupClause && e.codeNumber.replace(/\s/g, '') === 'GB50010' && findClauseLocator(e.clause) && (
-                <button
-                  type="button"
-                  onClick={() => onLookupClause(e.clause)}
-                  className="mt-3 text-sm font-medium text-blue-700 hover:underline"
-                >
-                  在索引中查看第 {e.clause} 条
-                </button>
-              )}
             </div>
           ))}
         </div>

@@ -78,7 +78,7 @@ const TBeamSVG: React.FC<{ b: number; h: number; hf: number; bf: number; cover: 
   );
 };
 
-const BeamTFlexure: React.FC<{ onLookupClause?: (clause: string) => void }> = ({ onLookupClause }) => {
+const BeamTFlexure: React.FC = () => {
   const [input, setInput] = useState<BeamTFlexureInput>({
     b: 200,
     h: 500,
@@ -397,7 +397,7 @@ const BeamTFlexure: React.FC<{ onLookupClause?: (clause: string) => void }> = ({
           {/* 规范依据 */}
           {activeTab === 'evidence' && (
             <div className="bg-white rounded-b-lg shadow-sm border border-gray-200 p-5">
-              <EvidencePanel evidence={result.allEvidence} onLookupClause={onLookupClause} />
+              <EvidencePanel evidence={result.allEvidence} />
             </div>
           )}
         </div>

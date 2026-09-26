@@ -8,18 +8,15 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run",
-    "codes:ocr": "node scripts/ocr-codes.mjs"
+    "test:run": "vitest run"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pdfjs-dist": "5.6.205",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-router-dom": "^7.18.4",
-    "tesseract.js": "7.0.0"
+    "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
