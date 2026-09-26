@@ -8,6 +8,7 @@ import SteelBeam from './components/calculators/SteelBeam';
 import RebarArea from './components/calculators/RebarArea';
 import AxialColumn from './components/calculators/AxialColumn';
 import SectionProperties from './components/calculators/SectionProperties';
+import MaterialWeight from './components/calculators/MaterialWeight';
 
 const ContinuousBeam = lazy(() => import('./components/calculators/ContinuousBeam'));
 
@@ -32,6 +33,8 @@ const App: React.FC = () => {
         return <AxialColumn />;
       case 'tools-params':
         return <SectionProperties />;
+      case 'tools-weight':
+        return <MaterialWeight />;
       case 'beam-continuous':
         return <Suspense fallback={<p className="text-sm text-gray-500">正在加载连续梁计算...</p>}><ContinuousBeam /></Suspense>;
       case 'column-eccentric':
@@ -43,7 +46,6 @@ const App: React.FC = () => {
       case 'foundation-independent':
       case 'staircase-plate':
       case 'wall-shear':
-      case 'tools-weight':
         return <Placeholder moduleId={activeModule} />;
       default:
         return <Placeholder moduleId={activeModule} />;
