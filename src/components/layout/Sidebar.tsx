@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface SidebarProps {
   activeModule: string;
@@ -75,19 +75,27 @@ const menuItems: MenuItem[] = [
     children: [
       { id: 'tools-rebar', label: '钢筋公称面积', available: true },
       { id: 'tools-weight', label: '材料重度', available: false },
-      { id: 'tools-params', label: '常用结构参数', available: false },
+      { id: 'tools-params', label: '常用结构参数', available: true },
     ],
   },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ activeModule, onSelectModule }) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
-      <div className="p-4 border-b border-gray-200">
-        <h1 className="text-lg font-bold text-gray-800">结构构件计算工具</h1>
-        <p className="text-xs text-gray-400 mt-1">中国规范 · Web 版</p>
+    <aside className="w-full md:w-64 shrink-0 bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col shadow-sm">
+      <div className="p-4 border-b border-gray-200 flex items-center justify-between gap-3">
+        <div>
+          <h1 className="text-lg font-bold text-gray-800">结构构件计算工具</h1>
+          <p className="text-xs text-gray-400 mt-1">中国规范 · Web 版</p>
+        </div>
+        <button type="button" aria-expanded={mobileOpen} aria-controls="module-navigation"
+          onClick={() => setMobileOpen(open => !open)}
+          className="md:hidden shrink-0 border border-gray-300 px-3 py-2 text-sm text-gray-700">
+          {mobileOpen ? '收起菜单' : '展开菜单'}
+        </button>
       </div>
-      <nav className="flex-1 overflow-y-auto py-2">
+      <nav id="module-navigation" className={`${mobileOpen ? 'block' : 'hidden'} md:block flex-1 overflow-y-auto max-h-[50vh] md:max-h-none py-2`}>
         {menuItems.map(group => (
           <div key={group.id} className="mb-1">
             <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -96,7 +104,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onSelectModule }) => {
             {group.children?.map(item => (
               <button
                 key={item.id}
-                onClick={() => item.available && onSelectModule(item.id)}
+                onClick={() => {
+                  if (!item.available) return;
+                  onSelectModule(item.id);
+                  setMobileOpen(false);
+                }}
                 className={`w-full text-left px-6 py-2 text-sm transition-colors ${
                   activeModule === item.id
                     ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700 font-medium'
@@ -117,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onSelectModule }) => {
           </div>
         ))}
       </nav>
-      <div className="p-3 border-t border-gray-200 text-xs text-gray-500">
+      <div className="hidden md:block p-3 border-t border-gray-200 text-xs text-gray-500">
         各模块的规范校核状态以计算结果为准
       </div>
     </aside>

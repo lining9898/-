@@ -7,6 +7,7 @@ import Placeholder from './components/calculators/Placeholder';
 import SteelBeam from './components/calculators/SteelBeam';
 import RebarArea from './components/calculators/RebarArea';
 import AxialColumn from './components/calculators/AxialColumn';
+import SectionProperties from './components/calculators/SectionProperties';
 
 type ModuleId = string;
 
@@ -27,6 +28,8 @@ const App: React.FC = () => {
         return <RebarArea />;
       case 'column-axial':
         return <AxialColumn />;
+      case 'tools-params':
+        return <SectionProperties />;
       case 'beam-continuous':
       case 'column-eccentric':
       case 'slab-one-way':
@@ -38,7 +41,6 @@ const App: React.FC = () => {
       case 'staircase-plate':
       case 'wall-shear':
       case 'tools-weight':
-      case 'tools-params':
         return <Placeholder moduleId={activeModule} />;
       default:
         return <Placeholder moduleId={activeModule} />;
@@ -46,9 +48,9 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen flex-col md:flex-row bg-gray-100">
       <Sidebar activeModule={activeModule} onSelectModule={setActiveModule} />
-      <main className="flex-1 overflow-auto p-6">
+      <main className="min-w-0 flex-1 overflow-auto p-4 md:p-6">
         {(['beam-flexure', 'beam-shear', 'beam-t-flexure', 'column-axial'].includes(activeModule)) && (
           <p role="note" className="max-w-7xl mx-auto mb-4 border-l-4 border-amber-500 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             当前混凝土计算依据仓库中的 GB 50010-2010（2015 年版）。住建部已发布 2024 年局部修订；本项目尚未完成新旧条款差异核查，结果不可直接作为现行工程设计依据。{' '}
