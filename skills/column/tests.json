@@ -1,0 +1,13 @@
+{
+  "cases": [
+    { "id": "axial-normal", "category": "normal", "file": "tests/core/column-axial.test.ts", "description": "轴心受压矩形箍筋柱基准承载力" },
+    { "id": "eccentric-normal", "category": "normal", "file": "tests/core/column-eccentric.test.ts", "description": "单轴单曲率偏心受压截面承载力" },
+    { "id": "axial-boundary", "category": "boundary", "file": "tests/core/column-axial.test.ts", "description": "长细比表格档位和 3% 纵筋率边界" },
+    { "id": "eccentric-boundary", "category": "boundary", "file": "tests/core/column-eccentric.test.ts", "description": "附加偏心距 20 mm 与 h/30 控制边界" },
+    { "id": "invalid-column", "category": "invalid", "file": "tests/core/column-axial.test.ts", "description": "超长细比、超配筋和无效材料输入" },
+    { "id": "unit-column", "category": "unit", "file": "tests/report/analysis-adapters.test.ts", "description": "mm、mm²、N/mm²、kN 和 kN·m 结果单位" },
+    { "id": "formula-column", "category": "formula", "file": "tests/report/analysis-adapters.test.ts", "description": "轴压计算书公式和偏心受压计算书公式" },
+    { "id": "pass-fail-column", "category": "pass-fail", "file": "tests/core/column-axial.test.ts", "description": "轴压、偏心受压通过与不通过分支" },
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "统一 column Skill 分派到两个 legacy 入口" }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "id": "column",
+  "name": "柱计算",
+  "kind": "calculation",
+  "version": "1.0.0",
+  "description": "通过 mode 分派现有轴心受压柱或单轴单曲率偏心受压柱计算，并统一返回 CalculationResult。",
+  "component": "column",
+  "calculatorEntry": "./calculator.ts",
+  "legacyEntry": "../../src/core/column/axial.ts; ../../src/core/column/eccentric.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/types/calculation.ts#CalculationResult",
+  "applicability": [
+    "mode=axial：矩形截面箍筋柱轴心受压单项验算",
+    "mode=eccentric：矩形截面、单轴单曲率、对称双层纵筋偏心受压截面承载力",
+    "各分支均只返回当前核心已经覆盖的单项验算，不代表完整工程设计通过"
+  ],
+  "boundaryChecks": [
+    "轴心受压计算长度与短边之比的表格范围",
+    "轴心受压纵筋率 3% 的混凝土计算面积分支",
+    "偏心受压附加偏心距 20 mm 与 h/30 的控制分支",
+    "偏心受压轴力平衡和二阶效应未覆盖提示",
+    "mode、截面、钢筋和材料输入错误"
+  ],
+  "formulaMappings": [
+    {
+      "id": "axial-gross-area",
+      "expression": "grossArea = width * depth",
+      "evidenceId": "mechanics-rectangle-area",
+      "requiredInputFields": ["width", "depth"]
+    },
+    {
+      "id": "axial-slenderness",
+      "expression": "slendernessRatio = effectiveLength / min(width, depth)",
+      "evidenceId": "clause-6.2.15-stability",
+      "requiredInputFields": ["effectiveLength", "width", "depth"]
+    },
+    {
+      "id": "axial-capacity",
+      "expression": "capacity = 0.9 * phi * (fc * concreteArea + fy * reinforcementArea) / 1000",
+      "evidenceId": "clause-6.2.15",
+      "requiredInputFields": ["axialForce", "concreteStrength", "steelCompressionStrength", "reinforcementArea"]
+    },
+    {
+      "id": "eccentric-additional-eccentricity",
+      "expression": "additionalEccentricity = max(20, depth / 30)",
+      "evidenceId": "clause-6.2.5",
+      "requiredInputFields": ["depth"]
+    },
+    {
+      "id": "eccentric-design-moment",
+      "expression": "designMoment = firstOrderMoment + axialForce * additionalEccentricity / 1000",
+      "evidenceId": "clause-6.2.5-moment",
+      "requiredInputFields": ["axialForce", "firstOrderMoment", "depth"]
+    }
+  ],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": ["mm", "mm²", "kN", "kN·m", "N/mm²", "%", "grade", "dimensionless"]
+}

@@ -1,0 +1,105 @@
+{
+  "records": [
+    {
+      "id": "mechanics-rectangle-area",
+      "codeName": "截面几何关系",
+      "codeNumber": "INTERNAL-MECHANICS",
+      "edition": "platform",
+      "chapter": "矩形截面几何",
+      "clause": "N/A",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "矩形截面全截面面积计算，不代替规范条文",
+      "formulaExpression": "grossArea = width * depth",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.15",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.15",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "矩形截面箍筋柱轴心受压的稳定系数和承载力单项验算；原项目尚待逐页登记 PDF 页码",
+      "formulaExpression": "capacity = 0.9 * phi * (fc * concreteArea + fy * reinforcementArea) / 1000",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.15-stability",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.15",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "矩形截面箍筋柱计算长度与短边之比及稳定系数查表；原项目尚待逐页登记 PDF 页码",
+      "formulaExpression": "slendernessRatio = effectiveLength / min(width, depth)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.1",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.1",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 49,
+      "applicability": "偏心受压正截面承载力的平截面等基本假定",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.2",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.2",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 51,
+      "applicability": "单轴作用和截面对称适用范围",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.5",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.5",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 52,
+      "applicability": "偏心受压附加偏心距；当前模型未覆盖二阶效应附加弯矩",
+      "formulaExpression": "additionalEccentricity = max(20, depth / 30)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.5-moment",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.5",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 52,
+      "applicability": "一阶弯矩与附加偏心距的当前简化叠加；二阶效应仍未覆盖",
+      "formulaExpression": "designMoment = firstOrderMoment + axialForce * additionalEccentricity / 1000",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.6",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.6",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 52,
+      "applicability": "偏心受力构件等效矩形受压应力图",
+      "verificationStatus": "REVIEW_REQUIRED"
+    }
+  ]
+}

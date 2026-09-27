@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["mode", "input"],
+  "properties": {
+    "mode": { "type": "string", "enum": ["axial", "eccentric"], "unit": "enum" },
+    "input": { "type": "object", "unit": "dimensionless", "description": "按 mode 选择下列一个输入分支" },
+    "width": { "type": "number", "exclusiveMinimum": 0, "unit": "mm" },
+    "depth": { "type": "number", "exclusiveMinimum": 0, "unit": "mm" },
+    "effectiveLength": { "type": "number", "exclusiveMinimum": 0, "unit": "mm" },
+    "reinforcementArea": { "type": "number", "exclusiveMinimum": 0, "unit": "mm²" },
+    "axialForce": { "type": "number", "minimum": 0, "unit": "kN" },
+    "concreteStrength": { "type": "number", "exclusiveMinimum": 0, "unit": "N/mm²" },
+    "steelCompressionStrength": { "type": "number", "exclusiveMinimum": 0, "unit": "N/mm²" },
+    "coverToSteelCentroid": { "type": "number", "exclusiveMinimum": 0, "unit": "mm" },
+    "reinforcementAreaEachFace": { "type": "number", "exclusiveMinimum": 0, "unit": "mm²" },
+    "firstOrderMoment": { "type": "number", "minimum": 0, "unit": "kN·m" },
+    "concreteGrade": { "type": "string", "enum": ["C20", "C25", "C30", "C35", "C40", "C45", "C50"], "unit": "grade" },
+    "steelGrade": { "type": "string", "enum": ["HPB300", "HRB400", "HRB500"], "unit": "grade" }
+  },
+  "oneOf": [
+    {
+      "properties": { "mode": { "const": "axial" }, "input": { "required": ["width", "depth", "effectiveLength", "reinforcementArea", "axialForce", "concreteStrength", "steelCompressionStrength"] } }
+    },
+    {
+      "properties": { "mode": { "const": "eccentric" }, "input": { "required": ["width", "depth", "coverToSteelCentroid", "reinforcementAreaEachFace", "axialForce", "firstOrderMoment", "concreteGrade", "steelGrade"] } }
+    }
+  ]
+}

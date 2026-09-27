@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculateBeamShear, BeamShearInput } from '../../src/core/beam/shear';
 import { calculateBeamFlexure, BeamFlexureInput } from '../../src/core/beam/flexure';
+import { calculateAxialColumn, AxialColumnInput } from '../../src/core/column/axial';
 import { skillRegistry } from '../../src/agent/skill-registry';
 
 const input: BeamShearInput = {
@@ -11,6 +12,11 @@ const input: BeamShearInput = {
 const flexureInput: BeamFlexureInput = {
   b: 250, h: 500, concreteGrade: 'C30', steelGrade: 'HRB400', cover: 25,
   barDiameter: 20, barCount: 4, moment: 120,
+};
+
+const axialInput: AxialColumnInput = {
+  width: 400, depth: 500, effectiveLength: 3200, reinforcementArea: 2400,
+  axialForce: 2200, concreteStrength: 14.3, steelCompressionStrength: 360,
 };
 
 describe('Skill Registry', () => {
@@ -39,6 +45,14 @@ describe('Skill Registry', () => {
     expect(throughRegistry.conclusion).toEqual(legacy.conclusion);
   });
 
+  it('dispatches the unified column Skill to the axial report adapter', () => {
+    const legacy = calculateAxialColumn(axialInput);
+    const throughRegistry = skillRegistry.calculate('column', { mode: 'axial', input: axialInput });
+    expect(throughRegistry.calculatorType).toBe('轴心受压柱');
+    expect(throughRegistry.results.find(item => item.label === '轴压承载力 Nu')?.value).toBe(legacy.capacity);
+    expect(throughRegistry.checks[0].passed).toBe(legacy.passed);
+  });
+
   it('returns a structured error result for invalid Agent input', () => {
     const result = skillRegistry.calculate('beam-shear', { ...input, h0: '460' });
     expect(result.advisories.some(advisory => advisory.code === 'SKILL_INPUT_INVALID')).toBe(true);
@@ -51,5 +65,8 @@ describe('Skill Registry', () => {
     expect(audit.issues.some(issue => issue.code === 'EVIDENCE_REVIEW_REQUIRED')).toBe(true);
     expect(skillRegistry.audit('calculation-auditor').passed).toBe(true);
     expect(skillRegistry.audit('beam-flexure').passed).toBe(true);
+    const columnAudit = skillRegistry.audit('column');
+    expect(columnAudit.passed).toBe(true);
+    expect(columnAudit.issues.some(issue => issue.severity === 'error')).toBe(false);
   });
 });

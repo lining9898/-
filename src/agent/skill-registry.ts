@@ -10,8 +10,13 @@ import auditorManifest from '../../skills/calculation-auditor/skill.json';
 import auditorSchema from '../../skills/calculation-auditor/schema.json';
 import auditorEvidence from '../../skills/calculation-auditor/evidence.json';
 import auditorTests from '../../skills/calculation-auditor/tests.json';
+import columnManifest from '../../skills/column/skill.json';
+import columnSchema from '../../skills/column/schema.json';
+import columnEvidence from '../../skills/column/evidence.json';
+import columnTests from '../../skills/column/tests.json';
 import { invokeBeamFlexure, isBeamFlexureInput } from '../../skills/beam-flexure/calculator';
 import { invokeBeamShear, isBeamShearInput } from '../../skills/beam-shear/calculator';
+import { invokeColumn, isColumnSkillInput } from '../../skills/column/calculator';
 import { auditSkillPackage, CalculationAuditResult } from './calculation-auditor';
 import {
   CalculationSkill,
@@ -52,6 +57,21 @@ const beamFlexureSkill: CalculationSkill = {
   calculate: invokeBeamFlexure,
 };
 
+const columnPackage: SkillPackage = {
+  manifest: columnManifest as SkillManifest,
+  schema: columnSchema as SkillInputSchema,
+  evidence: columnEvidence as SkillEvidenceCatalog,
+  tests: columnTests as SkillTestCatalog,
+};
+
+export const columnSkillPackage = columnPackage;
+
+const columnSkill: CalculationSkill = {
+  package: columnPackage,
+  accepts: isColumnSkillInput,
+  calculate: invokeColumn,
+};
+
 const calculationAuditorPackage: SkillPackage = {
   manifest: auditorManifest as SkillManifest,
   schema: auditorSchema as SkillInputSchema,
@@ -78,6 +98,7 @@ export class SkillRegistry {
   constructor() {
     this.registerCalculation(beamShearSkill);
     this.registerCalculation(beamFlexureSkill);
+    this.registerCalculation(columnSkill);
     this.registerAuditor(calculationAuditorPackage);
   }
 

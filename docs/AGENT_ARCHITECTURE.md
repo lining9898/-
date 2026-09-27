@@ -26,7 +26,7 @@ The rectangular and T-beam calculators currently assemble evidence in `src/core/
 
 ## Skill Registry migration
 
-The first migration packages are `skills/beam-shear/` and `skills/beam-flexure/`. Their manifests, input schemas, Evidence catalogs, and test catalogs are machine-readable. Each `calculator.ts` is a compatibility wrapper around its existing `src/core/beam` entry; the Skill layer does not duplicate or replace the shear or flexure formulas.
+The first migration packages are `skills/beam-shear/`, `skills/beam-flexure/`, and `skills/column/`. Their manifests, input schemas, Evidence catalogs, and test catalogs are machine-readable. Each `calculator.ts` is a compatibility wrapper around existing `src/core` entries; the Skill layer does not duplicate or replace the underlying formulas.
 
 `src/agent/skill-registry.ts` provides three stable operations for an Agent integration:
 
