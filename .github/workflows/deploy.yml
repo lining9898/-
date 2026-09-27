@@ -29,3 +29,39 @@ jobs:
 
     - name: Build
       run: npm run build
+
+  mirror-to-gitee:
+    needs: test-and-build
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+
+    steps:
+    - name: Checkout full history
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Explain missing Gitee credential
+      if: env.GITEE_TOKEN == ''
+      run: echo "::warning title=Gitee mirror not configured::Add the GITEE_TOKEN Actions secret to enable automatic mirroring."
+
+    - name: Push master to Gitee
+      if: env.GITEE_TOKEN != ''
+      env:
+        GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+      run: |
+        cat > "$RUNNER_TEMP/gitee-askpass" <<'EOF'
+        #!/bin/sh
+        case "$1" in
+          *Username*) printf '%s\n' 'lining9' ;;
+          *Password*) printf '%s\n' "$GITEE_TOKEN" ;;
+          *) exit 1 ;;
+        esac
+        EOF
+        chmod 700 "$RUNNER_TEMP/gitee-askpass"
+        GIT_ASKPASS="$RUNNER_TEMP/gitee-askpass" GIT_TERMINAL_PROMPT=0 \
+          git push https://gitee.com/lining9/cn-structural-toolkit.git HEAD:master
