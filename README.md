@@ -71,7 +71,7 @@ npm run test
 
 ## 使用方法
 
-1. 访问在线版本: https://cn-structural-toolkit.gitee.io
+1. 访问在线版本: https://funny-belekoy-d7095c.netlify.app/
 2. 选择需要计算的构件类型
 3. 输入构件参数 (截面尺寸、配筋、材料强度等)
 4. 获取计算结果与计算书
