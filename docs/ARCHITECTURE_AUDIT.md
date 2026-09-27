@@ -78,6 +78,6 @@ Skill 元数据还需要把测试按 `normal`、`boundary`、`invalid`、`unit`�
 
 ## 7. 迁移结论
 
-第一批选择 `beam-shear` 是合适的：它已经有较完整的 `CalculationResult`、逐步计算书和测试，可用薄包装层验证 Skill manifest、schema、Evidence 清单、Registry 调用和 Calculation Auditor，而不改变现有数值路径。
+第一批选择 `beam-shear` 是合适的：它已经有较完整的 `CalculationResult`、逐步计算书和测试，可用薄包装层验证 Skill manifest、schema、Evidence 清单、Registry 调用和 Calculation Auditor，而不改变现有数值路径。随后 `beam-flexure` 已按同一方式接入，验证了两个已有 `CalculationResult` 核心可以共用 Registry，而无需批量重写。
 
 迁移完成的判据：原 `calculateBeamShear` 的测试结果不变；页面仍调用原模块；Agent 通过 Registry 调用得到同一 `CalculationResult`；审查器能发现缺失单位、Evidence 和边界测试；所有规范状态仍按现有证据状态显示。

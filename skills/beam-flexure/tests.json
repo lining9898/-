@@ -1,0 +1,12 @@
+{
+  "cases": [
+    { "id": "normal-c30-hrb400", "category": "normal", "file": "tests/core/beam-flexure.test.ts", "description": "C30、HRB400 基准算例和 CalculationResult 完整性" },
+    { "id": "boundary-xi", "category": "boundary", "file": "tests/core/beam-flexure.test.ts", "description": "跨越界限相对受压区高度 xiB" },
+    { "id": "boundary-moment", "category": "boundary", "file": "tests/core/beam-flexure.test.ts", "description": "弯矩需求超过承载力" },
+    { "id": "invalid-input", "category": "invalid", "file": "tests/core/beam-flexure.test.ts", "description": "尺寸、保护层、钢筋容纳、材料和根数输入校验" },
+    { "id": "unit-area", "category": "unit", "file": "tests/core/beam-flexure.test.ts", "description": "MPa、mm、mm² 和 kN·m 的结果单位检查" },
+    { "id": "formula-trace", "category": "formula", "file": "tests/core/beam-flexure.test.ts", "description": "x、xi、xiB、Mu 和 AsMin 计算步骤与 Evidence" },
+    { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/beam-flexure.test.ts", "description": "界限、最小配筋和承载力验算结果" },
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "Registry 调用结果与 legacy 受弯入口核心结果一致" }
+  ]
+}

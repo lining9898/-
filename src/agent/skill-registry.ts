@@ -2,10 +2,15 @@ import beamManifest from '../../skills/beam-shear/skill.json';
 import beamSchema from '../../skills/beam-shear/schema.json';
 import beamEvidence from '../../skills/beam-shear/evidence.json';
 import beamTests from '../../skills/beam-shear/tests.json';
+import flexureManifest from '../../skills/beam-flexure/skill.json';
+import flexureSchema from '../../skills/beam-flexure/schema.json';
+import flexureEvidence from '../../skills/beam-flexure/evidence.json';
+import flexureTests from '../../skills/beam-flexure/tests.json';
 import auditorManifest from '../../skills/calculation-auditor/skill.json';
 import auditorSchema from '../../skills/calculation-auditor/schema.json';
 import auditorEvidence from '../../skills/calculation-auditor/evidence.json';
 import auditorTests from '../../skills/calculation-auditor/tests.json';
+import { invokeBeamFlexure, isBeamFlexureInput } from '../../skills/beam-flexure/calculator';
 import { invokeBeamShear, isBeamShearInput } from '../../skills/beam-shear/calculator';
 import { auditSkillPackage, CalculationAuditResult } from './calculation-auditor';
 import {
@@ -30,6 +35,21 @@ const beamShearSkill: CalculationSkill = {
   package: beamShearPackage,
   accepts: isBeamShearInput,
   calculate: invokeBeamShear,
+};
+
+const beamFlexurePackage: SkillPackage = {
+  manifest: flexureManifest as SkillManifest,
+  schema: flexureSchema as SkillInputSchema,
+  evidence: flexureEvidence as SkillEvidenceCatalog,
+  tests: flexureTests as SkillTestCatalog,
+};
+
+export const beamFlexureSkillPackage = beamFlexurePackage;
+
+const beamFlexureSkill: CalculationSkill = {
+  package: beamFlexurePackage,
+  accepts: isBeamFlexureInput,
+  calculate: invokeBeamFlexure,
 };
 
 const calculationAuditorPackage: SkillPackage = {
@@ -57,6 +77,7 @@ export class SkillRegistry {
 
   constructor() {
     this.registerCalculation(beamShearSkill);
+    this.registerCalculation(beamFlexureSkill);
     this.registerAuditor(calculationAuditorPackage);
   }
 

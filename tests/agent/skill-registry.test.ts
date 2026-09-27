@@ -1,10 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { calculateBeamShear, BeamShearInput } from '../../src/core/beam/shear';
+import { calculateBeamFlexure, BeamFlexureInput } from '../../src/core/beam/flexure';
 import { skillRegistry } from '../../src/agent/skill-registry';
 
 const input: BeamShearInput = {
   b: 250, h: 500, h0: 460, concreteGrade: 'C30', stirrupGrade: 'HPB300', V: 120,
   stirrupLegs: 2, stirrupSpacing: 200, stirrupDiameter: 8, loadType: 'uniform',
+};
+
+const flexureInput: BeamFlexureInput = {
+  b: 250, h: 500, concreteGrade: 'C30', steelGrade: 'HRB400', cover: 25,
+  barDiameter: 20, barCount: 4, moment: 120,
 };
 
 describe('Skill Registry', () => {
@@ -24,6 +30,15 @@ describe('Skill Registry', () => {
     expect(throughRegistry.conclusion).toEqual(legacy.conclusion);
   });
 
+  it('calls the legacy beam-flexure entry without changing calculation output', () => {
+    const legacy = calculateBeamFlexure(flexureInput);
+    const throughRegistry = skillRegistry.calculate('beam-flexure', flexureInput);
+    expect(throughRegistry.calculatorType).toBe(legacy.calculatorType);
+    expect(throughRegistry.results).toEqual(legacy.results);
+    expect(throughRegistry.checks).toEqual(legacy.checks);
+    expect(throughRegistry.conclusion).toEqual(legacy.conclusion);
+  });
+
   it('returns a structured error result for invalid Agent input', () => {
     const result = skillRegistry.calculate('beam-shear', { ...input, h0: '460' });
     expect(result.advisories.some(advisory => advisory.code === 'SKILL_INPUT_INVALID')).toBe(true);
@@ -35,5 +50,6 @@ describe('Skill Registry', () => {
     expect(audit.passed).toBe(true);
     expect(audit.issues.some(issue => issue.code === 'EVIDENCE_REVIEW_REQUIRED')).toBe(true);
     expect(skillRegistry.audit('calculation-auditor').passed).toBe(true);
+    expect(skillRegistry.audit('beam-flexure').passed).toBe(true);
   });
 });
