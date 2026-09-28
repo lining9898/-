@@ -7,6 +7,8 @@
     { "id": "unit-area", "category": "unit", "file": "tests/core/beam-flexure.test.ts", "description": "MPa、mm、mm² 和 kN·m 的结果单位检查" },
     { "id": "formula-trace", "category": "formula", "file": "tests/core/beam-flexure.test.ts", "description": "x、xi、xiB、Mu 和 AsMin 计算步骤与 Evidence" },
     { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/beam-flexure.test.ts", "description": "界限、最小配筋和承载力验算结果" },
-    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "Registry 调用结果与 legacy 受弯入口核心结果一致" }
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "Registry 调用结果与 legacy 受弯入口核心结果一致" },
+    { "id": "golden-cases", "category": "formula", "file": "tests/regression/golden-cases.test.ts", "description": "Golden Case 回归基准：Mu/As/x/rhoMin 及数量级锁定" },
+    { "id": "version-pinning", "category": "unit", "file": "tests/regression/spec-version-pinning.test.ts", "description": "规范版本一致性：Mu 数值基准不随默认版本漂移" }
   ]
 }

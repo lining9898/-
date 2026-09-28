@@ -8,6 +8,8 @@
     { "id": "unit-column", "category": "unit", "file": "tests/report/analysis-adapters.test.ts", "description": "mm、mm²、N/mm²、kN 和 kN·m 结果单位" },
     { "id": "formula-column", "category": "formula", "file": "tests/report/analysis-adapters.test.ts", "description": "轴压计算书公式和偏心受压计算书公式" },
     { "id": "pass-fail-column", "category": "pass-fail", "file": "tests/core/column-axial.test.ts", "description": "轴压、偏心受压通过与不通过分支" },
-    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "统一 column Skill 分派到两个 legacy 入口" }
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "统一 column Skill 分派到两个 legacy 入口" },
+    { "id": "golden-cases", "category": "formula", "file": "tests/regression/golden-cases.test.ts", "description": "Golden Case 回归基准：Nu/ea/设计弯矩锁定" },
+    { "id": "version-pinning", "category": "unit", "file": "tests/regression/spec-version-pinning.test.ts", "description": "规范版本一致性：轴压承载力基准不随默认版本漂移" }
   ]
 }

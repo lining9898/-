@@ -1,0 +1,29 @@
+{
+  "skillId": "steel-beam",
+  "basis": "钢结构构件验算（仓库本地算式，规范原文待校核）",
+  "unitBasis": {
+    "M": "kN·m", "V": "kN", "W": "mm³", "sigma": "N/mm²", "tau": "N/mm²"
+  },
+  "cases": [
+    {
+      "id": "steel-beam-basic",
+      "description": "钢梁应力验算基准算例（H 型截面，M=100 kN·m，V=80 kN）",
+      "input": {
+        "h": 500, "bf": 200, "tf": 12, "tw": 8,
+        "moment": 100, "shear": 80,
+        "bendingStrength": 215, "shearStrength": 125, "stabilityFactor": 0.9
+      },
+      "expected": [
+        { "label": "area", "value": 8608, "unit": "mm²", "tolerance": 0.01 },
+        { "label": "sectionModulus", "value": 1430922, "unit": "mm³", "tolerance": 1 },
+        { "label": "bendingStress", "value": 69.89, "unit": "N/mm²", "tolerance": 0.1 },
+        { "label": "shearStress", "value": 22.7, "unit": "N/mm²", "tolerance": 0.1 },
+        { "label": "stabilityStress", "value": 77.65, "unit": "N/mm²", "tolerance": 0.1 }
+      ],
+      "checks": [],
+      "reference": "σ = M·10⁶/W；τ = V·10³·S/(I·tw)；仓库内独立复算",
+      "evidenceStatus": "REVIEW_REQUIRED",
+      "note": "REFERENCE_CASE_REQUIRED：本模块不在 Calculation Skill 注册范围，规范原文依据待校核。"
+    }
+  ]
+}
