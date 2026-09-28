@@ -3,6 +3,7 @@ import { CalculationResult } from '../../types/calculation';
 import { generateReport } from '../../report/generator';
 import CalculationReportView from './CalculationReportView';
 import EvidencePanel from '../evidence/EvidencePanel';
+import AIReviewButton from '../ai-review/AIReviewButton';
 
 interface ResultTabsProps {
   result: CalculationResult;
@@ -25,6 +26,7 @@ const ResultTabs: React.FC<ResultTabsProps> = ({ result, children }) => {
           ? 'border-blue-700 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
         {tab.label}
       </button>)}
+      <AIReviewButton result={result} internalMechanics={result.calculatorType === 'beam-continuous'} />
     </div>
     <div role="tabpanel" className="py-4 space-y-5">
       {activeTab === 'result' && children}

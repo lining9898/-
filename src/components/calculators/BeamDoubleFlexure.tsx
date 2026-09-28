@@ -4,6 +4,7 @@ import { generateReport } from '../../report/generator';
 import EvidencePanel from '../evidence/EvidencePanel';
 import VerificationBadge from '../evidence/VerificationBadge';
 import CalculationReportView from '../report/CalculationReportView';
+import AIReviewButton from '../ai-review/AIReviewButton';
 
 const CONCRETE_GRADES = ['C20', 'C25', 'C30', 'C35', 'C40', 'C45', 'C50'];
 const STEEL_GRADES = ['HPB300', 'HRB335', 'HRB400', 'HRB500'];
@@ -234,6 +235,7 @@ const BeamDoubleFlexure: React.FC = () => {
               className={`px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'evidence' ? 'text-blue-700 border-b-2 border-blue-700' : 'text-gray-500 hover:text-gray-700'}`}>
               规范依据
             </button>
+            <AIReviewButton result={result} title="双筋梁正截面受弯" />
           </div>
 
           {activeTab === 'result' && (
