@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import StandardStatusNotice from './components/layout/StandardStatusNotice';
 import StandardsStatus from './pages/StandardsStatus';
@@ -12,18 +12,17 @@ import AxialColumn from './components/calculators/AxialColumn';
 import EccentricColumn from './components/calculators/EccentricColumn';
 import SectionProperties from './components/calculators/SectionProperties';
 import MaterialWeight from './components/calculators/MaterialWeight';
-
-const ContinuousBeam = lazy(() => import('./components/calculators/ContinuousBeam'));
+import ContinuousBeam from './components/calculators/ContinuousBeam';
 
 type ModuleId = string;
 
-const STANDARDS_STATUS_PATH = '/standards/status';
+const STANDARDS_STATUS_TAIL = '/standards/status';
 type View = 'calculator' | 'standards-status';
 
 const CONCRETE_MODULES = ['beam-flexure', 'beam-shear', 'beam-t-flexure', 'column-axial', 'column-eccentric'];
 
 const getInitialView = (): View =>
-  typeof window !== 'undefined' && window.location.pathname === STANDARDS_STATUS_PATH
+  typeof window !== 'undefined' && window.location.pathname.endsWith(STANDARDS_STATUS_TAIL)
     ? 'standards-status'
     : 'calculator';
 
@@ -37,13 +36,18 @@ const App: React.FC = () => {
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const navigateTo = (path: string) => {
-    window.history.pushState({}, '', path);
-    setView(path === STANDARDS_STATUS_PATH ? 'standards-status' : 'calculator');
+  const openStandardsStatus = () => {
+    window.history.pushState({}, '', 'standards/status');
+    setView('standards-status');
+  };
+
+  const backToCalculator = () => {
+    window.history.pushState({}, '', './');
+    setView('calculator');
   };
 
   if (view === 'standards-status') {
-    return <StandardsStatus onBack={() => navigateTo('/')} />;
+    return <StandardsStatus onBack={backToCalculator} />;
   }
 
   const renderContent = () => {
@@ -67,7 +71,7 @@ const App: React.FC = () => {
       case 'tools-weight':
         return <MaterialWeight />;
       case 'beam-continuous':
-        return <Suspense fallback={<p className="text-sm text-gray-500">正在加载连续梁计算...</p>}><ContinuousBeam /></Suspense>;
+        return <ContinuousBeam />;
       case 'slab-one-way':
       case 'slab-two-way':
       case 'slab-punching':
@@ -87,7 +91,7 @@ const App: React.FC = () => {
       <Sidebar activeModule={activeModule} onSelectModule={setActiveModule} />
       <main className="min-w-0 flex-1 overflow-auto p-4 md:p-6">
         {CONCRETE_MODULES.includes(activeModule) && (
-          <StandardStatusNotice onViewDetails={() => navigateTo(STANDARDS_STATUS_PATH)} />
+          <StandardStatusNotice onViewDetails={openStandardsStatus} />
         )}
         {renderContent()}
       </main>
