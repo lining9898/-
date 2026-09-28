@@ -1,5 +1,6 @@
 import { CalculationResult } from '../types/calculation';
 import { VerificationStatus } from '../types/evidence';
+import { CodeStatus } from '../normative/types';
 
 export type SkillKind = 'calculation' | 'normative' | 'auditor';
 
@@ -52,6 +53,8 @@ export interface SkillEvidenceRecord {
   edition: string;
   chapter: string;
   clause: string;
+  /** 条文原文（仅来自可靠原文核验，未核验时为空，绝不编造） */
+  text?: string;
   sourceFile: string | null;
   pdfPage: number | null;
   applicability: string;
@@ -98,6 +101,10 @@ export interface NormativeQuery {
   code: string;
   /** 条文号，如 "6.2.10" */
   clause: string;
+  /** 可选：指定规范版本（edition 标识，如 "2010（2015年版）"） */
+  edition?: string;
+  /** 可选：按项目实施日期选择版本（ISO yyyy-mm-dd） */
+  effectiveDate?: string;
 }
 
 export interface NormativeAnswer {
@@ -109,11 +116,17 @@ export interface NormativeAnswer {
   codeNumber: string;
   /** 版本/年份，如 "2010（2015年版）" */
   edition: string;
+  /** 版本生命周期状态（CURRENT/UPCOMING/SUPERSEDED/REVIEW_REQUIRED） */
+  codeStatus?: CodeStatus;
+  /** 该版本实施日期 */
+  effectiveDate?: string;
+  /** 被哪个版本取代（如有） */
+  replacedBy?: string;
   /** 章节号 */
   chapter: string;
   /** 条文号 */
   clause: string;
-  /** 条文原文（未校核时为空字符串） */
+  /** 条文原文（仅来自可靠原文核验，未校核时为空字符串，绝不编造） */
   text: string;
   /** PDF 页码，未导入时为 null */
   page: number | null;
@@ -123,7 +136,7 @@ export interface NormativeAnswer {
   verificationStatus: VerificationStatus;
   /** 适用范围说明 */
   applicability: string;
-  /** 警告（如"该条文已修订"） */
+  /** 警告（如"该条文已修订""该版本已被取代"） */
   warnings: string[];
 }
 

@@ -7,10 +7,11 @@
       "edition": "2010（2015年版）",
       "chapter": "第4章",
       "clause": "4.1.4",
+      "text": "混凝土轴心抗压强度的设计值 fc 应按表 4.1.4-1 采用；轴心抗拉强度的设计值 ft 应按表 4.1.4-2 采用。表 4.1.4-1（N/mm²）：C15=7.2、C20=9.6、C25=11.9、C30=14.3、C35=16.7、C40=19.1、C45=21.1、C50=23.1、C55=25.3、C60=27.5、C65=29.7、C70=31.8、C75=33.8、C80=35.9。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 34,
-      "applicability": "混凝土轴心抗压、轴心抗拉强度设计值",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "混凝土轴心抗压强度设计值 fc（fc 值直接读自 PDF 表 4.1.4-1；ft 表 4.1.4-2 数值由多来源交叉核验）",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-4.1.5",
@@ -19,10 +20,11 @@
       "edition": "2010（2015年版）",
       "chapter": "第4章",
       "clause": "4.1.5",
+      "text": "混凝土受压和受拉的弹性模量 Ec 宜按表 4.1.5 采用。表 4.1.5（×10⁴ N/mm²）：C15=2.20、C20=2.55、C25=2.80、C30=3.00、C35=3.15、C40=3.25、C45=3.35、C50=3.45、C55=3.55、C60=3.60、C65=3.65、C70=3.70、C75=3.75、C80=3.80。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 35,
       "applicability": "混凝土弹性模量",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-4.2.3",
@@ -31,10 +33,11 @@
       "edition": "2010（2015年版）",
       "chapter": "第4章",
       "clause": "4.2.3",
+      "text": "普通钢筋的抗拉强度设计值 fy、抗压强度设计值 fy' 应按表 4.2.3-1 采用。表 4.2.3-1（N/mm²）：HPB300=270、HRB335=300、HRB400/HRBF400/RRB400=360、HRB500/HRBF500=435。对轴心受压构件采用 HRB500、HRBF500 钢筋时，fy' 应取 400；横向钢筋用作受剪、受扭、受冲切承载力计算时，fyv 大于 360 时取 360。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 38,
       "applicability": "普通钢筋强度设计值",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-4.2.5",
@@ -43,10 +46,11 @@
       "edition": "2010（2015年版）",
       "chapter": "第4章",
       "clause": "4.2.5",
+      "text": "普通钢筋和预应力筋的弹性模量 Es 可按表 4.2.5 采用。表 4.2.5（×10⁵ N/mm²）：HPB300=2.10、HRB335/HRB400/HRB500=2.00、预应力螺纹钢筋=2.00、消除应力钢丝/中强度预应力钢丝=2.05、钢绞线=1.95。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 40,
       "applicability": "普通钢筋和预应力筋弹性模量",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-6.2.1",
@@ -55,10 +59,11 @@
       "edition": "2010（2015年版）",
       "chapter": "第6章",
       "clause": "6.2.1",
+      "text": "正截面承载力应按下列基本假定进行计算：1 截面应变保持平面；2 不考虑混凝土的抗拉强度；3 混凝土受压的应力与应变关系按公式（6.2.1-1）～（6.2.1-5）取用，其中 εcu=0.0033-(fcu,k-50)×10⁻⁵（6.2.1-5），当处于非均匀受压且按（6.2.1-5）计算的值大于 0.0033 时取 0.0033，轴心受压时取 ε0；4 纵向受拉钢筋的极限拉应变取 0.01。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 49,
-      "applicability": "正截面承载力计算的基本假定",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "正截面承载力计算的基本假定（含混凝土极限压应变 εcu）",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-6.2.2",
@@ -67,10 +72,11 @@
       "edition": "2010（2015年版）",
       "chapter": "第6章",
       "clause": "6.2.2",
+      "text": "在确定中和轴位置时，对双向受弯构件，其内、外弯矩作用平面应相互重合；对双向偏心受力构件，其轴向力作用点、混凝土和受压钢筋的合力点以及受拉钢筋的合力点应在同一条直线上。当不符合上述条件时，尚应考虑扭转的影响。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 51,
-      "applicability": "正截面承载力计算的一般规定",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "双向受弯/双向偏心构件中和轴位置与弯矩作用平面",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-6.2.5",
@@ -79,10 +85,11 @@
       "edition": "2010（2015年版）",
       "chapter": "第6章",
       "clause": "6.2.5",
+      "text": "偏心受压构件的正截面承载力计算时，应计入轴向压力在偏心方向存在的附加偏心距 ea，其值应取 20mm 和偏心方向截面最大尺寸的 1/30 两者中的较大值。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 52,
-      "applicability": "附加偏心距",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "偏心受压构件附加偏心距 ea=max(20mm, h/30)",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-6.2.6",
@@ -91,10 +98,11 @@
       "edition": "2010（2015年版）",
       "chapter": "第6章",
       "clause": "6.2.6",
+      "text": "受弯构件、偏心受力构件正截面承载力计算时，受压区混凝土的应力图形可简化为等效的矩形应力图。矩形应力图的受压区高度 x 可取中和轴高度乘以系数 β1：不超过 C50 时取 0.80，C80 时取 0.74，其间按线性内插。矩形应力图的应力值可由 fc 乘以系数 α1 确定：不超过 C50 时取 1.0，C80 时取 0.94，其间按线性内插。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 52,
-      "applicability": "等效矩形应力图",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "等效矩形应力图系数 α1、β1（C50 及以下取值）",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-6.2.7",
@@ -103,10 +111,12 @@
       "edition": "2010（2015年版）",
       "chapter": "第6章",
       "clause": "6.2.7",
+      "text": "纵向受拉钢筋屈服与受压区混凝土破坏同时发生时的相对界限受压区高度 ξb 应按下列公式计算：钢筋混凝土构件（有屈服点普通钢筋）ξb=β1/(1+fy/(Es·εcu))（6.2.7-1）。式中 ξb 取 xb/h0；Es 按表 4.2.5；εcu 按（6.2.1-5）；β1 按 6.2.6。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 53,
-      "applicability": "界限相对受压区高度",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "有屈服点普通钢筋的界限相对受压区高度 ξb",
+      "formulaExpression": "xiB = beta1 / (1 + fy / (Es * epsilonCu))",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-6.2.10",
@@ -115,10 +125,12 @@
       "edition": "2010（2015年版）",
       "chapter": "第6章",
       "clause": "6.2.10",
+      "text": "矩形截面或翼缘位于受拉边的倒 T 形截面受弯构件，其正截面受弯承载力应符合下列规定：M≤α1·fc·b·x·(h0-x/2)+fy'·As'·(h0-as')+…（6.2.10-1）；混凝土受压区高度 α1·fc·b·x=fy·As-fy'·As'+fpy·Ap+(σp0-f'py)·Ap'（6.2.10-2）；混凝土受压区高度尚应符合 x≤ξb·h0（6.2.10-3）、x≥2a'（6.2.10-4）。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 55,
-      "applicability": "矩形截面受弯构件正截面承载力",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "矩形截面受弯构件正截面受弯承载力（含受压区高度与界限验算）",
+      "formulaExpression": "x = fy * As / (alpha1 * fc * b)；Mu = alpha1 * fc * b * x * (h0 - x/2)；xi = x / h0 <= xiB",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-6.2.15",
@@ -127,10 +139,12 @@
       "edition": "2010（2015年版）",
       "chapter": "第6章",
       "clause": "6.2.15",
+      "text": "钢筋混凝土轴心受压构件，当配置的箍筋符合本规范第 9.3 节的规定时，其正截面受压承载力应符合下列规定：N≤0.9φ(fc·A+fy'·As')（6.2.15）。式中 φ 为钢筋混凝土构件的稳定系数，按表 6.2.15 采用；当配筋率大于 3% 时，A 改用 (A-As')。",
       "sourceFile": "GB50010-2010_2015_.pdf",
-      "pdfPage": null,
-      "applicability": "轴心受压构件正截面承载力",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "pdfPage": 58,
+      "applicability": "矩形截面箍筋柱轴心受压正截面承载力与稳定系数",
+      "formulaExpression": "capacity = 0.9 * phi * (fc * A + fy * As) / 1000",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-6.3.1",
@@ -139,10 +153,12 @@
       "edition": "2010（2015年版）",
       "chapter": "第6章",
       "clause": "6.3.1",
+      "text": "矩形、T 形和 I 形截面受弯构件的受剪截面应符合下列条件：当 hw/b≤4 时，V≤0.25βc·fc·b·h0（6.3.1-1）。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 69,
-      "applicability": "受剪截面限制条件",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "受剪截面限制条件（矩形截面 hw/b≤4）",
+      "formulaExpression": "Vmax = 0.25 * betaC * fc * b * h0",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-6.3.4",
@@ -151,10 +167,12 @@
       "edition": "2010（2015年版）",
       "chapter": "第6章",
       "clause": "6.3.4",
+      "text": "当仅配置箍筋时，矩形、T 形和 I 形截面受弯构件的斜截面受剪承载力应符合下列规定：V≤Vcs+Vp（6.3.4-1）；Vcs=αcv·ft·b·h0+fyv·(Asv/s)·h0（6.3.4-2）。αcv 斜截面混凝土受剪承载力系数：一般受弯构件取 0.7；集中荷载独立梁取 1.75/(λ+1)，λ=a/h0，λ 小于 1.5 取 1.5，大于 3 取 3。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 71,
-      "applicability": "斜截面受剪承载力",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "仅配置箍筋的矩形梁斜截面受剪承载力与 αcv",
+      "formulaExpression": "Vcs = alphaCv * ft * b * h0 + fyv * (Asv / s) * h0；alphaCv = 1.75 / (lambda + 1)",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-8.5.1",
@@ -163,10 +181,12 @@
       "edition": "2010（2015年版）",
       "chapter": "第8章",
       "clause": "8.5.1",
+      "text": "钢筋混凝土结构构件中纵向受力钢筋的配筋百分率 ρmin 不应小于表 8.5.1 规定的数值。表 8.5.1：受弯构件、偏心受拉、轴心受拉构件一侧的受拉钢筋——0.20 和 45ft/fy 中的较大值。注 5：受弯构件、大偏心受拉构件一侧受拉钢筋的配筋率应按全截面面积扣除受压翼缘面积 (bf'-b)hf' 后的截面面积计算（矩形截面即按 b·h）。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 124,
-      "applicability": "最小配筋率",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "受弯构件纵向受拉钢筋最小配筋率与全截面 b·h 计算基准",
+      "formulaExpression": "rhoMin = max(0.20%, 45 * ft / fy %)；AsMin = rhoMin * b * h",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-9.2.9",
@@ -175,10 +195,12 @@
       "edition": "2010（2015年版）",
       "chapter": "第9章",
       "clause": "9.2.9",
+      "text": "梁中箍筋的配置应符合下列规定：…当 V 大于 0.7ft·b·h0+0.05Np0 时，箍筋的配筋率 ρsv（ρsv=Asv/(b·s)）尚不应小于 0.24ft/fyv。",
       "sourceFile": "GB50010-2010_2015_.pdf",
       "pdfPage": 134,
-      "applicability": "梁箍筋构造要求",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "applicability": "梁箍筋最小配箍率 ρsv=Asv/(b·s) ≥ 0.24ft/fyv",
+      "formulaExpression": "rhoSv = Asv / (b * s) >= 0.24 * ft / fyv",
+      "verificationStatus": "VERIFIED"
     }
   ]
 }

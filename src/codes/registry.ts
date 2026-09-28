@@ -1,54 +1,49 @@
 /**
- * 规范注册表
- * 管理所有可用的规范及其版本
- * 当前为空壳，待导入真实规范 PDF 后填充
+ * 规范注册表（兼容层）
+ *
+ * 状态一律委托给 `src/normative/registry.ts`（来源驱动、多版本共存）。
+ * 禁止在此硬编码"哪个版本现行"——一律以可靠、可追溯来源为准。
  */
+
+import { normativeVersionRegistry } from '../normative/registry';
 
 export interface CodeEntry {
   codeNumber: string;
   codeName: string;
   edition: string;
+  /** current | superseded | draft（兼容旧接口映射） */
   status: 'current' | 'superseded' | 'draft';
   description: string;
   sourceFile: string | null;
   importedAt: string | null;
+  /** 版本状态核验来源 */
+  source: string;
+  /** 版本状态核验状态 */
+  verificationStatus: string;
 }
 
-/** 已注册规范列表 */
-const codeRegistry: CodeEntry[] = [
-  {
-    codeNumber: 'GB 50010',
-    codeName: '混凝土结构设计规范',
-    edition: '2010',
-    status: 'current',
-    description: '混凝土结构设计基本规范',
-    sourceFile: null,
-    importedAt: null,
-  },
-  {
-    codeNumber: 'GB 50009',
-    codeName: '建筑结构荷载规范',
-    edition: '2012',
-    status: 'current',
-    description: '建筑结构荷载取值与组合',
-    sourceFile: null,
-    importedAt: null,
-  },
-  {
-    codeNumber: 'GB 50007',
-    codeName: '建筑地基基础设计规范',
-    edition: '2011',
-    status: 'current',
-    description: '地基基础设计',
-    sourceFile: null,
-    importedAt: null,
-  },
-];
-
+/** 将版本注册表条目映射为旧接口的 CodeEntry */
 export function getRegisteredCodes(): CodeEntry[] {
-  return [...codeRegistry];
+  return normativeVersionRegistry.listAll().map(v => ({
+    codeNumber: v.codeNumber,
+    codeName: v.codeName,
+    edition: v.edition,
+    status: v.status === 'CURRENT' ? 'current' : v.status === 'SUPERSEDED' ? 'superseded' : 'draft',
+    description: v.note ?? '',
+    sourceFile: null,
+    importedAt: null,
+    source: v.source,
+    verificationStatus: v.verificationStatus,
+  }));
 }
 
 export function getCodeByNumber(codeNumber: string): CodeEntry | undefined {
-  return codeRegistry.find(c => c.codeNumber === codeNumber);
+  // 返回该编号下解析到的默认版本（未指定版本时取已核验 CURRENT）
+  const res = normativeVersionRegistry.resolve(codeNumber);
+  if (!res.version) return undefined;
+  return getRegisteredCodes().find(c => c.codeNumber === res.version!.codeNumber && c.edition === res.version!.edition);
+}
+
+export function getCodeVersions(codeNumber: string): CodeEntry[] {
+  return getRegisteredCodes().filter(c => c.codeNumber === codeNumber);
 }

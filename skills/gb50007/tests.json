@@ -1,0 +1,16 @@
+{
+  "cases": [
+    {
+      "id": "gb50007-resolve-unverified",
+      "category": "normal",
+      "file": "tests/normative/version-registry.test.ts",
+      "description": "查询任一未收录条文，返回 GB 50007-2011 且 UNVERIFIED"
+    },
+    {
+      "id": "gb50007-no-calculation-fields",
+      "category": "formula",
+      "file": "tests/normative/version-registry.test.ts",
+      "description": "NormativeAnswer 不包含 Mu/Vu/Nu/As 等计算结果字段"
+    }
+  ]
+}

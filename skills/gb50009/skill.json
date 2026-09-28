@@ -1,0 +1,24 @@
+{
+  "id": "gb50009",
+  "name": "GB 50009-2012 建筑结构荷载规范查询",
+  "kind": "normative",
+  "version": "1.0.0",
+  "description": "查询《建筑结构荷载规范》GB 50009-2012 条文。只回答规范说什么，不执行任何工程计算。当前仅收录材料重度工具实际需要的附录 A 表 A 证据，其余条文未收录。",
+  "component": "normative",
+  "calculatorEntry": "./resolver.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/agent/skill-types.ts#NormativeAnswer",
+  "applicability": [
+    "建筑结构荷载规范 GB 50009-2012 条文查询",
+    "仅收录材料重度工具所需证据；仓库内无 GB 50009 原文 PDF，证据保持 REVIEW_REQUIRED"
+  ],
+  "boundaryChecks": [
+    "不返回任何工程量、配筋面积、承载力数值",
+    "原文未入库，条文 text 为空，verificationStatus 为 REVIEW_REQUIRED"
+  ],
+  "formulaMappings": [],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": []
+}

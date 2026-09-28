@@ -1,0 +1,24 @@
+{
+  "id": "gb50007",
+  "name": "GB 50007-2011 建筑地基基础设计规范查询",
+  "kind": "normative",
+  "version": "1.0.0",
+  "description": "查询《建筑地基基础设计规范》GB 50007-2011 条文。只回答规范说什么，不执行任何工程计算。当前无 Calculation Skill 需要其条文 evidence，故未收录任何条文；任何查询均返回 UNVERIFIED。",
+  "component": "normative",
+  "calculatorEntry": "./resolver.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/agent/skill-types.ts#NormativeAnswer",
+  "applicability": [
+    "建筑地基基础设计规范 GB 50007-2011 条文查询",
+    "当前无计算模块需要其证据，evidence 为空；仓库内无原文 PDF"
+  ],
+  "boundaryChecks": [
+    "不返回任何工程量、配筋面积、承载力数值",
+    "未收录条文，查询返回 UNVERIFIED + 警告"
+  ],
+  "formulaMappings": [],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": []
+}

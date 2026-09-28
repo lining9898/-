@@ -14,12 +14,12 @@ const pkg: SkillPackage = buildPackage(
 );
 
 /**
- * GB 50010 normative skill。
- * 绑定版本：2010（2015年版）。
+ * GB 50009-2012 建筑结构荷载规范 normative skill。
+ * 绑定版本：2012（现行）。
  * 只返回规范条文与版本元信息；禁止返回任何工程量、配筋面积、承载力数值。
  */
-export const gb50010Skill = createNormativeSkill(pkg, {
-  primaryEdition: '2010（2015年版）',
-  fallbackCodeName: '混凝土结构设计规范',
-  fallbackCodeNumber: 'GB 50010',
+export const gb50009Skill = createNormativeSkill(pkg, {
+  primaryEdition: '2012',
+  fallbackCodeName: '建筑结构荷载规范',
+  fallbackCodeNumber: 'GB 50009',
 });

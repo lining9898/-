@@ -1,0 +1,16 @@
+{
+  "cases": [
+    {
+      "id": "gb50009-resolve-review-required",
+      "category": "normal",
+      "file": "tests/normative/version-registry.test.ts",
+      "description": "查询附录A表A，返回 GB 50009-2012 且 REVIEW_REQUIRED"
+    },
+    {
+      "id": "gb50009-no-calculation-fields",
+      "category": "formula",
+      "file": "tests/normative/version-registry.test.ts",
+      "description": "NormativeAnswer 不包含 Mu/Vu/Nu/As 等计算结果字段"
+    }
+  ]
+}

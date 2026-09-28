@@ -2,8 +2,8 @@
   "id": "gb50010",
   "name": "GB 50010-2010（2015年版）规范查询",
   "kind": "normative",
-  "version": "1.0.0",
-  "description": "查询《混凝土结构设计规范》GB 50010-2010（2015年版）条文。只返回规范说什么，不执行任何工程计算。",
+  "version": "1.1.0",
+  "description": "查询《混凝土结构设计规范》GB 50010-2010（2015年版）条文。只回答规范说什么，不执行任何工程计算。绑定的 2015 年版已被 2024 年版（GB/T 50010-2010）取代，Skill 状态保持 REVIEW_REQUIRED，2024 年版未核验前不得升级。",
   "component": "normative",
   "calculatorEntry": "./resolver.ts",
   "inputSchema": "./schema.json",
@@ -11,12 +11,13 @@
   "testCatalog": "./tests.json",
   "outputType": "src/agent/skill-types.ts#NormativeAnswer",
   "applicability": [
-    "混凝土结构设计规范 GB 50010-2010（2015年版）",
-    "材料强度、梁正截面、梁斜截面、柱相关条文的查询"
+    "混凝土结构设计规范 GB 50010-2010（2015年版）条文查询",
+    "evidence 已按仓库内 PDF 原文核验；版本状态受 2024 年版影响，需按现行标准复核"
   ],
   "boundaryChecks": [
-    "不返回任何工程量、配筋面积、承载力数值",
-    "原文未导入的条文 text 为空，verificationStatus 为 REVIEW_REQUIRED"
+    "不返回任何工程量、配筋面积、承载力数值（Mu/Vu/Nu/As）",
+    "支持指定版本/按实施日期选择版本；未收录版本的条文返回 UNVERIFIED",
+    "未核验原文的条文 text 为空，verificationStatus 为 REVIEW_REQUIRED/UNVERIFIED"
   ],
   "formulaMappings": [],
   "status": "REVIEW_REQUIRED",

@@ -1,0 +1,112 @@
+/**
+ * 规范版本与变更集数据（Agent 3）
+ *
+ * 所有版本状态均有可靠、可追溯来源（source）：
+ * - GB 50010 2010/2015 年版：来源为仓库内可靠原文 PDF（references/codes/GB50010-2010_2015_.pdf）
+ *   —— 修订说明逐字确认 2010-08-18 发布 / 2011-07-01 实施，以及 2015 年版 9 条局部修订。
+ * - GB 50010 2024 年版：来源为住建部公告（mohurd.gov.cn），2024-04-24 批准、2024-08-01 实施，
+ *   名称改为《混凝土结构设计标准》、编号改为 GB/T 50010-2010。
+ * - GB 50009-2012、GB 50007-2011：来源为住建部发布公告及相关标准库"现行"状态记录。
+ *
+ * 禁止根据模型记忆判断"哪个版本现行"，一律以上述来源为准。
+ */
+
+import { NormativeChangeSet, NormativeVersion } from './types';
+
+export const NORMATIVE_VERSIONS: NormativeVersion[] = [
+  {
+    codeName: '混凝土结构设计规范',
+    codeNumber: 'GB 50010',
+    designation: 'GB 50010-2010',
+    edition: '2010',
+    publishDate: '2010-08-18',
+    effectiveDate: '2011-07-01',
+    status: 'SUPERSEDED',
+    replacedBy: '2010（2015年版）',
+    source: 'references/codes/GB50010-2010_2015_.pdf（封面：2010-08-18 发布、2011-07-01 实施）',
+    verificationStatus: 'VERIFIED',
+    note: '原始 2010 版，后被 2015 年版局部修订取代。',
+  },
+  {
+    codeName: '混凝土结构设计规范',
+    codeNumber: 'GB 50010',
+    designation: 'GB 50010-2010（2015年版）',
+    edition: '2010（2015年版）',
+    publishDate: '2015-09-22',
+    effectiveDate: '2015-09-22',
+    status: 'SUPERSEDED',
+    replacedBy: '2010（2024年版，GB/T 50010-2010）',
+    source: 'references/codes/GB50010-2010_2015_.pdf（修订说明：住建部公告第919号，2015-09-22 批准）',
+    verificationStatus: 'VERIFIED',
+    note: '局部修订共 9 条（4.2.1/4.2.2/4.2.3/4.2.4/4.2.5/9.3.2/9.7.6/11.7.11/G.0.12）。仓库内 PDF 即本版。',
+  },
+  {
+    codeName: '混凝土结构设计标准',
+    codeNumber: 'GB 50010',
+    designation: 'GB/T 50010-2010',
+    edition: '2010（2024年版，GB/T 50010-2010）',
+    publishDate: '2024-04-24',
+    effectiveDate: '2024-08-01',
+    status: 'CURRENT',
+    source: 'https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html（住建部公告，2024-04-24 批准、2024-08-01 实施）',
+    verificationStatus: 'VERIFIED',
+    note: '名称改为《混凝土结构设计标准》、编号改为 GB/T 50010-2010；删除 C15 强度等级与 HRB335 钢筋。2024 年版原文尚未入库。',
+  },
+  {
+    codeName: '建筑结构荷载规范',
+    codeNumber: 'GB 50009',
+    designation: 'GB 50009-2012',
+    edition: '2012',
+    publishDate: '2012-05-28',
+    effectiveDate: '2012-10-01',
+    status: 'CURRENT',
+    source: 'https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2012/art_17339_210754.html（住建部公告第1405号，2012-05-28 发布、2012-10-01 实施）',
+    verificationStatus: 'VERIFIED',
+    note: '现行版本。仓库内无 GB 50009 原文 PDF，条文 evidence 保持 REVIEW_REQUIRED。',
+  },
+  {
+    codeName: '建筑地基基础设计规范',
+    codeNumber: 'GB 50007',
+    designation: 'GB 50007-2011',
+    edition: '2011',
+    publishDate: '2011-07-26',
+    effectiveDate: '2012-08-01',
+    status: 'CURRENT',
+    source: 'https://www.chinabuilding.com.cn/article-2197.html（住建部公告第1096号，2011 年发布、2012-08-01 实施）',
+    verificationStatus: 'VERIFIED',
+    note: '现行版本。仓库内无 GB 50007 原文 PDF；当前无 Calculation Skill 需要其条文 evidence。',
+  },
+];
+
+export const NORMATIVE_CHANGE_SETS: NormativeChangeSet[] = [
+  {
+    id: 'gb50010-2010-to-2015',
+    codeNumber: 'GB 50010',
+    fromEdition: '2010',
+    toEdition: '2010（2015年版）',
+    changedClauses: ['4.2.1', '4.2.2', '4.2.3', '4.2.4', '4.2.5', '9.3.2', '9.7.6', '11.7.11', 'G.0.12'],
+    changedFormulas: [],
+    changedParameters: ['钢筋品种和规格调整（局部修订主题）'],
+    changedApplicability: ['钢筋选用范围按 2015 年版调整'],
+    affectedSkills: ['beam-flexure', 'beam-shear', 'column'],
+    reviewDate: '2026-09-28',
+    source: 'references/codes/GB50010-2010_2015_.pdf（修订说明，逐字确认 9 条修订）',
+    verificationStatus: 'VERIFIED',
+    note: 'changedClauses 直接来自仓库内可靠原文 PDF 修订说明。affectedSkills 为依据"均引用钢筋强度/弹性模量条文"的推断，需计算 Agent 复核。',
+  },
+  {
+    id: 'gb50010-2015-to-2024',
+    codeNumber: 'GB 50010',
+    fromEdition: '2010（2015年版）',
+    toEdition: '2010（2024年版，GB/T 50010-2010）',
+    changedClauses: [],
+    changedFormulas: [],
+    changedParameters: ['C15 混凝土强度等级删除', 'HRB335 钢筋删除', '标准名称改为《混凝土结构设计标准》', '标准编号改为 GB/T 50010-2010'],
+    changedApplicability: ['新版标准适用范围需按 2024 年版原文核验'],
+    affectedSkills: ['beam-flexure', 'beam-shear', 'column'],
+    reviewDate: '2026-09-28',
+    source: 'https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html（住建部公告，2024-08-01 实施）',
+    verificationStatus: 'REVIEW_REQUIRED',
+    note: '2024 年版具体修订条文/公式原文尚未入库，无法逐条比对，故 changedClauses/changedFormulas 为空；新版不得自动把旧 Calculation Skill 置为 VERIFIED，受影响 Skill 保持 REVIEW_REQUIRED。',
+  },
+];

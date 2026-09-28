@@ -18,12 +18,23 @@ import gb50010Manifest from '../../skills/gb50010/skill.json';
 import gb50010Schema from '../../skills/gb50010/schema.json';
 import gb50010Evidence from '../../skills/gb50010/evidence.json';
 import gb50010Tests from '../../skills/gb50010/tests.json';
+import gb50009Manifest from '../../skills/gb50009/skill.json';
+import gb50009Schema from '../../skills/gb50009/schema.json';
+import gb50009Evidence from '../../skills/gb50009/evidence.json';
+import gb50009Tests from '../../skills/gb50009/tests.json';
+import gb50007Manifest from '../../skills/gb50007/skill.json';
+import gb50007Schema from '../../skills/gb50007/schema.json';
+import gb50007Evidence from '../../skills/gb50007/evidence.json';
+import gb50007Tests from '../../skills/gb50007/tests.json';
 
 import { invokeBeamFlexure, isBeamFlexureInput } from '../../skills/beam-flexure/calculator';
 import { invokeBeamShear, isBeamShearInput } from '../../skills/beam-shear/calculator';
 import { invokeColumn, isColumnSkillInput } from '../../skills/column/calculator';
 import { auditSkillPackage, CalculationAuditResult } from './calculation-auditor';
 import { gb50010Skill } from '../../skills/gb50010/resolver';
+import { gb50009Skill } from '../../skills/gb50009/resolver';
+import { gb50007Skill } from '../../skills/gb50007/resolver';
+import { normalizeCode } from '../normative/registry';
 import {
   CalculationSkill,
   NormativeAnswer,
@@ -75,6 +86,20 @@ const gb50010Package: SkillPackage = {
   tests: gb50010Tests as SkillTestCatalog,
 };
 
+const gb50009Package: SkillPackage = {
+  manifest: gb50009Manifest as SkillManifest,
+  schema: gb50009Schema as SkillInputSchema,
+  evidence: gb50009Evidence as SkillEvidenceCatalog,
+  tests: gb50009Tests as SkillTestCatalog,
+};
+
+const gb50007Package: SkillPackage = {
+  manifest: gb50007Manifest as SkillManifest,
+  schema: gb50007Schema as SkillInputSchema,
+  evidence: gb50007Evidence as SkillEvidenceCatalog,
+  tests: gb50007Tests as SkillTestCatalog,
+};
+
 // ---------------------------------------------------------------------------
 // Skill instances
 // ---------------------------------------------------------------------------
@@ -121,6 +146,8 @@ export class SkillRegistry {
     this.registerCalculation(beamShearSkill);
     this.registerCalculation(columnSkill);
     this.registerNormative(gb50010Skill);
+    this.registerNormative(gb50009Skill);
+    this.registerNormative(gb50007Skill);
     this.registerAuditor(calculationAuditorPackage);
   }
 
@@ -186,12 +213,13 @@ export class SkillRegistry {
   }
 
   resolve(query: NormativeQuery): NormativeAnswer {
-    // 在所有 normative skills 中查找匹配规范编号的 skill
+    // 路由：规范编号匹配的 normative skill（按 manifest id 或 evidence 记录）
     for (const skill of this.normativeSkills.values()) {
-      const codeMatch = skill.package.evidence.records.some(
-        r => r.codeNumber.replace(/[\s-]/g, '').toUpperCase() ===
-              query.code.replace(/[\s-]/g, '').toUpperCase()
-      );
+      const codeMatch =
+        normalizeCode(skill.package.manifest.id) === normalizeCode(query.code) ||
+        skill.package.evidence.records.some(
+          r => normalizeCode(r.codeNumber) === normalizeCode(query.code)
+        );
       if (codeMatch) return skill.resolve(query);
     }
     // 兜底：返回未收录
@@ -200,6 +228,7 @@ export class SkillRegistry {
       codeName: '未知规范',
       codeNumber: query.code,
       edition: '',
+      codeStatus: 'REVIEW_REQUIRED',
       chapter: '',
       clause: query.clause,
       text: '',
@@ -225,3 +254,5 @@ export { beamFlexurePackage as beamFlexureSkillPackage };
 export { columnPackage as columnSkillPackage };
 export { calculationAuditorPackage as calculationAuditorSkillPackage };
 export { gb50010Package };
+export { gb50009Package };
+export { gb50007Package };

@@ -1,0 +1,17 @@
+{
+  "records": [
+    {
+      "id": "appendix-a-table-a",
+      "codeName": "建筑结构荷载规范",
+      "codeNumber": "GB 50009",
+      "edition": "2012",
+      "chapter": "附录 A",
+      "clause": "表 A",
+      "text": "",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "常用材料和构件的自重（材料重度工具按需引用）。仓库内无 GB 50009 原文 PDF，未做可靠原文核验，不得据此 VERIFIED。",
+      "verificationStatus": "REVIEW_REQUIRED"
+    }
+  ]
+}

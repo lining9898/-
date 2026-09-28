@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "required": ["code", "clause"],
+  "properties": {
+    "code": { "type": "string", "description": "规范编号，如 GB50007" },
+    "clause": { "type": "string", "description": "条文号，如 5.2.4" }
+  }
+}

@@ -14,12 +14,13 @@ const pkg: SkillPackage = buildPackage(
 );
 
 /**
- * GB 50010 normative skill。
- * 绑定版本：2010（2015年版）。
+ * GB 50007-2011 建筑地基基础设计规范 normative skill。
+ * 绑定版本：2011（现行）。
+ * 当前无 Calculation Skill 需要其条文 evidence，任何查询均返回 UNVERIFIED + 警告。
  * 只返回规范条文与版本元信息；禁止返回任何工程量、配筋面积、承载力数值。
  */
-export const gb50010Skill = createNormativeSkill(pkg, {
-  primaryEdition: '2010（2015年版）',
-  fallbackCodeName: '混凝土结构设计规范',
-  fallbackCodeNumber: 'GB 50010',
+export const gb50007Skill = createNormativeSkill(pkg, {
+  primaryEdition: '2011',
+  fallbackCodeName: '建筑地基基础设计规范',
+  fallbackCodeNumber: 'GB 50007',
 });
