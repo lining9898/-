@@ -80,7 +80,7 @@ function verifiedEvidence(
     originalText: originalText,
     pdfPage: pdfPage,
     status: 'superseded',
-    verificationStatus: 'VERIFIED',
+    verificationStatus: 'REVIEW_REQUIRED',
     sourceFile: 'GB50010-2010_2015_.pdf',
   };
 }
