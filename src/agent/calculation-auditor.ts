@@ -89,14 +89,21 @@ function auditEvidence(skill: SkillPackage, issues: AuditIssue[]) {
     }
   }
   // 同一 Skill 的规范证据必须引用一致的设计依据版本，避免旧算例随默认版本漂移。
+  // 按 codeNumber 分组：同一规范编号内版本必须一致；不同规范编号版本不同是正常的。
   // 仅统计真正的规范证据（codeNumber 以 INTERNAL- 开头或 edition 为 platform 的内部记录除外）。
   const normativeRecords = skill.evidence.records.filter(
-    r => !/^INTERNAL-/.test(r.codeNumber) && r.edition !== 'platform'
+    r => !/^INTERNAL-/.test(r.codeNumber) && r.edition !== 'platform' && r.edition && r.edition !== '—'
   );
-  const editions = new Set(normativeRecords.map(r => r.edition).filter(Boolean));
-  if (editions.size > 1) {
-    issue(issues, 'error', 'EDITION_INCONSISTENT',
-      `Skill 的规范 Evidence 版本不一致：${[...editions].join(' / ')}`);
+  const byCode = new Map<string, Set<string>>();
+  for (const r of normativeRecords) {
+    if (!byCode.has(r.codeNumber)) byCode.set(r.codeNumber, new Set());
+    byCode.get(r.codeNumber)!.add(r.edition);
+  }
+  for (const [code, editions] of byCode) {
+    if (editions.size > 1) {
+      issue(issues, 'error', 'EDITION_INCONSISTENT',
+        `规范 ${code} 的 Evidence 版本不一致：${[...editions].join(' / ')}`);
+    }
   }
 }
 
