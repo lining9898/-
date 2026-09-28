@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["h", "spanX", "spanY", "concreteGrade", "steelGrade", "cover", "barDiameter", "barSpacing", "gkExtra", "qk", "gammaG", "gammaQ"],
+  "properties": {
+    "h": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "板厚" },
+    "spanX": { "type": "number", "exclusiveMinimum": 0, "unit": "m", "description": "短跨计算跨度 lx" },
+    "spanY": { "type": "number", "exclusiveMinimum": 0, "unit": "m", "description": "长跨计算跨度 ly" },
+    "concreteGrade": { "type": "string", "enum": ["C20", "C25", "C30", "C35", "C40", "C45", "C50"], "unit": "grade" },
+    "steelGrade": { "type": "string", "enum": ["HPB300", "HRB335", "HRB400", "HRB500"], "unit": "grade" },
+    "cover": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "短向受力钢筋外缘至板底距离" },
+    "barDiameter": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受力钢筋直径" },
+    "barSpacing": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受力钢筋间距" },
+    "gkExtra": { "type": "number", "minimum": 0, "unit": "kN/m²", "description": "附加恒载（面层等，不含板自重）" },
+    "qk": { "type": "number", "minimum": 0, "unit": "kN/m²", "description": "活荷载标准值" },
+    "gammaG": { "type": "number", "exclusiveMinimum": 0, "unit": "dimensionless", "description": "恒载分项系数" },
+    "gammaQ": { "type": "number", "exclusiveMinimum": 0, "unit": "dimensionless", "description": "活载分项系数" },
+    "width": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "计算单元宽度，默认 1000" }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "id": "foundation-independent",
+  "name": "柱下独立基础",
+  "kind": "calculation",
+  "version": "1.0.0",
+  "description": "轴心受压矩形柱下独立基础的地基承载力、受弯、冲切、抗剪与配筋验算，返回 CalculationResult。",
+  "component": "foundation",
+  "calculatorEntry": "./calculator.ts",
+  "legacyEntry": "../../src/core/foundation/independent.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/types/calculation.ts#CalculationResult",
+  "applicability": [
+    "轴心受压矩形柱下独立基础",
+    "地基承载力（标准组合）与配筋/冲切/抗剪（基本组合）验算",
+    "未计偏心受压（弯矩、水平剪力）"
+  ],
+  "boundaryChecks": [
+    "地基承载力 p_k ≤ f_a",
+    "冲切 F_l ≤ 0.7·β_hp·f_t·a_m·h0",
+    "斜截面受剪 V ≤ 0.7·β_hs·f_t·b_w·h0",
+    "长/短向配筋面积与最小配筋率 0.15%",
+    "柱截面不得超出基础底面",
+    "尺寸、荷载、材料输入边界",
+    "10³/10⁶ 数量级保护（N↔kN、mm↔m、N·mm↔kN·m、MPa↔Pa）"
+  ],
+  "formulaMappings": [
+    {
+      "id": "bearing-capacity",
+      "expression": "pk = (Nk + Gk)/A",
+      "evidenceId": "clause-5.2.2",
+      "requiredInputFields": ["L", "B", "d", "gammaM", "Nk"]
+    },
+    {
+      "id": "net-pressure",
+      "expression": "pj = N/A",
+      "evidenceId": "clause-8.2.7-net",
+      "requiredInputFields": ["L", "B", "N"]
+    },
+    {
+      "id": "moment-long",
+      "expression": "M1 = a1^2*(2B+hc)*pj/6",
+      "evidenceId": "clause-8.2.7",
+      "requiredInputFields": ["L", "B", "bc", "hc", "N"]
+    },
+    {
+      "id": "moment-short",
+      "expression": "M2 = a1b^2*(2L+bc)*pj/6",
+      "evidenceId": "clause-8.2.7-b",
+      "requiredInputFields": ["L", "B", "bc", "hc", "N"]
+    },
+    {
+      "id": "punching-force",
+      "expression": "Fl = pj*Al",
+      "evidenceId": "clause-8.2.8",
+      "requiredInputFields": ["L", "B", "h", "bc", "hc", "cover", "barDiameter", "N"]
+    },
+    {
+      "id": "punching-capacity",
+      "expression": "Vp = 0.7*betaHp*ft*am*h0",
+      "evidenceId": "clause-8.2.8-cap",
+      "requiredInputFields": ["h", "bc", "concreteGrade", "cover", "barDiameter"]
+    },
+    {
+      "id": "shear-force",
+      "expression": "Vs = pj*a1*B",
+      "evidenceId": "clause-8.2.9",
+      "requiredInputFields": ["L", "B", "bc", "N"]
+    },
+    {
+      "id": "shear-capacity",
+      "expression": "Vc = 0.7*betaHs*ft*bw*h0",
+      "evidenceId": "clause-8.2.9-cap",
+      "requiredInputFields": ["B", "h", "concreteGrade", "cover", "barDiameter"]
+    },
+    {
+      "id": "flexure-design",
+      "expression": "As = M/(0.9*fy*h0)",
+      "evidenceId": "clause-8.2.7-flex",
+      "requiredInputFields": ["L", "B", "h", "bc", "hc", "N", "steelGrade", "cover", "barDiameter"]
+    }
+  ],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": ["m", "mm", "kN/m³", "kPa", "kN", "kN·m", "mm²", "mm²/m", "MPa", "grade", "dimensionless"]
+}

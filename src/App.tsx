@@ -13,13 +13,18 @@ import EccentricColumn from './components/calculators/EccentricColumn';
 import SectionProperties from './components/calculators/SectionProperties';
 import MaterialWeight from './components/calculators/MaterialWeight';
 import ContinuousBeam from './components/calculators/ContinuousBeam';
+import OneWaySlab from './components/calculators/OneWaySlab';
+import TwoWaySlab from './components/calculators/TwoWaySlab';
+import IndependentFoundation from './components/calculators/IndependentFoundation';
+import StaircasePlate from './components/calculators/StaircasePlate';
 
 type ModuleId = string;
 
 const STANDARDS_STATUS_TAIL = '/standards/status';
 type View = 'calculator' | 'standards-status';
 
-const CONCRETE_MODULES = ['beam-flexure', 'beam-shear', 'beam-t-flexure', 'column-axial', 'column-eccentric'];
+const CONCRETE_MODULES = ['beam-flexure', 'beam-shear', 'beam-t-flexure', 'column-axial', 'column-eccentric', 'slab-one-way', 'slab-two-way', 'foundation-independent', 'staircase-plate'];
+
 
 const getInitialView = (): View =>
   typeof window !== 'undefined' && window.location.pathname.endsWith(STANDARDS_STATUS_TAIL)
@@ -73,12 +78,16 @@ const App: React.FC = () => {
       case 'beam-continuous':
         return <ContinuousBeam />;
       case 'slab-one-way':
+        return <OneWaySlab />;
       case 'slab-two-way':
+        return <TwoWaySlab />;
+      case 'foundation-independent':
+        return <IndependentFoundation />;
+      case 'staircase-plate':
+        return <StaircasePlate />;
       case 'slab-punching':
       case 'slab-crack':
       case 'slab-deflection':
-      case 'foundation-independent':
-      case 'staircase-plate':
       case 'wall-shear':
         return <Placeholder moduleId={activeModule} />;
       default:

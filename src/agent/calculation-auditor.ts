@@ -22,6 +22,7 @@ export interface CalculationAuditResult {
 
 const supportedUnits = new Set([
   '', 'dimensionless', 'enum', 'grade', '%', 'mm', 'mm²', 'm', 'm²', 'N', 'kN', 'N·m', 'kN·m', 'MPa', 'N/mm²', '肢', '根',
+  'kN/m', 'kN/m²', 'kN/m³', 'kPa', 'mm²/m', 'kN·m/m',
 ]);
 
 const normalizeFormula = (formula: string) => formula.replace(/\s+/g, '').replace(/·/g, '*');

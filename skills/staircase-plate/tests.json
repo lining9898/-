@@ -1,0 +1,14 @@
+{
+  "cases": [
+    { "id": "normal-c30-hrb400", "category": "normal", "file": "tests/core/staircase-plate.test.ts", "description": "板式楼梯基准算例与 CalculationResult 完整性" },
+    { "id": "normal-hand-calc", "category": "normal", "file": "tests/core/staircase-plate.test.ts", "description": "手算对比：恒载折算、组合、内力、配筋、承载力" },
+    { "id": "boundary-capacity", "category": "boundary", "file": "tests/core/staircase-plate.test.ts", "description": "跨越承载力与配筋边界" },
+    { "id": "boundary-thickness", "category": "boundary", "file": "tests/core/staircase-plate.test.ts", "description": "梯板厚度与间距构造边界" },
+    { "id": "invalid-input", "category": "invalid", "file": "tests/core/staircase-plate.test.ts", "description": "梯板、踏步和荷载输入校验" },
+    { "id": "unit-magnitude", "category": "unit", "file": "tests/core/staircase-plate.test.ts", "description": "kN/m²、kN/m、kN·m、mm²/m 结果单位/数量级检查" },
+    { "id": "formula-trace", "category": "formula", "file": "tests/core/staircase-plate.test.ts", "description": "恒载、组合、内力、配筋步骤与 Evidence 追溯" },
+    { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/staircase-plate.test.ts", "description": "验算项与结论" },
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/slab-foundation-stair-registry.test.ts", "description": "Registry 调用与 core 引擎核心结果一致" },
+    { "id": "evidence-map", "category": "formula", "file": "tests/agent/slab-foundation-stair-registry.test.ts", "description": "evidenceId 可追溯且不虚构页码" }
+  ]
+}

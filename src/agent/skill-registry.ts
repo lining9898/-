@@ -18,10 +18,30 @@ import gb50010Manifest from '../../skills/gb50010/skill.json';
 import gb50010Schema from '../../skills/gb50010/schema.json';
 import gb50010Evidence from '../../skills/gb50010/evidence.json';
 import gb50010Tests from '../../skills/gb50010/tests.json';
+import slabOneWayManifest from '../../skills/slab-one-way/skill.json';
+import slabOneWaySchema from '../../skills/slab-one-way/schema.json';
+import slabOneWayEvidence from '../../skills/slab-one-way/evidence.json';
+import slabOneWayTests from '../../skills/slab-one-way/tests.json';
+import slabTwoWayManifest from '../../skills/slab-two-way/skill.json';
+import slabTwoWaySchema from '../../skills/slab-two-way/schema.json';
+import slabTwoWayEvidence from '../../skills/slab-two-way/evidence.json';
+import slabTwoWayTests from '../../skills/slab-two-way/tests.json';
+import foundationIndependentManifest from '../../skills/foundation-independent/skill.json';
+import foundationIndependentSchema from '../../skills/foundation-independent/schema.json';
+import foundationIndependentEvidence from '../../skills/foundation-independent/evidence.json';
+import foundationIndependentTests from '../../skills/foundation-independent/tests.json';
+import staircasePlateManifest from '../../skills/staircase-plate/skill.json';
+import staircasePlateSchema from '../../skills/staircase-plate/schema.json';
+import staircasePlateEvidence from '../../skills/staircase-plate/evidence.json';
+import staircasePlateTests from '../../skills/staircase-plate/tests.json';
 
 import { invokeBeamFlexure, isBeamFlexureInput } from '../../skills/beam-flexure/calculator';
 import { invokeBeamShear, isBeamShearInput } from '../../skills/beam-shear/calculator';
 import { invokeColumn, isColumnSkillInput } from '../../skills/column/calculator';
+import { invokeOneWaySlab, isOneWaySlabInput } from '../../skills/slab-one-way/calculator';
+import { invokeTwoWaySlab, isTwoWaySlabInput } from '../../skills/slab-two-way/calculator';
+import { invokeIndependentFoundation, isIndependentFoundationInput } from '../../skills/foundation-independent/calculator';
+import { invokePlateStair, isPlateStairInput } from '../../skills/staircase-plate/calculator';
 import { auditSkillPackage, CalculationAuditResult } from './calculation-auditor';
 import { gb50010Skill } from '../../skills/gb50010/resolver';
 import {
@@ -75,6 +95,34 @@ const gb50010Package: SkillPackage = {
   tests: gb50010Tests as SkillTestCatalog,
 };
 
+const slabOneWayPackage: SkillPackage = {
+  manifest: slabOneWayManifest as SkillManifest,
+  schema: slabOneWaySchema as SkillInputSchema,
+  evidence: slabOneWayEvidence as SkillEvidenceCatalog,
+  tests: slabOneWayTests as SkillTestCatalog,
+};
+
+const slabTwoWayPackage: SkillPackage = {
+  manifest: slabTwoWayManifest as SkillManifest,
+  schema: slabTwoWaySchema as SkillInputSchema,
+  evidence: slabTwoWayEvidence as SkillEvidenceCatalog,
+  tests: slabTwoWayTests as SkillTestCatalog,
+};
+
+const foundationIndependentPackage: SkillPackage = {
+  manifest: foundationIndependentManifest as SkillManifest,
+  schema: foundationIndependentSchema as SkillInputSchema,
+  evidence: foundationIndependentEvidence as SkillEvidenceCatalog,
+  tests: foundationIndependentTests as SkillTestCatalog,
+};
+
+const staircasePlatePackage: SkillPackage = {
+  manifest: staircasePlateManifest as SkillManifest,
+  schema: staircasePlateSchema as SkillInputSchema,
+  evidence: staircasePlateEvidence as SkillEvidenceCatalog,
+  tests: staircasePlateTests as SkillTestCatalog,
+};
+
 // ---------------------------------------------------------------------------
 // Skill instances
 // ---------------------------------------------------------------------------
@@ -95,6 +143,30 @@ const columnSkill: CalculationSkill = {
   package: columnPackage,
   accepts: isColumnSkillInput,
   calculate: invokeColumn,
+};
+
+const slabOneWaySkill: CalculationSkill = {
+  package: slabOneWayPackage,
+  accepts: isOneWaySlabInput,
+  calculate: invokeOneWaySlab,
+};
+
+const slabTwoWaySkill: CalculationSkill = {
+  package: slabTwoWayPackage,
+  accepts: isTwoWaySlabInput,
+  calculate: invokeTwoWaySlab,
+};
+
+const foundationIndependentSkill: CalculationSkill = {
+  package: foundationIndependentPackage,
+  accepts: isIndependentFoundationInput,
+  calculate: invokeIndependentFoundation,
+};
+
+const staircasePlateSkill: CalculationSkill = {
+  package: staircasePlatePackage,
+  accepts: isPlateStairInput,
+  calculate: invokePlateStair,
 };
 
 // ---------------------------------------------------------------------------
@@ -120,6 +192,10 @@ export class SkillRegistry {
     this.registerCalculation(beamFlexureSkill);
     this.registerCalculation(beamShearSkill);
     this.registerCalculation(columnSkill);
+    this.registerCalculation(slabOneWaySkill);
+    this.registerCalculation(slabTwoWaySkill);
+    this.registerCalculation(foundationIndependentSkill);
+    this.registerCalculation(staircasePlateSkill);
     this.registerNormative(gb50010Skill);
     this.registerAuditor(calculationAuditorPackage);
   }
@@ -225,3 +301,7 @@ export { beamFlexurePackage as beamFlexureSkillPackage };
 export { columnPackage as columnSkillPackage };
 export { calculationAuditorPackage as calculationAuditorSkillPackage };
 export { gb50010Package };
+export { slabOneWayPackage as slabOneWaySkillPackage };
+export { slabTwoWayPackage as slabTwoWaySkillPackage };
+export { foundationIndependentPackage as foundationIndependentSkillPackage };
+export { staircasePlatePackage as staircasePlateSkillPackage };

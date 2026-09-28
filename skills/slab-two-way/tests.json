@@ -1,0 +1,14 @@
+{
+  "cases": [
+    { "id": "normal-c30-hrb400", "category": "normal", "file": "tests/core/slab-two-way.test.ts", "description": "双向板基准算例与 CalculationResult 完整性" },
+    { "id": "normal-hand-calc", "category": "normal", "file": "tests/core/slab-two-way.test.ts", "description": "手算对比：弯矩系数、配筋、承载力" },
+    { "id": "boundary-coef-interp", "category": "boundary", "file": "tests/core/slab-two-way.test.ts", "description": "λ 内插与长/短跨边界" },
+    { "id": "boundary-capacity", "category": "boundary", "file": "tests/core/slab-two-way.test.ts", "description": "跨越承载力与配筋边界" },
+    { "id": "invalid-input", "category": "invalid", "file": "tests/core/slab-two-way.test.ts", "description": "尺寸、荷载和钢筋输入校验" },
+    { "id": "unit-magnitude", "category": "unit", "file": "tests/core/slab-two-way.test.ts", "description": "kN/m²、kN·m/m 与 mm²/m 结果单位/数量级检查" },
+    { "id": "formula-trace", "category": "formula", "file": "tests/core/slab-two-way.test.ts", "description": "荷载、弯矩、配筋步骤与 Evidence 追溯" },
+    { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/slab-two-way.test.ts", "description": "双向验算项与结论" },
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/slab-foundation-stair-registry.test.ts", "description": "Registry 调用与 core 引擎核心结果一致" },
+    { "id": "evidence-map", "category": "formula", "file": "tests/agent/slab-foundation-stair-registry.test.ts", "description": "evidenceId 可追溯且不虚构页码" }
+  ]
+}
