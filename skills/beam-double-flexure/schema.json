@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "b", "h", "concreteGrade", "steelGrade", "compressionSteelGrade",
+    "cover", "barDiameter", "barCount",
+    "coverToCompressionCentroid", "compressionBarDiameter", "compressionBarCount",
+    "moment"
+  ],
+  "properties": {
+    "b": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "截面宽度" },
+    "h": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "截面高度" },
+    "concreteGrade": { "type": "string", "enum": ["C20", "C25", "C30", "C35", "C40", "C45", "C50"], "unit": "grade" },
+    "steelGrade": { "type": "string", "enum": ["HPB300", "HRB335", "HRB400", "HRB500"], "unit": "grade", "description": "受拉钢筋等级" },
+    "compressionSteelGrade": { "type": "string", "enum": ["HPB300", "HRB335", "HRB400", "HRB500"], "unit": "grade", "description": "受压钢筋等级" },
+    "cover": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受拉纵筋外缘至受拉边距离" },
+    "barDiameter": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受拉钢筋直径" },
+    "barCount": { "type": "integer", "exclusiveMinimum": 0, "unit": "根", "description": "受拉钢筋根数" },
+    "coverToCompressionCentroid": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受压钢筋合力点至受压边缘距离 a′s" },
+    "compressionBarDiameter": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受压钢筋直径" },
+    "compressionBarCount": { "type": "integer", "exclusiveMinimum": 0, "unit": "根", "description": "受压钢筋根数" },
+    "moment": { "type": "number", "minimum": 0, "unit": "kN·m", "description": "弯矩设计值" }
+  }
+}

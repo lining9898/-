@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["spans"],
+  "properties": {
+    "spans": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["length", "load"],
+        "properties": {
+          "length": { "type": "number", "exclusiveMinimum": 0, "maximum": 100, "unit": "m", "description": "跨长" },
+          "load": { "type": "number", "minimum": 0, "maximum": 10000, "unit": "kN/m", "description": "竖向均布荷载（向下为正）" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "beam-double-flexure",
+  "name": "双筋矩形梁正截面受弯",
+  "kind": "calculation",
+  "version": "1.0.0",
+  "description": "计算配置受拉与受压两种纵向钢筋、无预应力筋的矩形截面受弯构件正截面受弯承载力，并返回 CalculationResult。",
+  "component": "beam",
+  "calculatorEntry": "./calculator.ts",
+  "legacyEntry": "../../src/core/beam/double-flexure.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/types/calculation.ts#CalculationResult",
+  "applicability": [
+    "矩形截面、配置受拉与受压纵向钢筋、无预应力筋的受弯构件正截面承载力",
+    "输入弯矩为设计值，结果仅覆盖登记的单项验算"
+  ],
+  "boundaryChecks": [
+    "相对受压区高度 ξ 与界限值 ξb（x ≤ ξb·h0，超筋界限控制）",
+    "受压钢筋屈服条件 x ≥ 2a′s（不满足时按 Mu = fy·As·(h0 − a′s) 简化）",
+    "最小配筋面积 AsMin = ρmin · b · h",
+    "受弯承载力 Mu 与设计弯矩 M",
+    "受拉/受压钢筋根数、直径、保护层、合力点位置和截面容纳条件"
+  ],
+  "formulaMappings": [
+    {
+      "id": "compression-zone-depth",
+      "expression": "x = (fy·As − fy′·A′s) / (α1·fc·b)",
+      "evidenceId": "clause-6.2.10-x",
+      "requiredInputFields": ["b", "concreteGrade", "steelGrade", "compressionSteelGrade", "barDiameter", "barCount", "compressionBarDiameter", "compressionBarCount"]
+    },
+    {
+      "id": "limiting-relative-depth",
+      "expression": "ξb = β1 / (1 + fy / (Es·εcu))",
+      "evidenceId": "clause-6.2.7",
+      "requiredInputFields": ["concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "relative-compression-depth",
+      "expression": "ξ = x / h0",
+      "evidenceId": "clause-6.2.10-xi",
+      "requiredInputFields": ["h", "cover", "barDiameter"]
+    },
+    {
+      "id": "flexural-capacity",
+      "expression": "Mu = [α1·fc·b·x·(h0 − x/2) + fy′·A′s·(h0 − a′s)] / 1e6",
+      "evidenceId": "clause-6.2.10-Mu",
+      "requiredInputFields": ["b", "h", "cover", "coverToCompressionCentroid", "barDiameter", "barCount", "compressionBarDiameter", "compressionBarCount", "concreteGrade", "steelGrade", "compressionSteelGrade"]
+    },
+    {
+      "id": "compression-yield-condition",
+      "expression": "x ≥ 2a′s；否则 Mu = fy·As·(h0 − a′s)",
+      "evidenceId": "clause-6.2.10-compression-yield",
+      "requiredInputFields": ["coverToCompressionCentroid", "h", "cover", "barDiameter", "barCount"]
+    },
+    {
+      "id": "minimum-reinforcement-ratio",
+      "expression": "ρmin = max(0.20%, 45·ft/fy %)",
+      "evidenceId": "clause-8.5.1-rho",
+      "requiredInputFields": ["concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "minimum-reinforcement-area",
+      "expression": "AsMin = ρmin · b · h",
+      "evidenceId": "clause-8.5.1-area",
+      "requiredInputFields": ["b", "h", "concreteGrade", "steelGrade"]
+    }
+  ],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": ["mm", "mm²", "kN·m", "MPa", "%", "根", "grade", "dimensionless"]
+}

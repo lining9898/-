@@ -1,0 +1,52 @@
+{
+  "id": "beam-continuous",
+  "name": "连续梁内力计算",
+  "kind": "calculation",
+  "version": "1.0.0",
+  "description": "计算 1–4 跨等刚度连续梁在线弹性均布荷载下的支座反力、支座弯矩与跨内最大正弯矩，并返回 CalculationResult。内力采用结构力学（线弹性有限元/三弯矩方程）方法，非 GB 规范公式。",
+  "component": "beam",
+  "calculatorEntry": "./calculator.ts",
+  "legacyEntry": "../../src/core/beam/continuous.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/types/calculation.ts#CalculationResult",
+  "applicability": [
+    "1–4 跨、各跨等刚度 EI、简支支座、仅均布竖向荷载的连续梁线弹性内力分析",
+    "内力求解采用结构力学方法（线弹性有限元 FERS / 三弯矩方程），非 GB 规范公式，不挂接 GB 条文",
+    "仅完成内力分析，不进行荷载组合或构件设计验算，不能据此判定设计通过"
+  ],
+  "boundaryChecks": [
+    "跨度数 1–4 及每跨跨度 0–100 m",
+    "每跨均布荷载 0–10000 kN/m，且至少一跨非零",
+    "整体竖向力平衡 ΣR − Σ(q·L) ≈ 0"
+  ],
+  "formulaMappings": [
+    {
+      "id": "load-resultant",
+      "expression": "Q = q·L",
+      "evidenceId": "mechanics-load-resultant",
+      "requiredInputFields": ["spans"]
+    },
+    {
+      "id": "solver-internal-forces",
+      "expression": "支座弯矩与杆端内力由线弹性有限元求解器（FERS）计算",
+      "evidenceId": "mechanics-solver",
+      "requiredInputFields": ["spans"]
+    },
+    {
+      "id": "section-shear-moment",
+      "expression": "V(x) = V左 − qx；M(x) = M左 + V左·x − qx²/2",
+      "evidenceId": "mechanics-shear-moment",
+      "requiredInputFields": ["spans"]
+    },
+    {
+      "id": "static-equilibrium",
+      "expression": "ΣR − Σ(q·L) = 0",
+      "evidenceId": "mechanics-static-equilibrium",
+      "requiredInputFields": ["spans"]
+    }
+  ],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": ["m", "kN/m", "kN", "kN·m", "dimensionless"]
+}

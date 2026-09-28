@@ -12,7 +12,7 @@ const evidence = (clause: string, pdfPage: number, printedPage: number, summary:
   clause,
   originalText: summary,
   pdfPage,
-  status: 'superseded',
+  status: 'current',
   verificationStatus: 'REVIEW_REQUIRED',
   sourceFile: `GB50010-2010_2015_.pdf（原书第 ${printedPage} 页）`,
 });

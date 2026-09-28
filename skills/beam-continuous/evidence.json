@@ -1,0 +1,56 @@
+{
+  "records": [
+    {
+      "id": "mechanics-load-resultant",
+      "codeName": "结构力学方法",
+      "codeNumber": "INTERNAL-MECHANICS",
+      "edition": "platform",
+      "chapter": "线弹性结构内力",
+      "clause": "N/A",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "全跨均布荷载的竖向合力 Q = q·L（静力平衡，非 GB 规范公式）",
+      "formulaExpression": "Q = q · L",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "mechanics-solver",
+      "codeName": "结构力学方法",
+      "codeNumber": "INTERNAL-MECHANICS",
+      "edition": "platform",
+      "chapter": "线弹性结构内力",
+      "clause": "N/A",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "支座弯矩与杆端内力由线弹性有限元求解器（FERS）/ 三弯矩方程计算（结构力学方法，非 GB 规范公式）",
+      "formulaExpression": "FERS 线弹性求解",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "mechanics-shear-moment",
+      "codeName": "结构力学方法",
+      "codeNumber": "INTERNAL-MECHANICS",
+      "edition": "platform",
+      "chapter": "线弹性结构内力",
+      "clause": "N/A",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "跨内剪力与弯矩：V(x) = V左 − qx；M(x) = M左 + V左·x − qx²/2（静力平衡导出，非 GB 规范公式）",
+      "formulaExpression": "V(x) = V左 − qx；M(x) = M左 + V左·x − qx²/2",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "mechanics-static-equilibrium",
+      "codeName": "结构力学方法",
+      "codeNumber": "INTERNAL-MECHANICS",
+      "edition": "platform",
+      "chapter": "线弹性结构内力",
+      "clause": "N/A",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "整体竖向力平衡 ΣR − Σ(q·L) = 0（结构力学静力平衡，非 GB 规范公式）",
+      "formulaExpression": "ΣR − Σ(q·L) = 0",
+      "verificationStatus": "REVIEW_REQUIRED"
+    }
+  ]
+}

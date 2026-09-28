@@ -52,7 +52,7 @@ export function axialColumnReport(input: AxialColumnInput, result: AxialColumnRe
   const report = createEmptyResult('轴心受压柱');
   const evidence = createReviewRequiredEvidence('混凝土结构设计规范', 'GB 50010', '6.2.15');
   evidence.edition = '2010（2015年版）';
-  evidence.status = 'superseded';
+  evidence.status = 'current';
   evidence.sourceFile = 'references/codes/GB50010-2010_2015_.pdf';
   report.allEvidence = [evidence];
   report.inputs = [

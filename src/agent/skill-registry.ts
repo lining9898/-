@@ -6,6 +6,18 @@ import beamFlexureManifest from '../../skills/beam-flexure/skill.json';
 import beamFlexureSchema from '../../skills/beam-flexure/schema.json';
 import beamFlexureEvidence from '../../skills/beam-flexure/evidence.json';
 import beamFlexureTests from '../../skills/beam-flexure/tests.json';
+import beamTFlexureManifest from '../../skills/beam-t-flexure/skill.json';
+import beamTFlexureSchema from '../../skills/beam-t-flexure/schema.json';
+import beamTFlexureEvidence from '../../skills/beam-t-flexure/evidence.json';
+import beamTFlexureTests from '../../skills/beam-t-flexure/tests.json';
+import beamDoubleFlexureManifest from '../../skills/beam-double-flexure/skill.json';
+import beamDoubleFlexureSchema from '../../skills/beam-double-flexure/schema.json';
+import beamDoubleFlexureEvidence from '../../skills/beam-double-flexure/evidence.json';
+import beamDoubleFlexureTests from '../../skills/beam-double-flexure/tests.json';
+import beamContinuousManifest from '../../skills/beam-continuous/skill.json';
+import beamContinuousSchema from '../../skills/beam-continuous/schema.json';
+import beamContinuousEvidence from '../../skills/beam-continuous/evidence.json';
+import beamContinuousTests from '../../skills/beam-continuous/tests.json';
 import auditorManifest from '../../skills/calculation-auditor/skill.json';
 import auditorSchema from '../../skills/calculation-auditor/schema.json';
 import auditorEvidence from '../../skills/calculation-auditor/evidence.json';
@@ -20,7 +32,10 @@ import gb50010Evidence from '../../skills/gb50010/evidence.json';
 import gb50010Tests from '../../skills/gb50010/tests.json';
 
 import { invokeBeamFlexure, isBeamFlexureInput } from '../../skills/beam-flexure/calculator';
+import { invokeBeamTFlexure, isBeamTFlexureInput } from '../../skills/beam-t-flexure/calculator';
+import { invokeBeamDoubleFlexure, isBeamDoubleFlexureInput } from '../../skills/beam-double-flexure/calculator';
 import { invokeBeamShear, isBeamShearInput } from '../../skills/beam-shear/calculator';
+import { invokeContinuousBeam, isContinuousBeamInput } from '../../skills/beam-continuous/calculator';
 import { invokeColumn, isColumnSkillInput } from '../../skills/column/calculator';
 import { auditSkillPackage, CalculationAuditResult } from './calculation-auditor';
 import { gb50010Skill } from '../../skills/gb50010/resolver';
@@ -52,6 +67,27 @@ const beamFlexurePackage: SkillPackage = {
   schema: beamFlexureSchema as SkillInputSchema,
   evidence: beamFlexureEvidence as SkillEvidenceCatalog,
   tests: beamFlexureTests as SkillTestCatalog,
+};
+
+const beamTFlexurePackage: SkillPackage = {
+  manifest: beamTFlexureManifest as SkillManifest,
+  schema: beamTFlexureSchema as SkillInputSchema,
+  evidence: beamTFlexureEvidence as SkillEvidenceCatalog,
+  tests: beamTFlexureTests as SkillTestCatalog,
+};
+
+const beamDoubleFlexurePackage: SkillPackage = {
+  manifest: beamDoubleFlexureManifest as SkillManifest,
+  schema: beamDoubleFlexureSchema as SkillInputSchema,
+  evidence: beamDoubleFlexureEvidence as SkillEvidenceCatalog,
+  tests: beamDoubleFlexureTests as SkillTestCatalog,
+};
+
+const beamContinuousPackage: SkillPackage = {
+  manifest: beamContinuousManifest as SkillManifest,
+  schema: beamContinuousSchema as SkillInputSchema,
+  evidence: beamContinuousEvidence as SkillEvidenceCatalog,
+  tests: beamContinuousTests as SkillTestCatalog,
 };
 
 const columnPackage: SkillPackage = {
@@ -91,6 +127,24 @@ const beamFlexureSkill: CalculationSkill = {
   calculate: invokeBeamFlexure,
 };
 
+const beamTFlexureSkill: CalculationSkill = {
+  package: beamTFlexurePackage,
+  accepts: isBeamTFlexureInput,
+  calculate: invokeBeamTFlexure,
+};
+
+const beamDoubleFlexureSkill: CalculationSkill = {
+  package: beamDoubleFlexurePackage,
+  accepts: isBeamDoubleFlexureInput,
+  calculate: invokeBeamDoubleFlexure,
+};
+
+const beamContinuousSkill: CalculationSkill = {
+  package: beamContinuousPackage,
+  accepts: isContinuousBeamInput,
+  calculate: invokeContinuousBeam,
+};
+
 const columnSkill: CalculationSkill = {
   package: columnPackage,
   accepts: isColumnSkillInput,
@@ -118,8 +172,11 @@ export class SkillRegistry {
 
   constructor() {
     this.registerCalculation(beamFlexureSkill);
+    this.registerCalculation(beamTFlexureSkill);
+    this.registerCalculation(beamDoubleFlexureSkill);
     this.registerCalculation(beamShearSkill);
     this.registerCalculation(columnSkill);
+    this.registerCalculation(beamContinuousSkill);
     this.registerNormative(gb50010Skill);
     this.registerAuditor(calculationAuditorPackage);
   }
@@ -222,6 +279,9 @@ export const skillRegistry = new SkillRegistry();
 export const registeredAuditorSkillId = auditorManifest.id;
 export { beamShearPackage as beamShearSkillPackage };
 export { beamFlexurePackage as beamFlexureSkillPackage };
+export { beamTFlexurePackage as beamTFlexureSkillPackage };
+export { beamDoubleFlexurePackage as beamDoubleFlexureSkillPackage };
+export { beamContinuousPackage as beamContinuousSkillPackage };
 export { columnPackage as columnSkillPackage };
 export { calculationAuditorPackage as calculationAuditorSkillPackage };
 export { gb50010Package };
