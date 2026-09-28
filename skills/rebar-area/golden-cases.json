@@ -1,0 +1,21 @@
+{
+  "skillId": "rebar-area",
+  "basis": "几何计算（无规范条文）",
+  "unitBasis": { "d": "mm", "singleArea": "mm²", "totalArea": "mm²", "areaPerMetre": "mm²/m" },
+  "cases": [
+    {
+      "id": "rebar-area-d20",
+      "description": "钢筋面积工具基准算例（直径 20 mm，4 根，间距 200 mm）",
+      "input": { "diameter": 20, "count": 4, "spacing": 200 },
+      "expected": [
+        { "label": "singleArea", "value": 314.16, "unit": "mm²", "tolerance": 0.01 },
+        { "label": "totalArea", "value": 1256.64, "unit": "mm²", "tolerance": 0.01 },
+        { "label": "areaPerMetre", "value": 1570.8, "unit": "mm²/m", "tolerance": 0.1 }
+      ],
+      "checks": [],
+      "reference": "As = n·π·d²/4；As/m = As·1000/s（mm²/m 换算）",
+      "evidenceStatus": "VERIFIED",
+      "note": "纯几何换算，单位 mm²/m 与 10³ 换算可独立验证。"
+    }
+  ]
+}

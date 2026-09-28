@@ -7,6 +7,9 @@
     { "id": "unit-conversion", "category": "unit", "file": "tests/core/beam-shear.test.ts", "description": "MPa·mm²·mm 转换为 kN 的结果结构检查" },
     { "id": "formula-steps", "category": "formula", "file": "tests/core/beam-shear.test.ts", "description": "截面限制、混凝土、箍筋和综合承载力计算步骤" },
     { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/beam-shear.test.ts", "description": "截面限制、受剪承载力和最小配箍率验算项" },
-    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "Registry 调用结果与 legacy 入口核心结果一致" }
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "Registry 调用结果与 legacy 入口核心结果一致" },
+    { "id": "golden-cases", "category": "formula", "file": "tests/regression/golden-cases.test.ts", "description": "Golden Case 回归基准：Vc/Vs/Vcs/Vmax 数量级锁定" },
+    { "id": "unit-conversion-regression", "category": "unit", "file": "tests/regression/unit-conversion.test.ts", "description": "单位专项：N→kN /10³ 换算回归" },
+    { "id": "version-pinning", "category": "unit", "file": "tests/regression/spec-version-pinning.test.ts", "description": "规范版本一致性：Vcs 数值基准不随默认版本漂移" }
   ]
 }

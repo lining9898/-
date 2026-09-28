@@ -1,0 +1,58 @@
+{
+  "skillId": "column",
+  "basis": "GB 50010-2010（2015年版）",
+  "unitBasis": {
+    "fc": "N/mm²", "f'y": "N/mm²", "b": "mm", "h": "mm", "A": "mm²", "As": "mm²",
+    "Nu": "kN", "ea": "mm", "M": "kN·m"
+  },
+  "cases": [
+    {
+      "id": "column-axial-c30-hrb400",
+      "description": "轴心受压矩形箍筋柱基准算例（N=2200 kN）",
+      "input": {
+        "mode": "axial",
+        "input": {
+          "width": 400, "depth": 500, "effectiveLength": 3200,
+          "reinforcementArea": 2400, "axialForce": 2200,
+          "concreteStrength": 14.3, "steelCompressionStrength": 360
+        }
+      },
+      "expected": [
+        { "label": "全截面面积 A", "value": 200000, "unit": "mm²", "tolerance": 0.01 },
+        { "label": "计算长度与短边之比", "value": 8, "unit": "", "tolerance": 0.01 },
+        { "label": "稳定系数 φ", "value": 1, "unit": "", "tolerance": 0.01 },
+        { "label": "混凝土计算面积", "value": 200000, "unit": "mm²", "tolerance": 0.01 },
+        { "label": "轴压承载力 Nu", "value": 3351.6, "unit": "kN", "tolerance": 0.1 }
+      ],
+      "checks": [
+        { "name": "正截面轴压承载力单项验算", "passed": true }
+      ],
+      "reference": "GB 50010-2010(2015) 公式6.2.15、表6.2.15；仓库内独立复算",
+      "evidenceStatus": "REVIEW_REQUIRED",
+      "note": "REFERENCE_CASE_REQUIRED：已按公式独立复算作为回归基准，待外部规范算例确认。"
+    },
+    {
+      "id": "column-eccentric-c30-hrb400",
+      "description": "单轴单曲率偏心受压柱基准算例（N=1200 kN，M0=180 kN·m）",
+      "input": {
+        "mode": "eccentric",
+        "input": {
+          "width": 400, "depth": 500, "coverToSteelCentroid": 40,
+          "reinforcementAreaEachFace": 1500, "axialForce": 1200,
+          "firstOrderMoment": 180, "concreteGrade": "C30", "steelGrade": "HRB400"
+        }
+      },
+      "expected": [
+        { "label": "附加偏心距 ea", "value": 20, "unit": "mm", "tolerance": 0.01 },
+        { "label": "控制弯矩 M", "value": 204, "unit": "kN·m", "tolerance": 0.01 },
+        { "label": "有效高度 h0", "value": 460, "unit": "mm", "tolerance": 0.01 }
+      ],
+      "checks": [
+        { "name": "正截面单轴偏心受压承载力", "passed": true }
+      ],
+      "reference": "GB 50010-2010(2015) 公式6.2.5 附加偏心距、M=M0+N·ea；ea=20mm 与 h/30 中较大值",
+      "evidenceStatus": "REVIEW_REQUIRED",
+      "note": "REFERENCE_CASE_REQUIRED：ea、设计弯矩为确定性派生量；截面抗弯承载力（二分法模型）待外部算例确认，未纳入本基准。"
+    }
+  ]
+}

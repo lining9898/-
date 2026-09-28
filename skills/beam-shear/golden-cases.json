@@ -1,0 +1,55 @@
+{
+  "skillId": "beam-shear",
+  "basis": "GB 50010-2010（2015年版）",
+  "unitBasis": {
+    "ft": "MPa", "fyv": "MPa", "b": "mm", "h0": "mm", "Asv": "mm²",
+    "Vc": "kN", "Vs": "kN", "Vcs": "kN", "Vmax": "kN", "rhoSv": "%"
+  },
+  "cases": [
+    {
+      "id": "shear-uniform-c30-hpb300",
+      "description": "矩形梁斜截面受剪基准算例（均布荷载，仅配置箍筋）",
+      "input": {
+        "b": 250, "h": 500, "h0": 460, "concreteGrade": "C30",
+        "stirrupGrade": "HPB300", "V": 120, "stirrupLegs": 2,
+        "stirrupSpacing": 200, "stirrupDiameter": 8, "loadType": "uniform"
+      },
+      "expected": [
+        { "label": "同一截面箍筋总面积 Asv", "value": 100.53, "unit": "mm²", "tolerance": 0.01 },
+        { "label": "配箍率 ρsv", "value": 0.2, "unit": "%", "tolerance": 0.001 },
+        { "label": "腹板高宽比 h₀/b", "value": 1.84, "unit": "", "tolerance": 0.001 },
+        { "label": "截面限制系数 k", "value": 0.25, "unit": "", "tolerance": 0.001 },
+        { "label": "截面限制值 Vmax", "value": 411.13, "unit": "kN", "tolerance": 0.1 },
+        { "label": "混凝土受剪承载力 Vc", "value": 115.12, "unit": "kN", "tolerance": 0.1 },
+        { "label": "箍筋受剪承载力 Vs", "value": 62.43, "unit": "kN", "tolerance": 0.1 },
+        { "label": "斜截面受剪承载力 Vcs", "value": 177.55, "unit": "kN", "tolerance": 0.2 },
+        { "label": "最小配箍率 ρsv,min", "value": 0.13, "unit": "%", "tolerance": 0.01 }
+      ],
+      "checks": [
+        { "name": "截面限制条件验算", "passed": true },
+        { "name": "斜截面受剪承载力验算", "passed": true },
+        { "name": "最小配箍率验算", "passed": true }
+      ],
+      "reference": "GB 50010-2010(2015) 公式6.3.1、6.3.4-1/-2、9.2.9；仓库内独立复算",
+      "evidenceStatus": "REVIEW_REQUIRED",
+      "note": "REFERENCE_CASE_REQUIRED：已按公式独立复算作为回归基准，仍待教材/规范原文标准算例外部确认。"
+    },
+    {
+      "id": "shear-concentrated-lambda-limit",
+      "description": "集中荷载独立梁剪跨比被限制为 1.5 的边界算例",
+      "input": {
+        "b": 250, "h": 500, "h0": 460, "concreteGrade": "C30",
+        "stirrupGrade": "HPB300", "V": 60, "stirrupLegs": 2,
+        "stirrupSpacing": 200, "stirrupDiameter": 8,
+        "loadType": "concentrated", "shearSpan": 100
+      },
+      "expected": [
+        { "label": "计算剪跨比", "value": 1.5, "unit": "", "tolerance": 0.001 }
+      ],
+      "checks": [],
+      "reference": "GB 50010-2010(2015) 公式6.3.4 剪跨比限制 λ ∈ [1.5, 3]",
+      "evidenceStatus": "REVIEW_REQUIRED",
+      "note": "剪跨比下限 1.5 的确定性边界；REFERENCE_CASE_REQUIRED 外部复核。"
+    }
+  ]
+}
