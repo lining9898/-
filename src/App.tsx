@@ -1,5 +1,7 @@
-import React, { Suspense, lazy, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
+import StandardStatusNotice from './components/layout/StandardStatusNotice';
+import StandardsStatus from './pages/StandardsStatus';
 import BeamFlexure from './components/calculators/BeamFlexure';
 import BeamShear from './components/calculators/BeamShear';
 import BeamTFlexure from './components/calculators/BeamTFlexure';
@@ -15,8 +17,34 @@ const ContinuousBeam = lazy(() => import('./components/calculators/ContinuousBea
 
 type ModuleId = string;
 
+const STANDARDS_STATUS_PATH = '/standards/status';
+type View = 'calculator' | 'standards-status';
+
+const CONCRETE_MODULES = ['beam-flexure', 'beam-shear', 'beam-t-flexure', 'column-axial', 'column-eccentric'];
+
+const getInitialView = (): View =>
+  typeof window !== 'undefined' && window.location.pathname === STANDARDS_STATUS_PATH
+    ? 'standards-status'
+    : 'calculator';
+
 const App: React.FC = () => {
   const [activeModule, setActiveModule] = useState<ModuleId>('beam-flexure');
+  const [view, setView] = useState<View>(getInitialView);
+
+  useEffect(() => {
+    const onPopState = () => setView(getInitialView());
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  const navigateTo = (path: string) => {
+    window.history.pushState({}, '', path);
+    setView(path === STANDARDS_STATUS_PATH ? 'standards-status' : 'calculator');
+  };
+
+  if (view === 'standards-status') {
+    return <StandardsStatus onBack={() => navigateTo('/')} />;
+  }
 
   const renderContent = () => {
     switch (activeModule) {
@@ -58,12 +86,8 @@ const App: React.FC = () => {
     <div className="flex h-screen flex-col md:flex-row bg-gray-100">
       <Sidebar activeModule={activeModule} onSelectModule={setActiveModule} />
       <main className="min-w-0 flex-1 overflow-auto p-4 md:p-6">
-        {(['beam-flexure', 'beam-shear', 'beam-t-flexure', 'column-axial', 'column-eccentric'].includes(activeModule)) && (
-          <p role="note" className="max-w-7xl mx-auto mb-4 border-l-4 border-amber-500 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            当前混凝土计算依据仓库中的 GB 50010-2010（2015 年版）。住建部已发布 2024 年局部修订；本项目尚未完成新旧条款差异核查，结果不可直接作为现行工程设计依据。{' '}
-            <a href="https://www.mohurd.gov.cn/file/2024/20240822/a015dc08-eaf2-474a-81c1-c4454e3b220c.pdf"
-              target="_blank" rel="noreferrer" className="underline">查看住建部公告</a>
-          </p>
+        {CONCRETE_MODULES.includes(activeModule) && (
+          <StandardStatusNotice onViewDetails={() => navigateTo(STANDARDS_STATUS_PATH)} />
         )}
         {renderContent()}
       </main>
