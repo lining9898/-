@@ -1,0 +1,62 @@
+{
+  "id": "slab-one-way",
+  "name": "单向板",
+  "kind": "calculation",
+  "version": "1.0.0",
+  "description": "单跨简支单向板（取 1m 宽计算单元）的荷载、内力、配筋与构造验算，返回 CalculationResult。",
+  "component": "slab",
+  "calculatorEntry": "./calculator.ts",
+  "legacyEntry": "../../src/core/slab/one-way.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/types/calculation.ts#CalculationResult",
+  "applicability": [
+    "单跨简支单向板（取 1m 宽计算单元）",
+    "恒载（含板自重）与活载基本组合下的正截面受弯配筋",
+    "未计塑性内力重分布与连续板内力系数"
+  ],
+  "boundaryChecks": [
+    "相对受压区高度 ξ 与界限值 ξb",
+    "最小配筋率 ρmin = max(0.20%, 45ft/fy%)",
+    "实配钢筋面积 As,prov 与所需面积 As,req",
+    "受弯承载力 Mu 与设计弯矩 M",
+    "钢筋间距 70~200mm 构造",
+    "板厚与跨厚比构造",
+    "板厚、跨度、保护层和钢筋放不下等输入边界"
+  ],
+  "formulaMappings": [
+    {
+      "id": "load-combination",
+      "expression": "q = (gammaG*gk + gammaQ*qk)*b",
+      "evidenceId": "clause-gb50009-combo",
+      "requiredInputFields": ["h", "span", "gkExtra", "qk", "gammaG", "gammaQ", "width"]
+    },
+    {
+      "id": "midspan-moment",
+      "expression": "M = q*l0^2/8",
+      "evidenceId": "clause-moment",
+      "requiredInputFields": ["span"]
+    },
+    {
+      "id": "flexure-design",
+      "expression": "As_req = alpha1*fc*b*x/fy",
+      "evidenceId": "clause-6.2.10",
+      "requiredInputFields": ["h", "concreteGrade", "steelGrade", "cover", "barDiameter"]
+    },
+    {
+      "id": "flexure-capacity",
+      "expression": "Mu = alpha1*fc*b*x*(h0-x/2)",
+      "evidenceId": "clause-6.2.10-cap",
+      "requiredInputFields": ["h", "concreteGrade", "steelGrade", "cover", "barDiameter", "barSpacing"]
+    },
+    {
+      "id": "minimum-reinforcement-ratio",
+      "expression": "rhoMin = max(0.20, 45*ft/fy)/100",
+      "evidenceId": "clause-8.5.1",
+      "requiredInputFields": ["h", "concreteGrade", "steelGrade"]
+    }
+  ],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": ["mm", "m", "mm²/m", "kN/m", "kN/m²", "kN·m", "MPa", "%", "grade", "dimensionless"]
+}

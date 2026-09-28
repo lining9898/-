@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["span", "stepRise", "stepRun", "t", "concreteGrade", "steelGrade", "cover", "barDiameter", "barSpacing", "gkExtra", "qk", "gammaG", "gammaQ"],
+  "properties": {
+    "span": { "type": "number", "exclusiveMinimum": 0, "unit": "m", "description": "梯段水平投影计算跨度 l0" },
+    "stepRise": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "踏步高" },
+    "stepRun": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "踏步宽" },
+    "t": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "梯板厚" },
+    "concreteGrade": { "type": "string", "enum": ["C20", "C25", "C30", "C35", "C40", "C45", "C50"], "unit": "grade" },
+    "steelGrade": { "type": "string", "enum": ["HPB300", "HRB335", "HRB400", "HRB500"], "unit": "grade" },
+    "cover": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "梯板底受力钢筋外缘至板底距离" },
+    "barDiameter": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受力钢筋直径" },
+    "barSpacing": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受力钢筋间距" },
+    "gkExtra": { "type": "number", "minimum": 0, "unit": "kN/m²", "description": "面层及板底抹灰等附加恒载" },
+    "qk": { "type": "number", "minimum": 0, "unit": "kN/m²", "description": "活荷载标准值" },
+    "gammaG": { "type": "number", "exclusiveMinimum": 0, "unit": "dimensionless", "description": "恒载分项系数" },
+    "gammaQ": { "type": "number", "exclusiveMinimum": 0, "unit": "dimensionless", "description": "活载分项系数" },
+    "width": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "梯板计算宽度，默认 1000" }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "id": "slab-two-way",
+  "name": "双向板",
+  "kind": "calculation",
+  "version": "1.0.0",
+  "description": "四边简支双向板（短跨/长跨）的荷载、内力（弹性板系数）、配筋与构造验算，返回 CalculationResult。",
+  "component": "slab",
+  "calculatorEntry": "./calculator.ts",
+  "legacyEntry": "../../src/core/slab/two-way.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/types/calculation.ts#CalculationResult",
+  "applicability": [
+    "四边简支双向板（弹性板，泊松比 μ=0.2）",
+    "跨中弯矩 Mx=αx·q·lx²、My=αy·q·lx²",
+    "未计边界连续与塑性内力重分布"
+  ],
+  "boundaryChecks": [
+    "短/长向相对受压区高度 ξ 与 ξb",
+    "短/长向实配钢筋面积与所需面积",
+    "短/长向受弯承载力 Mu 与设计弯矩",
+    "最小配筋率 ρmin",
+    "钢筋间距 70~200mm 与板厚构造",
+    "跨度、板厚、保护层和钢筋放不下等输入边界"
+  ],
+  "formulaMappings": [
+    {
+      "id": "load-combination",
+      "expression": "q = gammaG*gk + gammaQ*qk",
+      "evidenceId": "clause-gb50009-combo",
+      "requiredInputFields": ["h", "spanX", "spanY", "gkExtra", "qk", "gammaG", "gammaQ"]
+    },
+    {
+      "id": "moment-x",
+      "expression": "Mx = alphaX*q*lx^2",
+      "evidenceId": "clause-coef",
+      "requiredInputFields": ["spanX", "spanY"]
+    },
+    {
+      "id": "moment-y",
+      "expression": "My = alphaY*q*lx^2",
+      "evidenceId": "clause-coef-y",
+      "requiredInputFields": ["spanX", "spanY"]
+    },
+    {
+      "id": "flexure-design",
+      "expression": "As_req = alpha1*fc*b*x/fy",
+      "evidenceId": "clause-6.2.10",
+      "requiredInputFields": ["h", "concreteGrade", "steelGrade", "cover", "barDiameter"]
+    },
+    {
+      "id": "minimum-reinforcement-ratio",
+      "expression": "rhoMin = max(0.20, 45*ft/fy)/100",
+      "evidenceId": "clause-8.5.1",
+      "requiredInputFields": ["h", "concreteGrade", "steelGrade"]
+    }
+  ],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": ["mm", "m", "mm²/m", "kN/m²", "kN·m/m", "kN·m", "MPa", "%", "grade", "dimensionless"]
+}

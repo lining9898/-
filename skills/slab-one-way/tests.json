@@ -1,0 +1,14 @@
+{
+  "cases": [
+    { "id": "normal-c30-hrb400", "category": "normal", "file": "tests/core/slab-one-way.test.ts", "description": "单向板基准算例与 CalculationResult 完整性" },
+    { "id": "normal-hand-calc", "category": "normal", "file": "tests/core/slab-one-way.test.ts", "description": "手算对比：荷载、弯矩、配筋、承载力" },
+    { "id": "boundary-min-ratio", "category": "boundary", "file": "tests/core/slab-one-way.test.ts", "description": "跨越最小配筋率与承载力边界" },
+    { "id": "boundary-spacing", "category": "boundary", "file": "tests/core/slab-one-way.test.ts", "description": "钢筋间距与板厚构造边界" },
+    { "id": "invalid-input", "category": "invalid", "file": "tests/core/slab-one-way.test.ts", "description": "尺寸、荷载和钢筋输入校验" },
+    { "id": "unit-magnitude", "category": "unit", "file": "tests/core/slab-one-way.test.ts", "description": "kN/m、kN·m、mm²/m 与 MPa 结果单位/数量级检查" },
+    { "id": "formula-trace", "category": "formula", "file": "tests/core/slab-one-way.test.ts", "description": "荷载、弯矩、配筋、承载力计算步骤与 Evidence 追溯" },
+    { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/slab-one-way.test.ts", "description": "验算项与结论" },
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/slab-foundation-stair-registry.test.ts", "description": "Registry 调用与 core 引擎核心结果一致" },
+    { "id": "evidence-map", "category": "formula", "file": "tests/agent/slab-foundation-stair-registry.test.ts", "description": "evidenceId 可追溯且不虚构页码" }
+  ]
+}

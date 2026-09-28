@@ -1,0 +1,142 @@
+{
+  "records": [
+    {
+      "id": "clause-4.1.4",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第4章",
+      "clause": "4.1.4",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 34,
+      "applicability": "混凝土轴心抗压/抗拉强度设计值 fc、ft",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "clause-4.2.3",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第4章",
+      "clause": "4.2.3",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 38,
+      "applicability": "普通钢筋抗拉强度设计值 fy",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "clause-6.2.6",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.6",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 52,
+      "applicability": "等效矩形应力图系数 α1、β1（C50 及以下）",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "clause-6.2.7",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.7",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 53,
+      "applicability": "界限相对受压区高度 ξb = β1/(1+fy/(Es·εcu))",
+      "formulaExpression": "xiB = beta1/(1+fy/(Es*epsilonCu))",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "clause-6.2.10",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.10",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 55,
+      "applicability": "正截面受弯承载力与受压区高度 x",
+      "formulaExpression": "As_req = alpha1*fc*b*x/fy",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "clause-8.5.1",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第8章",
+      "clause": "8.5.1",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 124,
+      "applicability": "纵向受力钢筋最小配筋百分率 ρmin",
+      "formulaExpression": "rhoMin = max(0.20, 45*ft/fy)/100",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "clause-gb50009-weight",
+      "codeName": "建筑结构荷载规范",
+      "codeNumber": "GB 50009",
+      "edition": "2012",
+      "chapter": "第3章",
+      "clause": "3.1.1",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "永久荷载（钢筋混凝土重度 25 kN/m³）",
+      "formulaExpression": "gk = 25*t*sqrt(1+(h/b)^2) + 25*h/2 + gkExtra",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-gb50009-combo",
+      "codeName": "建筑结构荷载规范",
+      "codeNumber": "GB 50009",
+      "edition": "2012",
+      "chapter": "第3章",
+      "clause": "3.2.3",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "荷载基本组合（恒载 1.3、活载 1.5，可变荷载控制）",
+      "formulaExpression": "q = (gammaG*gk + gammaQ*qk)*b",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-moment",
+      "codeName": "结构力学（简支梁内力）",
+      "codeNumber": "—",
+      "edition": "—",
+      "chapter": "—",
+      "clause": "2.1.2",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "单跨简支梯板跨中弯矩 M=q·l0²/8",
+      "formulaExpression": "M = q*l0^2/8",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-9.1.3",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第9章",
+      "clause": "9.1.3",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "板受力钢筋间距 70~200mm（构造）",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-thickness",
+      "codeName": "工程构造建议",
+      "codeNumber": "—",
+      "edition": "—",
+      "chapter": "—",
+      "clause": "板式楼梯梯板厚",
+      "sourceFile": null,
+      "pdfPage": null,
+      "applicability": "梯板厚度建议不宜小于水平投影跨度 1/30（工程经验）",
+      "verificationStatus": "REVIEW_REQUIRED"
+    }
+  ]
+}

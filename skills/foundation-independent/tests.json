@@ -1,0 +1,15 @@
+{
+  "cases": [
+    { "id": "normal-hand-calc", "category": "normal", "file": "tests/core/foundation-independent.test.ts", "description": "手算对比：地基承载力、受弯、冲切、抗剪、配筋全链路" },
+    { "id": "normal-result-complete", "category": "normal", "file": "tests/core/foundation-independent.test.ts", "description": "CalculationResult 完整性" },
+    { "id": "boundary-bearing", "category": "boundary", "file": "tests/core/foundation-independent.test.ts", "description": "地基承载力与冲切跨越界限" },
+    { "id": "boundary-dimension", "category": "boundary", "file": "tests/core/foundation-independent.test.ts", "description": "基础高度/柱截面边界" },
+    { "id": "invalid-input", "category": "invalid", "file": "tests/core/foundation-independent.test.ts", "description": "尺寸、荷载、材料和柱超出基础输入校验" },
+    { "id": "unit-magnitude", "category": "unit", "file": "tests/core/foundation-independent.test.ts", "description": "kN·m、kN、mm²、kPa 结果单位检查" },
+    { "id": "magnitude-protection", "category": "unit", "file": "tests/core/foundation-independent.test.ts", "description": "10³/10⁶ 数量级保护：N↔kN、mm↔m、N·mm↔kN·m、MPa↔Pa" },
+    { "id": "formula-trace", "category": "formula", "file": "tests/core/foundation-independent.test.ts", "description": "各步骤与 Evidence 追溯" },
+    { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/foundation-independent.test.ts", "description": "地基、冲切、受剪、配筋验算项" },
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/slab-foundation-stair-registry.test.ts", "description": "Registry 调用与 core 引擎核心结果一致" },
+    { "id": "evidence-map", "category": "formula", "file": "tests/agent/slab-foundation-stair-registry.test.ts", "description": "evidenceId 可追溯且不虚构页码" }
+  ]
+}

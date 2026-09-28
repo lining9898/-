@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["L", "B", "h", "bc", "hc", "d", "gammaM", "fa", "Nk", "N", "concreteGrade", "steelGrade", "cover", "barDiameter", "barSpacing"],
+  "properties": {
+    "L": { "type": "number", "exclusiveMinimum": 0, "unit": "m", "description": "基础底面长边" },
+    "B": { "type": "number", "exclusiveMinimum": 0, "unit": "m", "description": "基础底面短边" },
+    "h": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "基础高度" },
+    "bc": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "柱截面沿长边 L 方向的边长" },
+    "hc": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "柱截面沿短边 B 方向的边长" },
+    "d": { "type": "number", "exclusiveMinimum": 0, "unit": "m", "description": "基础埋深（室外地坪至基底）" },
+    "gammaM": { "type": "number", "exclusiveMinimum": 0, "unit": "kN/m³", "description": "基础及覆土平均重度" },
+    "fa": { "type": "number", "exclusiveMinimum": 0, "unit": "kPa", "description": "修正后的地基承载力特征值" },
+    "Nk": { "type": "number", "exclusiveMinimum": 0, "unit": "kN", "description": "轴心荷载标准值（承载力验算）" },
+    "N": { "type": "number", "exclusiveMinimum": 0, "unit": "kN", "description": "轴心荷载设计值（配筋/冲切/抗剪）" },
+    "concreteGrade": { "type": "string", "enum": ["C20", "C25", "C30", "C35", "C40", "C45", "C50"], "unit": "grade" },
+    "steelGrade": { "type": "string", "enum": ["HPB300", "HRB335", "HRB400", "HRB500"], "unit": "grade" },
+    "cover": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "基础底面保护层（有垫层）" },
+    "barDiameter": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受力钢筋直径" },
+    "barSpacing": { "type": "number", "exclusiveMinimum": 0, "unit": "mm", "description": "受力钢筋间距" }
+  }
+}

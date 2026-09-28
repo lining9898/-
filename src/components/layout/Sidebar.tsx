@@ -35,8 +35,8 @@ const menuItems: MenuItem[] = [
     id: 'slab',
     label: '板',
     children: [
-      { id: 'slab-one-way', label: '单向板', available: false },
-      { id: 'slab-two-way', label: '双向板', available: false },
+      { id: 'slab-one-way', label: '单向板', available: true },
+      { id: 'slab-two-way', label: '双向板', available: true },
       { id: 'slab-punching', label: '板冲切', available: false },
       { id: 'slab-crack', label: '板裂缝', available: false },
       { id: 'slab-deflection', label: '板挠度', available: false },
@@ -46,14 +46,14 @@ const menuItems: MenuItem[] = [
     id: 'foundation',
     label: '基础',
     children: [
-      { id: 'foundation-independent', label: '柱下独立基础', available: false },
+      { id: 'foundation-independent', label: '柱下独立基础', available: true },
     ],
   },
   {
     id: 'staircase',
     label: '楼梯',
     children: [
-      { id: 'staircase-plate', label: '现浇板式楼梯', available: false },
+      { id: 'staircase-plate', label: '现浇板式楼梯', available: true },
     ],
   },
   {
