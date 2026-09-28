@@ -5,6 +5,7 @@ import BeamSectionSVG from '../svg/BeamSectionSVG';
 import EvidencePanel from '../evidence/EvidencePanel';
 import VerificationBadge from '../evidence/VerificationBadge';
 import CalculationReportView from '../report/CalculationReportView';
+import AIReviewButton from '../ai-review/AIReviewButton';
 
 const CONCRETE_GRADES = ['C20', 'C25', 'C30', 'C35', 'C40', 'C45', 'C50'];
 const STEEL_GRADES = ['HPB300', 'HRB335', 'HRB400', 'HRB500'];
@@ -173,6 +174,7 @@ const BeamFlexure: React.FC = () => {
             >
               规范依据
             </button>
+            <AIReviewButton result={result} title="矩形梁正截面受弯" />
           </div>
 
           {/* 计算结果 */}
