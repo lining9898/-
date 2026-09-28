@@ -1,0 +1,84 @@
+{
+  "id": "beam-t-flexure",
+  "name": "T形梁正截面受弯",
+  "kind": "calculation",
+  "version": "1.0.0",
+  "description": "计算翼缘位于受压区的T形、I形截面普通钢筋混凝土梁（仅配置受拉钢筋、无预应力筋）的正截面受弯承载力，并返回 CalculationResult。",
+  "component": "beam",
+  "calculatorEntry": "./calculator.ts",
+  "legacyEntry": "../../src/core/beam/t-flexure.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/types/calculation.ts#CalculationResult",
+  "applicability": [
+    "翼缘位于受压区的T形、I形截面普通钢筋混凝土梁",
+    "单向受弯、仅配置受拉钢筋、无受压钢筋、无预应力筋的简化正截面承载力计算",
+    "输入弯矩为设计值，结果仅覆盖登记的单项验算"
+  ],
+  "boundaryChecks": [
+    "中和轴位置：fy·As 与 α1·fc·bf·hf 的比较，切换矩形（b=bf）或T形（b+翼缘）分支",
+    "相对受压区高度 ξ 与界限值 ξb",
+    "最小配筋面积 AsMin = ρmin · b · h（按全截面扣除受压翼缘面积后的截面面积）",
+    "受弯承载力 Mu 与设计弯矩 M",
+    "截面尺寸、钢筋容纳、材料等级和弯矩输入边界"
+  ],
+  "formulaMappings": [
+    {
+      "id": "flange-capacity-check",
+      "expression": "fy·As ≤ α1·fc·bf·hf → 中和轴在翼缘内",
+      "evidenceId": "clause-6.2.11-flange",
+      "requiredInputFields": ["b", "hf", "bf", "barDiameter", "barCount", "concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "compression-zone-depth-flange",
+      "expression": "x = fy·As / (α1·fc·bf)",
+      "evidenceId": "clause-6.2.10-x",
+      "requiredInputFields": ["b", "bf", "barDiameter", "barCount", "concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "compression-zone-depth-web",
+      "expression": "x = [fy·As − α1·fc·(bf−b)·hf] / (α1·fc·b)",
+      "evidenceId": "clause-6.2.11-x",
+      "requiredInputFields": ["b", "bf", "hf", "barDiameter", "barCount", "concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "relative-compression-depth",
+      "expression": "ξ = x / h0",
+      "evidenceId": "clause-6.2.10-xi",
+      "requiredInputFields": ["h", "cover", "barDiameter"]
+    },
+    {
+      "id": "limiting-relative-depth",
+      "expression": "ξb = β1 / (1 + fy / (Es·εcu))",
+      "evidenceId": "clause-6.2.7",
+      "requiredInputFields": ["concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "flexural-capacity-flange",
+      "expression": "Mu = α1·fc·bf·x·(h0 − x/2) / 1e6",
+      "evidenceId": "clause-6.2.10-Mu",
+      "requiredInputFields": ["b", "bf", "h", "cover", "barDiameter", "barCount", "concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "flexural-capacity-web",
+      "expression": "Mu = α1·fc·[b·x·(h0−x/2) + (bf−b)·hf·(h0−hf/2)] / 1e6",
+      "evidenceId": "clause-6.2.11-Mu",
+      "requiredInputFields": ["b", "bf", "hf", "h", "cover", "barDiameter", "barCount", "concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "minimum-reinforcement-ratio",
+      "expression": "ρmin = max(0.20%, 45·ft/fy %)",
+      "evidenceId": "clause-8.5.1-rho",
+      "requiredInputFields": ["concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "minimum-reinforcement-area",
+      "expression": "AsMin = ρmin · b · h",
+      "evidenceId": "clause-8.5.1-area",
+      "requiredInputFields": ["b", "h", "concreteGrade", "steelGrade"]
+    }
+  ],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": ["mm", "mm²", "kN·m", "MPa", "%", "根", "grade", "dimensionless"]
+}

@@ -1,0 +1,14 @@
+{
+  "cases": [
+    { "id": "normal-c30-hrb400", "category": "normal", "file": "tests/core/beam-double-flexure.test.ts", "description": "C30、HRB400 双筋基准算例和 CalculationResult 完整性" },
+    { "id": "reference-hand-check", "category": "formula", "file": "tests/core/beam-double-flexure.test.ts", "description": "手算/参考算例：受压区高度 x、界限 ξb、受弯承载力 Mu、最小配筋 AsMin" },
+    { "id": "boundary-compression-not-yield", "category": "boundary", "file": "tests/core/beam-double-flexure.test.ts", "description": "x < 2a′s 时切换受压钢筋未屈服简化分支" },
+    { "id": "boundary-over-reinforced", "category": "boundary", "file": "tests/core/beam-double-flexure.test.ts", "description": "x > ξb·h0 时按界限控制并判超筋" },
+    { "id": "boundary-moment", "category": "boundary", "file": "tests/core/beam-double-flexure.test.ts", "description": "设计弯矩跨过承载力时验算翻转" },
+    { "id": "invalid-input", "category": "invalid", "file": "tests/core/beam-double-flexure.test.ts", "description": "尺寸、保护层、合力点位置、钢筋容纳、材料和根数输入校验" },
+    { "id": "unit-conversion", "category": "unit", "file": "tests/core/beam-double-flexure.test.ts", "description": "N·mm→kN·m 与 N→kN 单位换算语义检查" },
+    { "id": "formula-trace", "category": "formula", "file": "tests/core/beam-double-flexure.test.ts", "description": "x、ξ、ξb、Mu 和 AsMin 计算步骤与 Evidence（6.2.10 / 6.2.7 / 8.5.1）" },
+    { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/beam-double-flexure.test.ts", "description": "界限、受压钢筋屈服、最小配筋和承载力验算结果" },
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/skill-registry.test.ts", "description": "Registry 调用结果与 legacy 双筋受弯入口核心结果一致" }
+  ]
+}

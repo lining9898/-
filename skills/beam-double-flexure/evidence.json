@@ -1,0 +1,143 @@
+{
+  "records": [
+    {
+      "id": "clause-4.1.4",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第4章",
+      "clause": "4.1.4",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 34,
+      "applicability": "混凝土轴心抗压、轴心抗拉强度设计值 fc、ft",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-4.2.3",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第4章",
+      "clause": "4.2.3",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 38,
+      "applicability": "普通钢筋强度设计值 fy、fy′",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-4.2.5",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第4章",
+      "clause": "4.2.5",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 40,
+      "applicability": "普通钢筋弹性模量 Es",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.6",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.6",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 52,
+      "applicability": "C50 及以下混凝土等效矩形应力图参数 α1、β1",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.7",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.7",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 53,
+      "applicability": "有屈服点普通钢筋的界限相对受压区高度",
+      "formulaExpression": "ξb = β1 / (1 + fy / (Es·εcu))，εcu = 0.0033",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.10-x",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.10",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 54,
+      "applicability": "双筋矩形截面混凝土受压区高度，由 α1·fc·b·x = fy·As − fy′·A′s 确定（6.2.10-2）",
+      "formulaExpression": "x = (fy·As − fy′·A′s) / (α1·fc·b)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.10-xi",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.10",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 54,
+      "applicability": "相对受压区高度 ξ = x / h0 和界限验算 x ≤ ξb·h0（6.2.10-3）",
+      "formulaExpression": "ξ = x / h0",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.10-Mu",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.10",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 54,
+      "applicability": "双筋矩形截面正截面受弯承载力（6.2.10-1）",
+      "formulaExpression": "Mu = α1·fc·b·x·(h0 − x/2) + fy′·A′s·(h0 − a′s)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.10-compression-yield",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第6章",
+      "clause": "6.2.10",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 54,
+      "applicability": "受压钢筋达到设计强度的条件 x ≥ 2a′s；不满足时按设计方法 Mu = fy·As·(h0 − a′s) 简化，属设计原理方法而非规范直接条文，待核验",
+      "formulaExpression": "x ≥ 2a′s；否则 Mu = fy·As·(h0 − a′s)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-8.5.1-rho",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第8章",
+      "clause": "8.5.1",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 124,
+      "applicability": "受弯构件纵向受拉钢筋最小配筋率",
+      "formulaExpression": "ρmin = max(0.20%, 45·ft/fy %)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-8.5.1-area",
+      "codeName": "混凝土结构设计规范",
+      "codeNumber": "GB 50010",
+      "edition": "2010（2015年版）",
+      "chapter": "第8章",
+      "clause": "8.5.1",
+      "sourceFile": "GB50010-2010_2015_.pdf",
+      "pdfPage": 124,
+      "applicability": "矩形截面最小配筋面积按全截面 b·h 计算",
+      "formulaExpression": "AsMin = ρmin · b · h",
+      "verificationStatus": "REVIEW_REQUIRED"
+    }
+  ]
+}

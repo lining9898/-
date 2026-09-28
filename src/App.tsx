@@ -5,6 +5,7 @@ import StandardsStatus from './pages/StandardsStatus';
 import BeamFlexure from './components/calculators/BeamFlexure';
 import BeamShear from './components/calculators/BeamShear';
 import BeamTFlexure from './components/calculators/BeamTFlexure';
+import BeamDoubleFlexure from './components/calculators/BeamDoubleFlexure';
 import Placeholder from './components/calculators/Placeholder';
 import SteelBeam from './components/calculators/SteelBeam';
 import RebarArea from './components/calculators/RebarArea';
@@ -19,7 +20,7 @@ type ModuleId = string;
 const STANDARDS_STATUS_TAIL = '/standards/status';
 type View = 'calculator' | 'standards-status';
 
-const CONCRETE_MODULES = ['beam-flexure', 'beam-shear', 'beam-t-flexure', 'column-axial', 'column-eccentric'];
+const CONCRETE_MODULES = ['beam-flexure', 'beam-shear', 'beam-t-flexure', 'beam-double-flexure', 'column-axial', 'column-eccentric'];
 
 const getInitialView = (): View =>
   typeof window !== 'undefined' && window.location.pathname.endsWith(STANDARDS_STATUS_TAIL)
@@ -58,6 +59,8 @@ const App: React.FC = () => {
         return <BeamShear />;
       case 'beam-t-flexure':
         return <BeamTFlexure />;
+      case 'beam-double-flexure':
+        return <BeamDoubleFlexure />;
       case 'steel-beam':
         return <SteelBeam />;
       case 'tools-rebar':

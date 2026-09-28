@@ -1,0 +1,12 @@
+{
+  "cases": [
+    { "id": "normal-single-span", "category": "normal", "file": "tests/core/beam-continuous.test.ts", "description": "单跨简支均布荷载算例与解析解" },
+    { "id": "normal-two-span", "category": "normal", "file": "tests/core/beam-continuous.test.ts", "description": "等跨双跨闭合解（支座弯矩 −qL²/8）" },
+    { "id": "normal-four-span", "category": "normal", "file": "tests/core/beam-continuous.test.ts", "description": "四跨对称荷载对称反力" },
+    { "id": "boundary-asymmetric", "category": "boundary", "file": "tests/core/beam-continuous.test.ts", "description": "不对称荷载与整体竖向力平衡" },
+    { "id": "invalid-input", "category": "invalid", "file": "tests/core/beam-continuous.test.ts", "description": "空跨度、零/负跨度、负荷载、全零荷载" },
+    { "id": "unit-conversion", "category": "unit", "file": "tests/agent/beam-continuous.test.ts", "description": "m、kN/m、kN、kN·m 单位语义与 CalculationResult 结构" },
+    { "id": "formula-trace", "category": "formula", "file": "tests/agent/beam-continuous.test.ts", "description": "结构力学证据（非 GB）挂接到步骤与结果" },
+    { "id": "registry-compatibility", "category": "normal", "file": "tests/agent/beam-continuous.test.ts", "description": "Registry 调用返回 CalculationResult 且核心结果一致" }
+  ]
+}

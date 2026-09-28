@@ -27,6 +27,9 @@ CalculationResult
 | Skill ID | 类型 | 说明 |
 |----------|------|------|
 | `beam-flexure` | calculation | 矩形梁正截面受弯承载力 |
+| `beam-t-flexure` | calculation | T形梁正截面受弯承载力 |
+| `beam-double-flexure` | calculation | 双筋矩形梁正截面受弯承载力 |
+| `beam-continuous` | calculation | 连续梁内力（结构力学方法，非 GB 规范公式） |
 | `beam-shear` | calculation | 矩形梁斜截面受剪承载力 |
 | `column` | calculation | 矩形箍筋柱轴压/偏心受压 |
 | `gb50010` | normative | GB 50010-2010（2015年版）条文查询 |

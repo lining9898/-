@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { calculateBeamShear, BeamShearInput } from '../../src/core/beam/shear';
 import { calculateBeamFlexure, BeamFlexureInput } from '../../src/core/beam/flexure';
+import { calculateBeamTFlexure, BeamTFlexureInput } from '../../src/core/beam/t-flexure';
+import { calculateBeamDoubleFlexure, BeamDoubleFlexureInput } from '../../src/core/beam/double-flexure';
 import { calculateAxialColumn, AxialColumnInput } from '../../src/core/column/axial';
 import { skillRegistry } from '../../src/agent/skill-registry';
 
@@ -12,6 +14,18 @@ const input: BeamShearInput = {
 const flexureInput: BeamFlexureInput = {
   b: 250, h: 500, concreteGrade: 'C30', steelGrade: 'HRB400', cover: 25,
   barDiameter: 20, barCount: 4, moment: 120,
+};
+
+const tFlexureInput: BeamTFlexureInput = {
+  b: 200, h: 500, hf: 100, bf: 600, concreteGrade: 'C30', steelGrade: 'HRB400',
+  cover: 25, barDiameter: 20, barCount: 4, moment: 120,
+};
+
+const doubleFlexureInput: BeamDoubleFlexureInput = {
+  b: 300, h: 600, concreteGrade: 'C30', steelGrade: 'HRB400', compressionSteelGrade: 'HRB400',
+  cover: 35, barDiameter: 25, barCount: 5,
+  coverToCompressionCentroid: 40, compressionBarDiameter: 20, compressionBarCount: 2,
+  moment: 300,
 };
 
 const axialInput: AxialColumnInput = {
@@ -43,6 +57,36 @@ describe('Skill Registry', () => {
     expect(throughRegistry.results).toEqual(legacy.results);
     expect(throughRegistry.checks).toEqual(legacy.checks);
     expect(throughRegistry.conclusion).toEqual(legacy.conclusion);
+  });
+
+  it('calls the legacy beam-t-flexure entry without changing calculation output', () => {
+    const legacy = calculateBeamTFlexure(tFlexureInput);
+    const throughRegistry = skillRegistry.calculate('beam-t-flexure', tFlexureInput);
+    expect(throughRegistry.calculatorType).toBe(legacy.calculatorType);
+    expect(throughRegistry.results).toEqual(legacy.results);
+    expect(throughRegistry.checks).toEqual(legacy.checks);
+    expect(throughRegistry.conclusion).toEqual(legacy.conclusion);
+  });
+
+  it('returns a structured error result for invalid beam-t-flexure input', () => {
+    const result = skillRegistry.calculate('beam-t-flexure', { ...tFlexureInput, hf: '100' });
+    expect(result.advisories.some(advisory => advisory.code === 'SKILL_INPUT_INVALID')).toBe(true);
+    expect(result.overallStatus).toBe('REVIEW_REQUIRED');
+  });
+
+  it('calls the legacy beam-double-flexure entry without changing calculation output', () => {
+    const legacy = calculateBeamDoubleFlexure(doubleFlexureInput);
+    const throughRegistry = skillRegistry.calculate('beam-double-flexure', doubleFlexureInput);
+    expect(throughRegistry.calculatorType).toBe(legacy.calculatorType);
+    expect(throughRegistry.results).toEqual(legacy.results);
+    expect(throughRegistry.checks).toEqual(legacy.checks);
+    expect(throughRegistry.conclusion).toEqual(legacy.conclusion);
+  });
+
+  it('returns a structured error result for invalid beam-double-flexure input', () => {
+    const result = skillRegistry.calculate('beam-double-flexure', { ...doubleFlexureInput, compressionBarCount: '2' });
+    expect(result.advisories.some(advisory => advisory.code === 'SKILL_INPUT_INVALID')).toBe(true);
+    expect(result.overallStatus).toBe('REVIEW_REQUIRED');
   });
 
   it('dispatches the unified column Skill to the axial report adapter', () => {
