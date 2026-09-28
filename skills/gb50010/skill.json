@@ -1,0 +1,24 @@
+{
+  "id": "gb50010",
+  "name": "GB 50010-2010（2015年版）规范查询",
+  "kind": "normative",
+  "version": "1.0.0",
+  "description": "查询《混凝土结构设计规范》GB 50010-2010（2015年版）条文。只返回规范说什么，不执行任何工程计算。",
+  "component": "normative",
+  "calculatorEntry": "./resolver.ts",
+  "inputSchema": "./schema.json",
+  "evidenceCatalog": "./evidence.json",
+  "testCatalog": "./tests.json",
+  "outputType": "src/agent/skill-types.ts#NormativeAnswer",
+  "applicability": [
+    "混凝土结构设计规范 GB 50010-2010（2015年版）",
+    "材料强度、梁正截面、梁斜截面、柱相关条文的查询"
+  ],
+  "boundaryChecks": [
+    "不返回任何工程量、配筋面积、承载力数值",
+    "原文未导入的条文 text 为空，verificationStatus 为 REVIEW_REQUIRED"
+  ],
+  "formulaMappings": [],
+  "status": "REVIEW_REQUIRED",
+  "supportedUnits": []
+}

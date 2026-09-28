@@ -1,11 +1,11 @@
-import beamManifest from '../../skills/beam-shear/skill.json';
-import beamSchema from '../../skills/beam-shear/schema.json';
-import beamEvidence from '../../skills/beam-shear/evidence.json';
-import beamTests from '../../skills/beam-shear/tests.json';
-import flexureManifest from '../../skills/beam-flexure/skill.json';
-import flexureSchema from '../../skills/beam-flexure/schema.json';
-import flexureEvidence from '../../skills/beam-flexure/evidence.json';
-import flexureTests from '../../skills/beam-flexure/tests.json';
+import beamShearManifest from '../../skills/beam-shear/skill.json';
+import beamShearSchema from '../../skills/beam-shear/schema.json';
+import beamShearEvidence from '../../skills/beam-shear/evidence.json';
+import beamShearTests from '../../skills/beam-shear/tests.json';
+import beamFlexureManifest from '../../skills/beam-flexure/skill.json';
+import beamFlexureSchema from '../../skills/beam-flexure/schema.json';
+import beamFlexureEvidence from '../../skills/beam-flexure/evidence.json';
+import beamFlexureTests from '../../skills/beam-flexure/tests.json';
 import auditorManifest from '../../skills/calculation-auditor/skill.json';
 import auditorSchema from '../../skills/calculation-auditor/schema.json';
 import auditorEvidence from '../../skills/calculation-auditor/evidence.json';
@@ -14,12 +14,21 @@ import columnManifest from '../../skills/column/skill.json';
 import columnSchema from '../../skills/column/schema.json';
 import columnEvidence from '../../skills/column/evidence.json';
 import columnTests from '../../skills/column/tests.json';
+import gb50010Manifest from '../../skills/gb50010/skill.json';
+import gb50010Schema from '../../skills/gb50010/schema.json';
+import gb50010Evidence from '../../skills/gb50010/evidence.json';
+import gb50010Tests from '../../skills/gb50010/tests.json';
+
 import { invokeBeamFlexure, isBeamFlexureInput } from '../../skills/beam-flexure/calculator';
 import { invokeBeamShear, isBeamShearInput } from '../../skills/beam-shear/calculator';
 import { invokeColumn, isColumnSkillInput } from '../../skills/column/calculator';
 import { auditSkillPackage, CalculationAuditResult } from './calculation-auditor';
+import { gb50010Skill } from '../../skills/gb50010/resolver';
 import {
   CalculationSkill,
+  NormativeAnswer,
+  NormativeQuery,
+  NormativeSkill,
   SkillEvidenceCatalog,
   SkillInputSchema,
   SkillManifest,
@@ -27,34 +36,22 @@ import {
   SkillTestCatalog,
 } from './skill-types';
 
+// ---------------------------------------------------------------------------
+// Build packages
+// ---------------------------------------------------------------------------
+
 const beamShearPackage: SkillPackage = {
-  manifest: beamManifest as SkillManifest,
-  schema: beamSchema as SkillInputSchema,
-  evidence: beamEvidence as SkillEvidenceCatalog,
-  tests: beamTests as SkillTestCatalog,
-};
-
-export const beamShearSkillPackage = beamShearPackage;
-
-const beamShearSkill: CalculationSkill = {
-  package: beamShearPackage,
-  accepts: isBeamShearInput,
-  calculate: invokeBeamShear,
+  manifest: beamShearManifest as SkillManifest,
+  schema: beamShearSchema as SkillInputSchema,
+  evidence: beamShearEvidence as SkillEvidenceCatalog,
+  tests: beamShearTests as SkillTestCatalog,
 };
 
 const beamFlexurePackage: SkillPackage = {
-  manifest: flexureManifest as SkillManifest,
-  schema: flexureSchema as SkillInputSchema,
-  evidence: flexureEvidence as SkillEvidenceCatalog,
-  tests: flexureTests as SkillTestCatalog,
-};
-
-export const beamFlexureSkillPackage = beamFlexurePackage;
-
-const beamFlexureSkill: CalculationSkill = {
-  package: beamFlexurePackage,
-  accepts: isBeamFlexureInput,
-  calculate: invokeBeamFlexure,
+  manifest: beamFlexureManifest as SkillManifest,
+  schema: beamFlexureSchema as SkillInputSchema,
+  evidence: beamFlexureEvidence as SkillEvidenceCatalog,
+  tests: beamFlexureTests as SkillTestCatalog,
 };
 
 const columnPackage: SkillPackage = {
@@ -64,14 +61,6 @@ const columnPackage: SkillPackage = {
   tests: columnTests as SkillTestCatalog,
 };
 
-export const columnSkillPackage = columnPackage;
-
-const columnSkill: CalculationSkill = {
-  package: columnPackage,
-  accepts: isColumnSkillInput,
-  calculate: invokeColumn,
-};
-
 const calculationAuditorPackage: SkillPackage = {
   manifest: auditorManifest as SkillManifest,
   schema: auditorSchema as SkillInputSchema,
@@ -79,7 +68,38 @@ const calculationAuditorPackage: SkillPackage = {
   tests: auditorTests as SkillTestCatalog,
 };
 
-export const calculationAuditorSkillPackage = calculationAuditorPackage;
+const gb50010Package: SkillPackage = {
+  manifest: gb50010Manifest as SkillManifest,
+  schema: gb50010Schema as SkillInputSchema,
+  evidence: gb50010Evidence as SkillEvidenceCatalog,
+  tests: gb50010Tests as SkillTestCatalog,
+};
+
+// ---------------------------------------------------------------------------
+// Skill instances
+// ---------------------------------------------------------------------------
+
+const beamShearSkill: CalculationSkill = {
+  package: beamShearPackage,
+  accepts: isBeamShearInput,
+  calculate: invokeBeamShear,
+};
+
+const beamFlexureSkill: CalculationSkill = {
+  package: beamFlexurePackage,
+  accepts: isBeamFlexureInput,
+  calculate: invokeBeamFlexure,
+};
+
+const columnSkill: CalculationSkill = {
+  package: columnPackage,
+  accepts: isColumnSkillInput,
+  calculate: invokeColumn,
+};
+
+// ---------------------------------------------------------------------------
+// Registry
+// ---------------------------------------------------------------------------
 
 export interface SkillSummary {
   id: string;
@@ -93,16 +113,18 @@ export interface SkillSummary {
 
 export class SkillRegistry {
   private readonly calculationSkills = new Map<string, CalculationSkill>();
+  private readonly normativeSkills = new Map<string, NormativeSkill>();
   private readonly auditPackages = new Map<string, SkillPackage>();
 
   constructor() {
-    this.registerCalculation(beamShearSkill);
     this.registerCalculation(beamFlexureSkill);
+    this.registerCalculation(beamShearSkill);
     this.registerCalculation(columnSkill);
+    this.registerNormative(gb50010Skill);
     this.registerAuditor(calculationAuditorPackage);
   }
 
-  registerCalculation(skill: CalculationSkill) {
+  registerCalculation(skill: CalculationSkill): void {
     if (skill.package.manifest.kind !== 'calculation') {
       throw new Error(`只能注册 calculation Skill：${skill.package.manifest.id}`);
     }
@@ -112,7 +134,17 @@ export class SkillRegistry {
     this.calculationSkills.set(skill.package.manifest.id, skill);
   }
 
-  registerAuditor(skill: SkillPackage) {
+  registerNormative(skill: NormativeSkill): void {
+    if (skill.package.manifest.kind !== 'normative') {
+      throw new Error(`只能注册 normative Skill：${skill.package.manifest.id}`);
+    }
+    if (this.normativeSkills.has(skill.package.manifest.id)) {
+      throw new Error(`Skill 已注册：${skill.package.manifest.id}`);
+    }
+    this.normativeSkills.set(skill.package.manifest.id, skill);
+  }
+
+  registerAuditor(skill: SkillPackage): void {
     if (skill.manifest.kind !== 'auditor') {
       throw new Error(`只能注册 auditor Skill：${skill.manifest.id}`);
     }
@@ -124,22 +156,27 @@ export class SkillRegistry {
 
   list(): SkillSummary[] {
     const packages = [
-      ...[...this.calculationSkills.values()].map(skill => skill.package),
+      ...[...this.calculationSkills.values()].map(s => s.package),
+      ...[...this.normativeSkills.values()].map(s => s.package),
       ...this.auditPackages.values(),
     ];
-    return packages.map(skill => ({
-      id: skill.manifest.id,
-      name: skill.manifest.name,
-      kind: skill.manifest.kind,
-      description: skill.manifest.description,
-      status: skill.manifest.status,
-      component: skill.manifest.component,
-      inputSchema: skill.manifest.inputSchema,
+    return packages.map(p => ({
+      id: p.manifest.id,
+      name: p.manifest.name,
+      kind: p.manifest.kind,
+      description: p.manifest.description,
+      status: p.manifest.status,
+      component: p.manifest.component,
+      inputSchema: p.manifest.inputSchema,
     }));
   }
 
   describe(id: string): SkillPackage | undefined {
-    return this.calculationSkills.get(id)?.package ?? this.auditPackages.get(id);
+    return (
+      this.calculationSkills.get(id)?.package ??
+      this.normativeSkills.get(id)?.package ??
+      this.auditPackages.get(id)
+    );
   }
 
   calculate(id: string, input: unknown) {
@@ -148,12 +185,43 @@ export class SkillRegistry {
     return skill.calculate(input);
   }
 
+  resolve(query: NormativeQuery): NormativeAnswer {
+    // 在所有 normative skills 中查找匹配规范编号的 skill
+    for (const skill of this.normativeSkills.values()) {
+      const codeMatch = skill.package.evidence.records.some(
+        r => r.codeNumber.replace(/[\s-]/g, '').toUpperCase() ===
+              query.code.replace(/[\s-]/g, '').toUpperCase()
+      );
+      if (codeMatch) return skill.resolve(query);
+    }
+    // 兜底：返回未收录
+    return {
+      query,
+      codeName: '未知规范',
+      codeNumber: query.code,
+      edition: '',
+      chapter: '',
+      clause: query.clause,
+      text: '',
+      page: null,
+      source: null,
+      verificationStatus: 'UNVERIFIED',
+      applicability: '未收录规范',
+      warnings: ['该规范暂未接入 normative Skill。'],
+    };
+  }
+
   audit(id: string): CalculationAuditResult {
-    const packageDefinition = this.describe(id);
-    if (!packageDefinition) throw new Error(`未找到 Skill：${id}`);
-    return auditSkillPackage(packageDefinition);
+    const pkg = this.describe(id);
+    if (!pkg) throw new Error(`未找到 Skill：${id}`);
+    return auditSkillPackage(pkg);
   }
 }
 
 export const skillRegistry = new SkillRegistry();
 export const registeredAuditorSkillId = auditorManifest.id;
+export { beamShearPackage as beamShearSkillPackage };
+export { beamFlexurePackage as beamFlexureSkillPackage };
+export { columnPackage as columnSkillPackage };
+export { calculationAuditorPackage as calculationAuditorSkillPackage };
+export { gb50010Package };

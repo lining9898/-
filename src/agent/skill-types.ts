@@ -1,6 +1,7 @@
 import { CalculationResult } from '../types/calculation';
+import { VerificationStatus } from '../types/evidence';
 
-export type SkillKind = 'calculation' | 'auditor';
+export type SkillKind = 'calculation' | 'normative' | 'auditor';
 
 export interface SkillFormulaMapping {
   id: string;
@@ -87,3 +88,48 @@ export interface CalculationSkill {
   accepts(input: unknown): boolean;
   calculate(input: unknown): CalculationResult;
 }
+
+// ---------------------------------------------------------------------------
+// Normative Skill: 只回答"规范说什么"，不做任何工程计算
+// ---------------------------------------------------------------------------
+
+export interface NormativeQuery {
+  /** 规范编号，如 "GB50010" 或 "GB 50010" */
+  code: string;
+  /** 条文号，如 "6.2.10" */
+  clause: string;
+}
+
+export interface NormativeAnswer {
+  /** 原始查询 */
+  query: NormativeQuery;
+  /** 规范名称，如 "混凝土结构设计规范" */
+  codeName: string;
+  /** 规范编号，如 "GB 50010" */
+  codeNumber: string;
+  /** 版本/年份，如 "2010（2015年版）" */
+  edition: string;
+  /** 章节号 */
+  chapter: string;
+  /** 条文号 */
+  clause: string;
+  /** 条文原文（未校核时为空字符串） */
+  text: string;
+  /** PDF 页码，未导入时为 null */
+  page: number | null;
+  /** 来源文件 */
+  source: string | null;
+  /** 校核状态 */
+  verificationStatus: VerificationStatus;
+  /** 适用范围说明 */
+  applicability: string;
+  /** 警告（如"该条文已修订"） */
+  warnings: string[];
+}
+
+export interface NormativeSkill {
+  package: SkillPackage;
+  /** 查询规范条文，返回 NormativeAnswer（禁止返回 CalculationResult） */
+  resolve(query: NormativeQuery): NormativeAnswer;
+}
+

@@ -1,117 +1,81 @@
-# 混凝土结构工具箱 (CN-Structural-Toolkit)
+# CN-Structural-Toolkit — 中国规范结构构件计算 Web 平台
 
-基于中国《混凝土结构设计规范》(GB 50010-2010, 2015年版) 的钢筋混凝土构件计算工具箱。
+基于中国规范的结构构件计算 Web 平台，采用 **Agent → Skill Registry → Engine → Result** 分层架构。
 
-## 功能特性
+## 架构
 
-### 当前支持功能
+```
+AI Agent
+  ↓
+Skill Registry（list / describe / calculate / resolve / audit）
+  ↓
+┌─────────────────┬──────────────────┬─────────────────┐
+│ Calculation     │ Normative       │ Auditor         │
+│ Skills          │ Skills          │ Skills          │
+│ "怎么算"        │ "规范说什么"     │ "是否可靠"      │
+└─────────────────┴──────────────────┴─────────────────┘
+  ↓                    ↓                   ↓
+Engineering Engine   NormativeAnswer   AuditResult
+  ↓
+CalculationResult
+  ↓
+计算书 / 审查报告
+```
 
-- **矩形梁正截面受弯承载力计算** - 基于 GB 50010-2010 第 6.2.10 条
-- **矩形梁斜截面受剪承载力计算** - 基于 GB 50010-2010 第 6.3.4 条
-- **矩形箍筋柱轴压承载力计算** - 矩形箍筋柱单项验算
-- **矩形箍筋柱偏心受压承载力计算** - 大小偏心判别与承载力计算
+### 已实现 Skills
 
-### 核心计算模块
+| Skill ID | 类型 | 说明 |
+|----------|------|------|
+| `beam-flexure` | calculation | 矩形梁正截面受弯承载力 |
+| `beam-shear` | calculation | 矩形梁斜截面受剪承载力 |
+| `column` | calculation | 矩形箍筋柱轴压/偏心受压 |
+| `gb50010` | normative | GB 50010-2010（2015年版）条文查询 |
+| `calculation-auditor` | auditor | Skill 结构审查 |
 
-| 模块 | 规范依据 | 状态 |
-|------|----------|------|
-| 混凝土强度设计值 (fc, ft) | 4.1.4 | ✅ 已验证 |
-| 钢筋强度设计值 (fy) | 4.2.3 | ✅ 已验证 |
-| 混凝土弹性模量 (Ec) | 4.1.5 | ✅ 已验证 |
-| 钢筋弹性模量 (Es) | 4.2.5 | ✅ 已验证 |
-| 等效矩形应力图系数 (α1, β1) | 6.2.6 | ✅ 已验证 |
-| 混凝土极限压应变 (εcu) | 6.2.1 | ✅ 已验证 |
-| 界限相对受压区高度 (ξb) | 6.2.7 | ✅ 已验证 |
-| 正截面受弯承载力 (Mu) | 6.2.10 | ✅ 已验证 |
-| 最小配筋率 (ρmin) | 8.5.1 | ✅ 已修复 |
+## 技术栈
 
-## 技术架构
-
-### 前端
-
-- **框架**: React 18 + TypeScript
-- **构建工具**: Vite
-- **样式**: Tailwind CSS
-
-### 计算引擎
-
-- **核心**: Rust (编译为 WebAssembly)
-- **文档生成**: 规范化计算书输出
-
-### 部署
-
-- 支持 Netlify 部署
-- 预编译 WASM 计算模块
+- **前端**: React 19 + TypeScript 7 + Vite 8
+- **样式**: Tailwind CSS 4
+- **测试**: Vitest 5 + Testing Library
+- **计算引擎**: Rust → WebAssembly（@ferscloud/fers-calculation-web）
 
 ## 快速开始
 
-### 安装依赖
-
 ```bash
 npm install
+npm run dev       # 开发
+npm run build     # 生产构建
+npm run test:run  # 全量测试
 ```
-
-### 开发模式
-
-```bash
-npm run dev
-```
-
-### 构建生产版本
-
-```bash
-npm run build
-```
-
-### 运行测试
-
-```bash
-npm run test
-```
-
-## 使用方法
-
-1. 访问在线版本: https://funny-belekoy-d7095c.netlify.app/
-2. 选择需要计算的构件类型
-3. 输入构件参数 (截面尺寸、配筋、材料强度等)
-4. 获取计算结果与计算书
 
 ## 项目结构
 
 ```
-cn-structural-toolkit/
-├── docs/                    # 规范验证与架构文档
-│   ├── GB50010_VERIFICATION_REPORT.md  # 规范原文校核报告
-│   ├── PHASE3_COMPLETION_REPORT.md     # 第三阶段完成报告
-│   ├── SHEAR_VERIFICATION_REPORT.md    # 斜截面计算校核
-│   └── ...
-├── dist/                    # 构建输出
-├── index.html              # 入口文件
-└── package.json
+src/
+├── agent/           # Skill Registry、类型定义、Auditor
+│   ├── skill-types.ts
+│   ├── skill-registry.ts
+│   └── calculation-auditor.ts
+├── core/            # 计算引擎（梁/柱/钢/工具）
+├── types/           # CalculationResult、Evidence 数据模型
+├── report/          # 计算书生成器
+├── components/       # React UI
+└── pages/           # 页面
+skills/              # Skill 包（manifest + schema + evidence + tests + entry）
+tests/               # 测试
+docs/                # 架构与校核文档
 ```
 
-## 规范与参考
+## Evidence 追溯链
 
-### 主要参考规范
+```
+CalculationResult → steps/formula → evidenceId → SkillEvidenceRecord → 规范名称/版本/条文/页码
+```
 
-- 《混凝土结构设计规范》GB 50010-2010 (2015年版)
+所有 `formulaMappings[].evidenceId` 必须在对应 Skill 的 `evidence.json` 中存在。
 
-### 第三方参考项目
+## 规范依据
 
-- AS 3600 Structural Toolkit
-- ConcreteDesignPy
-- claude-structural-engineering
+- 《混凝土结构设计规范》GB 50010-2010（2015年版）
 
-详见 [THIRD_PARTY_REFERENCES.md](./THIRD_PARTY_REFERENCES.md)
-
-## 许可证
-
-详见 [dist/FERS-LICENSE.txt](./dist/FERS-LICENSE.txt)
-
-## 贡献指南
-
-欢迎提交 Issue 和 Pull Request 来改进本项目。
-
----
-
-*本工具箱的计算结果仅供参考，实际工程设计请咨询专业工程师并以正式施工图为准。*
+> 计算结果仅供参考，实际工程设计请以正式施工图为准。

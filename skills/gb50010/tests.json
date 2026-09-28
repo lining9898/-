@@ -1,0 +1,22 @@
+{
+  "cases": [
+    {
+      "id": "gb50010-resolve-known-clause",
+      "category": "normal",
+      "file": "tests/agent/normative-skill.test.ts",
+      "description": "查询已收录条文 6.2.10，返回 NormativeAnswer"
+    },
+    {
+      "id": "gb50010-resolve-unknown-clause",
+      "category": "invalid",
+      "file": "tests/agent/normative-skill.test.ts",
+      "description": "查询未收录条文，返回 UNVERIFIED + 警告"
+    },
+    {
+      "id": "gb50010-no-calculation-fields",
+      "category": "formula",
+      "file": "tests/agent/normative-skill.test.ts",
+      "description": "NormativeAnswer 不包含 Mu/Vu/Nu/As 等计算结果字段"
+    }
+  ]
+}
