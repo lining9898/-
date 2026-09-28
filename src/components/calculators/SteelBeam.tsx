@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { calculateSteelBeam, SteelBeamInput } from '../../core/steel/beam';
 
-const SOURCE = 'https://jncc.jinan.gov.cn/attach/0/c24799cca3194d3ba1d87c72caa1c3ef.pdf';
-
 const fields: { key: keyof SteelBeamInput; label: string; unit: string; step?: string }[] = [
   { key: 'h', label: '截面高度 h', unit: 'mm' },
   { key: 'bf', label: '翼缘宽度 bf', unit: 'mm' },
@@ -90,9 +88,14 @@ const SteelBeam: React.FC = () => {
             <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 p-3">
               示例输入不代表项目材料。f、fv 应按材料、厚度等条件另行确定；φb 应按附录 C 和实际侧向支承条件另行确定。此处未验算截面宽厚比、局部稳定、组合应力、挠度、疲劳、连接及抗震要求；三项单独满足不能作为完整设计通过结论。
             </p>
-            <a href={SOURCE} target="_blank" rel="noreferrer" className="text-sm text-blue-700 underline">
-              查看规范扫描件（济南市住建部门）
-            </a>
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900 space-y-1">
+              <p className="font-bold text-blue-800">规范依据</p>
+              <p>规范：GB 50017-2017 钢结构设计标准</p>
+              <p>计算项目：钢梁受弯、受剪、整体稳定</p>
+              <p>条文状态：待原文校核</p>
+              <p>证据来源：规范原文库</p>
+              <p className="text-blue-600">原文未导入，暂不提供条文引用。</p>
+            </div>
           </>}
         </section>
       </div>

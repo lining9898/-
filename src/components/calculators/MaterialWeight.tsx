@@ -44,8 +44,9 @@ const MaterialWeight: React.FC = () => {
           <input type="number" step="any" value={volume} onChange={event => setVolume(Number(event.target.value))}
             className="block w-full mt-1 border border-gray-300 rounded px-3 py-2 bg-white" />
         </label>
-        <a href="https://commons.wikimedia.org/wiki/File:GB_50009-2012_%E5%BB%BA%E7%AD%91%E7%BB%93%E6%9E%84%E8%8D%B7%E8%BD%BD%E8%A7%84%E8%8C%83.pdf"
-          target="_blank" rel="noreferrer" className="text-xs text-blue-700 underline">查看公开规范扫描件</a>
+        <p className="text-xs text-gray-500">
+          规范依据：GB 50009-2012《建筑结构荷载规范》附录 A；原文未导入，暂不提供条文引用。
+        </p>
       </section>
       <section aria-live="polite" className="min-w-0">
         {calculation.error && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-sm text-red-700">{calculation.error}</p>}
