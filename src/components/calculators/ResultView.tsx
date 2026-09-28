@@ -5,6 +5,7 @@ import EvidencePanel from '../evidence/EvidencePanel';
 import VerificationBadge from '../evidence/VerificationBadge';
 import CalculationReportView from '../report/CalculationReportView';
 import AIReviewButton from '../ai-review/AIReviewButton';
+import DeepSeekReviewButton from '../ai-review/DeepSeekReviewButton';
 
 /**
  * 通用计算结果渲染组件（结果 / 计算书 / 规范依据 三个页签）
@@ -29,6 +30,7 @@ const ResultView: React.FC<{ result: CalculationResult }> = ({ result }) => {
           </button>
         ))}
         <AIReviewButton result={result} />
+        <DeepSeekReviewButton result={result} magnitudeHighRisk={result.calculatorType === 'foundation-independent'} />
       </div>
 
       {activeTab === 'result' && (

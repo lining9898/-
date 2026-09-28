@@ -4,6 +4,7 @@ import { generateReport } from '../../report/generator';
 import CalculationReportView from './CalculationReportView';
 import EvidencePanel from '../evidence/EvidencePanel';
 import AIReviewButton from '../ai-review/AIReviewButton';
+import DeepSeekReviewButton from '../ai-review/DeepSeekReviewButton';
 
 interface ResultTabsProps {
   result: CalculationResult;
@@ -27,6 +28,7 @@ const ResultTabs: React.FC<ResultTabsProps> = ({ result, children }) => {
         {tab.label}
       </button>)}
       <AIReviewButton result={result} internalMechanics={result.calculatorType === 'beam-continuous'} />
+      <DeepSeekReviewButton result={result} internalMechanics={result.calculatorType === 'beam-continuous'} />
     </div>
     <div role="tabpanel" className="py-4 space-y-5">
       {activeTab === 'result' && children}
