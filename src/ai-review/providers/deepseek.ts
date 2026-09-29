@@ -132,9 +132,8 @@ export async function callDeepSeekReview(
           { role: 'system', content: buildSystemInstructions() },
           { role: 'user', content: reviewPrompt },
         ],
-        response_format: { type: 'json_object' },
         temperature: 0.1,
-        max_tokens: 4096,
+        max_tokens: 8192,
       }),
       signal: controller.signal,
     });
@@ -164,10 +163,27 @@ export async function callDeepSeekReview(
       return { ok: false, error: 'DeepSeek 返回空内容', errorType: 'PARSE' };
     }
 
-    // json_schema 模式下应该直接是合法 JSON
+    // 解析 JSON：先直接 parse，失败则从文本中提取 JSON 块
+    let parsed: any = null;
     try {
-      const parsed = JSON.parse(outputText);
-      const result: ExtendedReviewResult = {
+      parsed = JSON.parse(outputText);
+    } catch {
+      const jsonMatch = outputText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try { parsed = JSON.parse(jsonMatch[0]); } catch { /* ignore */ }
+      }
+    }
+
+    if (!parsed) {
+      return {
+        ok: false,
+        error: `无法解析 JSON，原始返回前 500 字: ${outputText.slice(0, 500)}`,
+        errorType: 'PARSE',
+        rawContent: outputText,
+      };
+    }
+
+    const result: ExtendedReviewResult = {
         status: parsed.status || 'REVIEW_REQUIRED',
         summary: parsed.summary || '',
         issues: (parsed.issues || []).map((iss: any, i: number) => ({
