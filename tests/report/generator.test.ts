@@ -38,12 +38,20 @@ describe('计算书生成器', () => {
     expect(report.some(s => s.title.includes('计算过程'))).toBe(true);
     expect(report.some(s => s.title.includes('验算'))).toBe(true);
     expect(report.some(s => s.title.includes('结论'))).toBe(true);
-    expect(report.some(s => s.title.includes('规范依据'))).toBe(true);
+    expect(report.some(s => s.title.includes('公式证据与条文来源'))).toBe(true);
+    const basis = report.find(s => s.title.includes('设计依据'))!;
+    expect(basis.content).toContain('GB 55001-2021');
+    expect(basis.content).toContain('GB 55008-2021');
+    expect(basis.content).toContain('GB/T 50010-2010');
+    expect(basis.content).toContain('本计算模块实际公式基线');
+    expect(basis.content).not.toContain('已废止');
+    expect(basis.evidence).toHaveLength(0);
   });
 
   it('空计算结果应能生成基本计算书', () => {
     const result = createEmptyResult('test');
     const report = generateReport(result);
     expect(report.length).toBeGreaterThan(0);
+    expect(report[0].content).toContain('未执行国家规范设计验算');
   });
 });
