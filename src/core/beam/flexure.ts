@@ -171,7 +171,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   // 记录截面参数
   result.geometry = [
     { label: '有效高度 h₀', value: Math.round(h0 * 100) / 100, unit: 'mm' },
-    { label: 'h₀ 构成', value: `h − c − d/2 = ${input.h} − ${input.cover} − ${input.barDiameter}/2`, unit: 'mm', note: 'c 为纵筋外缘至受拉边距离（已含保护层厚度与箍筋直径），d 为纵筋直径' },
+    { label: 'h₀ 构成', value: `h − c − d/2（c 含保护层+箍筋直径）`, unit: 'mm' },
     { label: '受拉钢筋面积 As', value: Math.round(As * 100) / 100, unit: 'mm²' },
   ];
 
