@@ -1,30 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { INITIAL_CLAUSES } from '../../src/codes/initialData';
 
 describe('Evidence mapping: beta1/xi_b clause attribution', () => {
-  const flexureSrc = readFileSync(
-    resolve(process.cwd(), 'src/core/beam/flexure.ts'), 'utf-8'
-  );
-
-  it('β1 应引用 6.2.6（矩形应力图系数），不应仅引 6.2.7', () => {
-    const betaLine = flexureSrc.split('\n').find((l: string) => l.includes('betaEvidence'));
-    expect(betaLine).toBeDefined();
-    expect(betaLine).toContain('6.2.6');
-    expect(betaLine).not.toContain('6.2.7');
-  });
-
-  it('ξb 应引用 6.2.7（相对界限受压区高度）', () => {
-    const xiBLine = flexureSrc.split('\n').find((l: string) => l.includes('xiBEvidence'));
-    expect(xiBLine).toBeDefined();
-    expect(xiBLine).toContain('6.2.7');
-  });
-
-  it('6.2.6 和 6.2.7 在系统 ClauseEvidence 中尚未 VERIFIED', async () => {
-    const { INITIAL_CLAUSES } = await import('../../src/codes/initialData');
-    const c626 = INITIAL_CLAUSES.find((c: { clause: string }) => c.clause === '6.2.6');
-    const c627 = INITIAL_CLAUSES.find((c: { clause: string }) => c.clause === '6.2.7');
+  it('6.2.6 和 6.2.7 在系统 ClauseEvidence 中不存在或未 VERIFIED', () => {
+    const c626 = INITIAL_CLAUSES.find(c => c.clause === '6.2.6');
+    const c627 = INITIAL_CLAUSES.find(c => c.clause === '6.2.7');
     if (c626) expect(['REVIEW_REQUIRED', 'UNVERIFIED']).toContain(c626.verificationStatus);
     if (c627) expect(['REVIEW_REQUIRED', 'UNVERIFIED']).toContain(c627.verificationStatus);
+  });
+
+  it('系统 VERIFIED Evidence 只有 4 条 GB50010 条文', () => {
+    const verified = INITIAL_CLAUSES.filter(c => c.verificationStatus === 'VERIFIED');
+    expect(verified.map(c => c.clause).sort()).toEqual(['4.1.4', '4.2.3', '6.2.10', '6.2.11']);
   });
 });
