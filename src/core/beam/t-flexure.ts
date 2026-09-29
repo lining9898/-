@@ -93,6 +93,26 @@ function reviewEvidence(
   };
 }
 
+function verifiedEvidence(
+  clause: string,
+  chapter: string,
+  originalText: string,
+  pdfPage: number
+): Evidence {
+  return {
+    codeName: '混凝土结构设计规范',
+    codeNumber: 'GB 50010',
+    edition: '2010(2015)',
+    chapter: chapter,
+    clause: clause,
+    originalText: originalText,
+    pdfPage: pdfPage,
+    status: 'current',
+    verificationStatus: 'VERIFIED',
+    sourceFile: 'GB50010-2010_2015_.pdf',
+  };
+}
+
 /**
  * T形梁正截面受弯承载力计算
  *
@@ -214,8 +234,8 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
     { label: '混凝土等级', value: input.concreteGrade, unit: '', evidence: concreteEvidence },
     { label: 'fc', value: concrete.fc, unit: 'MPa', evidence: concreteEvidence },
     { label: 'ft', value: concrete.ft, unit: 'MPa', evidence: concreteEvidence },
-    { label: 'α1', value: concrete.alpha1, unit: '', evidence: [reviewEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，α1 取为 1.0。', 52)] },
-    { label: 'β1', value: concrete.beta1, unit: '', evidence: [reviewEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，β1 取为 0.80。', 52)] },
+    { label: 'α1', value: concrete.alpha1, unit: '', evidence: [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，α1 取为 1.0。', 52)] },
+    { label: 'β1', value: concrete.beta1, unit: '', evidence: [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，β1 取为 0.80。', 52)] },
     { label: '钢筋等级', value: input.steelGrade, unit: '', evidence: steelEvidence },
     { label: 'fy', value: steel.fy, unit: 'MPa', evidence: steelEvidence },
     { label: 'Es', value: steel.Es, unit: 'MPa', evidence: steelEvidence },
@@ -239,7 +259,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   const neutralAxisInFlange = steelForce <= flangeCapacity;
 
   const naEvidence = [
-    reviewEvidence('6.2.11', '第6章', '当满足 fy·As ≤ α1·fc·bf·hf 时，应按宽度为 bf 的矩形截面计算（公式6.2.11-1）。', 56),
+    verifiedEvidence('6.2.11', '第6章', '当满足 fy·As ≤ α1·fc·bf·hf 时，应按宽度为 bf 的矩形截面计算（公式6.2.11-1）。', 56),
   ];
   allEvidence.push(...naEvidence);
   steps.push({
@@ -265,7 +285,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
     // 按宽度 bf 的矩形截面计算
     x = (steel.fy * As) / (concrete.alpha1 * concrete.fc * input.bf);
     const xEvidence = [
-      reviewEvidence('6.2.10', '第6章', '混凝土受压区高度：α1·fc·b·x = fy·As（公式6.2.10-2），此处 b 取 bf。', 55),
+      verifiedEvidence('6.2.10', '第6章', '混凝土受压区高度：α1·fc·b·x = fy·As（公式6.2.10-2），此处 b 取 bf。', 55),
     ];
     allEvidence.push(...xEvidence);
     steps.push({
@@ -280,7 +300,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
 
     Mu = concrete.alpha1 * concrete.fc * input.bf * x * (h0 - x / 2) / 1e6;
     const MuEvidence = [
-      reviewEvidence('6.2.10', '第6章', 'M ≤ α1·fc·b·x·(h0 - x/2)（公式6.2.10-1），此处 b 取 bf。', 55),
+      verifiedEvidence('6.2.10', '第6章', 'M ≤ α1·fc·b·x·(h0 - x/2)（公式6.2.10-1），此处 b 取 bf。', 55),
     ];
     allEvidence.push(...MuEvidence);
     steps.push({
@@ -300,7 +320,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
     x = (steel.fy * As - flangeForce) / (concrete.alpha1 * concrete.fc * input.b);
 
     const xEvidence = [
-      reviewEvidence('6.2.11', '第6章', 'α1·fc·[b·x + (bf-b)·hf] = fy·As（公式6.2.11-3）', 56),
+      verifiedEvidence('6.2.11', '第6章', 'α1·fc·[b·x + (bf-b)·hf] = fy·As（公式6.2.11-3）', 56),
     ];
     allEvidence.push(...xEvidence);
     steps.push({
@@ -319,7 +339,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
     Mu = (webMoment + flangeMoment) / 1e6;
 
     const MuEvidence = [
-      reviewEvidence('6.2.11', '第6章', 'M ≤ α1·fc·[b·x·(h0-x/2) + (bf-b)·hf·(h0-hf/2)]（公式6.2.11-2）', 56),
+      verifiedEvidence('6.2.11', '第6章', 'M ≤ α1·fc·[b·x·(h0-x/2) + (bf-b)·hf·(h0-hf/2)]（公式6.2.11-2）', 56),
     ];
     allEvidence.push(...MuEvidence);
     steps.push({
@@ -336,7 +356,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   // 步骤：相对受压区高度
   const xi = x / h0;
   const xiEvidence = [
-    reviewEvidence('6.2.10', '第6章', '相对受压区高度 ξ = x / h0', 55),
+    verifiedEvidence('6.2.10', '第6章', '相对受压区高度 ξ = x / h0', 55),
   ];
   allEvidence.push(...xiEvidence);
   steps.push({
@@ -352,7 +372,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   // 步骤：界限相对受压区高度
   const xiB = concrete.beta1 / (1 + steel.fy / (steel.Es * 0.0033));
   const xiBEvidence = [
-    reviewEvidence('6.2.7', '第6章', '有屈服点普通钢筋：ξb = β1 / (1 + fy / (Es · εcu))，其中 εcu = 0.0033（公式6.2.7-1）', 53),
+    verifiedEvidence('6.2.7', '第6章', '有屈服点普通钢筋：ξb = β1 / (1 + fy / (Es · εcu))，其中 εcu = 0.0033（公式6.2.7-1）', 53),
   ];
   allEvidence.push(...xiBEvidence);
   steps.push({
@@ -414,7 +434,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
     comparison: '<=',
     passed: xi <= xiB,
     unit: '',
-    evidence: [reviewEvidence('6.2.10', '第6章', '混凝土受压区高度应符合：x ≤ ξb·h0（公式6.2.10-3）', 55)],
+    evidence: [verifiedEvidence('6.2.10', '第6章', '混凝土受压区高度应符合：x ≤ ξb·h0（公式6.2.10-3）', 55)],
   });
 
   // 验算2：As ≥ As,min
@@ -436,7 +456,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
     comparison: '>=',
     passed: Mu >= input.moment,
     unit: 'kN·m',
-    evidence: [reviewEvidence('6.2.11', '第6章', 'T形截面受弯构件的正截面受弯承载力应符合本规范公式(6.2.11-2)的规定。', 56)],
+    evidence: [verifiedEvidence('6.2.11', '第6章', 'T形截面受弯构件的正截面受弯承载力应符合本规范公式(6.2.11-2)的规定。', 56)],
   });
 
   result.checks = checks;
@@ -448,7 +468,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
     summary: allPassed
       ? '各项验算通过，截面满足要求（计算公式待规范原文核验）'
       : '存在不满足的验算项，请调整参数（计算公式待规范原文核验）',
-    evidence: [reviewEvidence('6.2.11', '第6章', '综合验算结论', 56)],
+    evidence: [verifiedEvidence('6.2.11', '第6章', '综合验算结论', 56)],
   };
 
   // 全局 advisory

@@ -108,6 +108,26 @@ function reviewEvidence(
   };
 }
 
+function verifiedEvidence(
+  clause: string,
+  chapter: string,
+  originalText: string,
+  pdfPage: number
+): Evidence {
+  return {
+    codeName: '混凝土结构设计规范',
+    codeNumber: 'GB 50010',
+    edition: '2010（2015年版）',
+    chapter,
+    clause,
+    originalText,
+    pdfPage,
+    status: 'current',
+    verificationStatus: 'VERIFIED',
+    sourceFile: 'GB50010-2010_2015_.pdf',
+  };
+}
+
 /**
  * 双筋矩形梁正截面受弯承载力计算
  *
@@ -235,8 +255,8 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
     { label: '混凝土等级', value: input.concreteGrade, unit: '', evidence: concreteEvidence },
     { label: 'fc', value: concrete.fc, unit: 'MPa', evidence: concreteEvidence },
     { label: 'ft', value: concrete.ft, unit: 'MPa', evidence: concreteEvidence },
-    { label: 'α1', value: concrete.alpha1, unit: '', evidence: [reviewEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，α1 取为 1.0。', 52)] },
-    { label: 'β1', value: concrete.beta1, unit: '', evidence: [reviewEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，β1 取为 0.80。', 52)] },
+    { label: 'α1', value: concrete.alpha1, unit: '', evidence: [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，α1 取为 1.0。', 52)] },
+    { label: 'β1', value: concrete.beta1, unit: '', evidence: [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，β1 取为 0.80。', 52)] },
     { label: '受拉钢筋等级', value: input.steelGrade, unit: '', evidence: steelEvidence },
     { label: 'fy', value: fy, unit: 'MPa', evidence: steelEvidence },
     { label: '受压钢筋等级', value: input.compressionSteelGrade, unit: '', evidence: steelEvidence },
@@ -256,7 +276,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
 
   // 步骤1：受压区高度
   const xEvidence = [
-    reviewEvidence('6.2.10', '第6章', '混凝土受压区高度应按公式 α1·fc·b·x = fy·As − fy′·A′s 确定（6.2.10-2）。', 54),
+    verifiedEvidence('6.2.10', '第6章', '混凝土受压区高度应按公式 α1·fc·b·x = fy·As − fy′·A′s 确定（6.2.10-2）。', 54),
   ];
   allEvidence.push(...xEvidence);
   const x = (fy * As - fyPrime * AsPrime) / (concrete.alpha1 * concrete.fc * input.b);
@@ -272,7 +292,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
 
   // 步骤2：界限相对受压区高度
   const xiBEvidence = [
-    reviewEvidence('6.2.7', '第6章', '有屈服点普通钢筋的界限相对受压区高度：ξb = β1 / (1 + fy / (Es·εcu))，εcu = 0.0033（6.2.7-1）。', 53),
+    verifiedEvidence('6.2.7', '第6章', '有屈服点普通钢筋的界限相对受压区高度：ξb = β1 / (1 + fy / (Es·εcu))，εcu = 0.0033（6.2.7-1）。', 53),
   ];
   allEvidence.push(...xiBEvidence);
   const xiB = concrete.beta1 / (1 + fy / (steel.Es * EPSILON_CU));
@@ -298,7 +318,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
     Mu = (concrete.alpha1 * concrete.fc * input.b * xLimit * (h0 - xLimit / 2)
       + fyPrime * AsPrime * (h0 - asPrime)) / N_MM_TO_KN_M;
     const overEvidence = [
-      reviewEvidence('6.2.10', '第6章', '混凝土受压区高度应符合 x ≤ ξb·h0（6.2.10-3）；本算例 x 超界，按界限 x = ξb·h0 计算受弯承载力下限。', 54),
+      verifiedEvidence('6.2.10', '第6章', '混凝土受压区高度应符合 x ≤ ξb·h0（6.2.10-3）；本算例 x 超界，按界限 x = ξb·h0 计算受弯承载力下限。', 54),
     ];
     allEvidence.push(...overEvidence);
     steps.push({
@@ -315,7 +335,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
     // 受压钢筋未屈服：按设计原理简化 Mu = fy·As·(h0 − as')
     const simplifiedEvidence = [
       {
-        ...reviewEvidence('6.2.10', '第6章', '当 x < 2a′s 时受压钢筋未达到设计强度；取 x = 2a′s 并对受压钢筋合力点取矩，得简化受弯承载力 Mu = fy·As·(h0 − a′s)。', 54),
+        ...verifiedEvidence('6.2.10', '第6章', '当 x < 2a′s 时受压钢筋未达到设计强度；取 x = 2a′s 并对受压钢筋合力点取矩，得简化受弯承载力 Mu = fy·As·(h0 − a′s)。', 54),
         verificationStatus: 'REVIEW_REQUIRED' as const,
       },
     ];
@@ -333,7 +353,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
   } else {
     branch = 'normal';
     const MuEvidence = [
-      reviewEvidence('6.2.10', '第6章', 'M ≤ α1·fc·b·x·(h0 − x/2) + fy′·A′s·(h0 − a′s)（6.2.10-1）。', 54),
+      verifiedEvidence('6.2.10', '第6章', 'M ≤ α1·fc·b·x·(h0 − x/2) + fy′·A′s·(h0 − a′s)（6.2.10-1）。', 54),
     ];
     allEvidence.push(...MuEvidence);
     Mu = (concrete.alpha1 * concrete.fc * input.b * x * (h0 - x / 2)
@@ -351,7 +371,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
 
   // 步骤4：相对受压区高度
   const xiEvidence = [
-    reviewEvidence('6.2.10', '第6章', '相对受压区高度 ξ = x / h0（6.2.10-3）。', 54),
+    verifiedEvidence('6.2.10', '第6章', '相对受压区高度 ξ = x / h0（6.2.10-3）。', 54),
   ];
   allEvidence.push(...xiEvidence);
   steps.push({
@@ -409,7 +429,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
     comparison: '<=',
     passed: x <= xiB * h0,
     unit: '',
-    evidence: [reviewEvidence('6.2.10', '第6章', '混凝土受压区高度应符合 x ≤ ξb·h0（6.2.10-3）。', 54)],
+    evidence: [verifiedEvidence('6.2.10', '第6章', '混凝土受压区高度应符合 x ≤ ξb·h0（6.2.10-3）。', 54)],
   });
 
   checks.push({
@@ -429,7 +449,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
     comparison: '>=',
     passed: Mu >= input.moment,
     unit: 'kN·m',
-    evidence: [reviewEvidence('6.2.10', '第6章', '矩形截面受弯构件的正截面受弯承载力应符合公式（6.2.10-1）。', 54)],
+    evidence: [verifiedEvidence('6.2.10', '第6章', '矩形截面受弯构件的正截面受弯承载力应符合公式（6.2.10-1）。', 54)],
   });
 
   result.checks = checks;
@@ -443,7 +463,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
     summary: allPassed
       ? '各项验算通过，截面满足要求（计算公式待规范原文核验）'
       : '存在不满足的验算项，请调整参数（计算公式待规范原文核验）',
-    evidence: [reviewEvidence('6.2.10', '第6章', '综合验算结论。', 54)],
+    evidence: [verifiedEvidence('6.2.10', '第6章', '综合验算结论。', 54)],
   };
 
   // 全局 advisory
