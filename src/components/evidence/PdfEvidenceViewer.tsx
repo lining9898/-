@@ -22,6 +22,14 @@ const PdfEvidenceViewer: React.FC<PdfEvidenceViewerProps> = ({
         <span className="text-xs font-medium text-blue-700">
           PDF 原文 · {codeLabel} 第 {clause} 条 · 第 {pageNumber} 页
         </span>
+        <a
+          href={src}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-blue-600 hover:underline"
+        >
+          新窗口打开 ↗
+        </a>
       </div>
       <iframe
         src={src}
