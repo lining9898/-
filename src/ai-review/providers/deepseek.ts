@@ -117,7 +117,7 @@ export async function callDeepSeekReview(
   const timer = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const resp = await fetch(`${baseUrl}/responses`, {
+    const resp = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -125,18 +125,13 @@ export async function callDeepSeekReview(
       },
       body: JSON.stringify({
         model,
-        input: reviewPrompt,
-        instructions: buildSystemInstructions(),
-        text: {
-          format: {
-            type: 'json_schema',
-            name: 'review_result',
-            schema: REVIEW_RESULT_SCHEMA,
-          },
-        },
-        reasoning: { effort: 'low' },
-        max_output_tokens: 4096,
-        stream: false,
+        messages: [
+          { role: 'system', content: buildSystemInstructions() },
+          { role: 'user', content: reviewPrompt },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.1,
+        max_tokens: 4096,
       }),
       signal: controller.signal,
     });
@@ -159,13 +154,8 @@ export async function callDeepSeekReview(
 
     const data = await resp.json();
 
-    // Responses API: output 是 item 数组，找 message 里的 output_text
-    const outputText: string = (data.output || [])
-      .filter((item: any) => item.type === 'message')
-      .flatMap((msg: any) => msg.content || [])
-      .filter((c: any) => c.type === 'output_text')
-      .map((c: any) => c.text)
-      .join('');
+    // Chat Completions: choices[0].message.content
+    const outputText: string = data?.choices?.[0]?.message?.content || '';
 
     if (!outputText) {
       return { ok: false, error: 'DeepSeek 返回空内容', errorType: 'PARSE' };
