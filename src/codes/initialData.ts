@@ -180,7 +180,9 @@ export const INITIAL_CLAUSES: ClauseEvidence[] = [
     printedPage: '37-38',
     sourceFile: PDF_FILE_NAME,
     sourceHash: PDF_SHA256,
-    verificationStatus: 'REVIEW_REQUIRED',
+    verificationStatus: 'VERIFIED',
+    verifiedAt: '2026-09-29',
+    verifiedBy: '人工核验（PDF原文对照）',
     linkedSkills: ['beam-flexure', 'beam-t-flexure', 'beam-double-flexure', 'column'],
   },
   // 6.2.7 相对界限受压区高度 ξb（印刷页 38，PDF 页 53）
@@ -195,7 +197,9 @@ export const INITIAL_CLAUSES: ClauseEvidence[] = [
     printedPage: '38',
     sourceFile: PDF_FILE_NAME,
     sourceHash: PDF_SHA256,
-    verificationStatus: 'REVIEW_REQUIRED',
+    verificationStatus: 'VERIFIED',
+    verifiedAt: '2026-09-29',
+    verifiedBy: '人工核验（PDF原文对照）',
     linkedSkills: ['beam-flexure', 'beam-t-flexure', 'beam-double-flexure'],
   },
   // 6.2.10 矩形截面受弯承载力（印刷页 39-40，PDF 页 54-55）
