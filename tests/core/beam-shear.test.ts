@@ -89,11 +89,11 @@ describe('矩形梁斜截面受剪承载力计算', () => {
       expect(result.advisories.length).toBeGreaterThan(0);
     });
 
-    it('所有规范依据应标记为 VERIFIED', () => {
+    it('所有规范依据应标记为 REVIEW_REQUIRED（B14 修复 BUG-01 后）', () => {
       const result = calculateBeamShear(defaultInput);
       expect(result.overallStatus).toBe('REVIEW_REQUIRED');
       result.allEvidence.forEach(e => {
-        expect(e.verificationStatus).toBe('VERIFIED');
+        expect(e.verificationStatus).toBe('REVIEW_REQUIRED');
       });
     });
 

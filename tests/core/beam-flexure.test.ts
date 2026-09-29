@@ -89,11 +89,11 @@ describe('矩形梁正截面受弯计算', () => {
       expect(result.advisories.length).toBeGreaterThan(0);
     });
 
-    it('所有规范依据应标记为 VERIFIED', () => {
+    it('所有规范依据应标记为 REVIEW_REQUIRED（B14 修复 BUG-01 后）', () => {
       const result = calculateBeamFlexure(defaultInput);
       expect(result.overallStatus).toBe('REVIEW_REQUIRED');
       result.allEvidence.forEach(e => {
-        expect(e.verificationStatus).toBe('VERIFIED');
+        expect(e.verificationStatus).toBe('REVIEW_REQUIRED');
       });
     });
 
@@ -102,13 +102,12 @@ describe('矩形梁正截面受弯计算', () => {
       expect(result.advisories.some(a => a.code === 'NORM_UPDATE_REQUIRED')).toBe(true);
     });
 
-    it('受弯公式证据应指向 PDF 第 55 页且不虚构结论条文', () => {
+    it('受弯公式证据应指向 6.2.10（REVIEW_REQUIRED，等待人工核验）', () => {
       const result = calculateBeamFlexure(defaultInput);
       const capacityStep = result.steps.find(step => step.name === '计算正截面受弯承载力');
       expect(capacityStep?.evidence[0]).toMatchObject({
         clause: '6.2.10',
-        pdfPage: 55,
-        verificationStatus: 'VERIFIED',
+        verificationStatus: 'REVIEW_REQUIRED',
       });
       expect(result.conclusion.evidence).toEqual([]);
     });

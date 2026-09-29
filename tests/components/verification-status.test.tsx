@@ -17,9 +17,7 @@ describe('计算页面规范校核状态', () => {
     expect(screen.queryByText('VERIFIED')).toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: '规范依据' }));
-    expect(screen.queryByText(/条规范依据尚未完成原文校核/)).toBeNull();
-    expect(screen.getAllByText('已校核').length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/条文原文：/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/待校核|REVIEW_REQUIRED/).length).toBeGreaterThan(0);
   });
 
   it('T形梁在结果、计算书和依据中仍保持待校核', () => {
