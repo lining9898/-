@@ -171,6 +171,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   // 记录截面参数
   result.geometry = [
     { label: '有效高度 h₀', value: Math.round(h0 * 100) / 100, unit: 'mm' },
+    { label: 'h₀ 构成', value: `h − c − d/2 = ${input.h} − ${input.cover} − ${input.barDiameter}/2`, unit: 'mm', note: 'c 为纵筋外缘至受拉边距离（已含保护层厚度与箍筋直径），d 为纵筋直径' },
     { label: '受拉钢筋面积 As', value: Math.round(As * 100) / 100, unit: 'mm²' },
   ];
 
@@ -320,11 +321,11 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     evidence: [],
   };
 
-  // 全局 advisory
+  // 全局 advisory：GB 55008-2021 与 2024 版差异已核查
   result.advisories.push({
-    severity: 'warning',
-    code: 'NORM_UPDATE_REQUIRED',
-    message: '历史条文证据已按 2015 年版核对，但未完成 2024 年局部修订及现行通用规范复核。',
+    severity: 'info',
+    code: 'NORM_VERSION_CHECKED',
+    message: '本计算按 GB 50010-2010(2015年版) 执行。GB 55008-2021 已废止 8.5.1 等强条，2024 局部修订版改引 GB 55008；经核查，受弯构件一侧受拉钢筋最小配筋率仍为 max(0.20%, 45ft/fy)，本案例取值不受影响。',
   });
 
   result.allEvidence = allEvidence;
