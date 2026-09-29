@@ -14,11 +14,12 @@ import AxialColumn from './components/calculators/AxialColumn';
 import EccentricColumn from './components/calculators/EccentricColumn';
 import SectionProperties from './components/calculators/SectionProperties';
 import MaterialWeight from './components/calculators/MaterialWeight';
-import ContinuousBeam from './components/calculators/ContinuousBeam';
 import OneWaySlab from './components/calculators/OneWaySlab';
 import TwoWaySlab from './components/calculators/TwoWaySlab';
 import IndependentFoundation from './components/calculators/IndependentFoundation';
 import StaircasePlate from './components/calculators/StaircasePlate';
+
+const ContinuousBeam = React.lazy(() => import('./components/calculators/ContinuousBeam'));
 
 type ModuleId = string;
 
@@ -109,7 +110,9 @@ const App: React.FC = () => {
         {CONCRETE_MODULES.includes(activeModule) && (
           <StandardStatusNotice onViewDetails={openStandardsStatus} />
         )}
-        {renderContent()}
+        <React.Suspense fallback={<div role="status" className="py-8 text-center text-sm text-gray-500">正在加载计算模块...</div>}>
+          {renderContent()}
+        </React.Suspense>
       </main>
     </div>
   );

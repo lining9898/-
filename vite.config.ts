@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     modulePreload: false,
-    assetsInlineLimit: 4000000,
+    // Keep the structural solver WASM as a cacheable file instead of embedding it in JavaScript.
+    assetsInlineLimit: 4096,
   },
   optimizeDeps: { exclude: ['@ferscloud/fers-calculation-web'] },
   server: { port: 3000, host: '0.0.0.0' },
