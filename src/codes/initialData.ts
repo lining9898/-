@@ -154,6 +154,17 @@ export const INITIAL_EDITIONS: CodeEdition[] = [
     sourcePdfFile: 'GB50204-2015混凝土结构工程施工质量验收规范.pdf',
     sourcePdfHash: 'c8c51d57617027cd0375a36dbf5aaa95f23ce416a4405494cd6859869ab25337',
   },
+  {
+    editionId: 'JGJ1-2014',
+    codeNumber: 'JGJ 1',
+    codeName: '装配式混凝土结构技术规程',
+    year: '2014',
+    validityStatus: 'CURRENT',
+    validitySource: '住建部2014-02-10发布，2014-10-01实施',
+    scope: '装配式混凝土结构设计、制作、施工与验收',
+    sourcePdfFile: 'JGJ1-2014装配式混凝土结构技术规程.pdf',
+    sourcePdfHash: '1775753f1f371e6105d75bf29d25bf4cbccc6d323c656b0c42d8d580abf8c0fa',
+  },
 ];
 
 export const INITIAL_CLAUSES: ClauseEvidence[] = [
