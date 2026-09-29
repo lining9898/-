@@ -63,6 +63,18 @@ export const INITIAL_EDITIONS: CodeEdition[] = [
     sourcePdfFile: 'GB 55008-2021 混凝土结构通用规范.pdf',
     sourcePdfHash: '8c59c206d482efe8667e42629f37fe3a304ca31ec8d5625436a53b82c81a4bf4',
   },
+  {
+    editionId: 'GB50011-2010-2016',
+    codeNumber: 'GB 50011',
+    codeName: '建筑抗震设计规范',
+    year: '2010',
+    amendment: '2016年版',
+    validityStatus: 'CURRENT',
+    validitySource: '住建部第1199号公告（2016年局部修订，2016-08-01实施）',
+    scope: '建筑抗震设防、地震作用、抗震构造措施',
+    sourcePdfFile: 'GB50011-2010(2016年版)建筑抗震设计规范.pdf',
+    sourcePdfHash: 'feb4fa0173b852fda75c80ea66206621bd1b07cb85c110600551a7b1fa1cb8a6',
+  },
 ];
 
 export const INITIAL_CLAUSES: ClauseEvidence[] = [
