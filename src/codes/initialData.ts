@@ -75,6 +75,17 @@ export const INITIAL_EDITIONS: CodeEdition[] = [
     sourcePdfFile: 'GB50011-2010(2016年版)建筑抗震设计规范.pdf',
     sourcePdfHash: 'feb4fa0173b852fda75c80ea66206621bd1b07cb85c110600551a7b1fa1cb8a6',
   },
+  {
+    editionId: 'GB55001-2021',
+    codeNumber: 'GB 55001',
+    codeName: '工程结构通用规范',
+    year: '2021',
+    validityStatus: 'CURRENT',
+    validitySource: '住建部2021年第70号公告（2021-04-09发布，2022-01-01实施，全文强制）',
+    scope: '工程结构基本规定、作用、材料、设计、检测维护通用要求（全文强制性）',
+    sourcePdfFile: 'GB 55001-2021 工程结构通用规范.pdf',
+    sourcePdfHash: 'e7d7bb9f88911482cc9ceb82fed70603c9e75b4d6490472bbf141f5441b42b4c',
+  },
 ];
 
 export const INITIAL_CLAUSES: ClauseEvidence[] = [
