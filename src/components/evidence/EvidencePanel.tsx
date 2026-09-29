@@ -6,24 +6,34 @@ interface EvidencePanelProps {
   evidence: Evidence[];
 }
 
-// 根据规范编号映射 PDF 文件路径（public/pdfs/ 下，相对路径，运行时用 document.baseURI 解析）
 const PDF_MAP: Record<string, string> = {
   'GB 50010': 'pdfs/gb50010-2010-2015.pdf',
 };
 
-const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
-  const [openPdf, setOpenPdf] = useState<string | null>(null);
+// 条文局部截图映射（从真实 PDF 裁切生成）
+const CLAUSE_IMAGE_MAP: Record<string, string> = {
+  'GB 50010|6.2.6': 'evidence-assets/gb50010-2010-2015/6.2.6.jpg',
+  'GB 50010|6.2.7': 'evidence-assets/gb50010-2010-2015/6.2.7.jpg',
+  'GB 50010|6.2.10': 'evidence-assets/gb50010-2010-2015/6.2.10.jpg',
+  'GB 50010|6.2.11': 'evidence-assets/gb50010-2010-2015/6.2.11.jpg',
+};
 
-  // 去重
+const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
+  const [openFullPdf, setOpenFullPdf] = useState<string | null>(null);
+
   const unique = evidence.filter(
     (e, i, arr) => arr.findIndex(x => x.clause === e.clause && x.codeNumber === e.codeNumber) === i
   );
   const pendingCount = unique.filter(e => e.verificationStatus !== 'VERIFIED').length;
 
   const getPdfUrl = (e: Evidence): string | null => {
-    // 标准化 key
     const key = e.codeNumber.replace(/\s+/g, ' ').trim();
     return PDF_MAP[key] ?? null;
+  };
+
+  const getClauseImage = (e: Evidence): string | null => {
+    const key = `${e.codeNumber}|${e.clause}`;
+    return CLAUSE_IMAGE_MAP[key] ?? null;
   };
 
   return (
@@ -44,9 +54,11 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
         <div className="space-y-3">
           {unique.map((e, i) => {
             const pdfUrl = getPdfUrl(e);
+            const imageUrl = getClauseImage(e);
             const viewerKey = `${e.codeNumber}-${e.clause}`;
-            const isOpen = openPdf === viewerKey;
+            const isFullOpen = openFullPdf === viewerKey;
             const hasPdf = pdfUrl && e.pdfPage;
+            const resolvedImage = imageUrl ? new URL(imageUrl, document.baseURI).href : null;
 
             return (
               <div key={i} className="p-4 bg-gray-50 rounded border border-gray-200">
@@ -66,23 +78,53 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
                 <div className="text-xs text-gray-500 space-y-1">
                   <div>规范名称：{e.codeName}</div>
                   <div>版本：{e.edition || '待填写'}</div>
-                  <div>{e.verificationStatus === 'VERIFIED' ? '条文原文' : '待核验依据摘录'}：{e.originalText}</div>
-                  <div>{e.verificationStatus === 'VERIFIED' ? 'PDF 页码' : '待核验 PDF 页码'}：{e.pdfPage ?? '待填写'}</div>
-                  <div>来源文件：{e.sourceFile ?? '未导入'}</div>
                 </div>
 
-                {hasPdf ? (
+                {/* 解析条文 */}
+                <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-gray-700">
+                  <span className="font-medium text-blue-700">解析条文：</span>
+                  {e.originalText}
+                </div>
+
+                {/* PDF 原文局部截图 */}
+                <div className="mt-2">
+                  <span className="text-xs font-medium text-gray-600">PDF 原文：</span>
+                  {resolvedImage ? (
+                    <div className="mt-1">
+                      <img
+                        src={resolvedImage}
+                        alt={`GB50010 ${e.clause}`}
+                        className="w-full border border-gray-300 rounded cursor-zoom-in"
+                        onClick={() => window.open(resolvedImage, '_blank')}
+                      />
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs text-gray-400">
+                          GB 50010-2010（2015年版）PDF 第 {e.pdfPage} 页
+                        </span>
+                        <span className="text-xs text-green-600 font-medium">CLAUSE_LOCATED</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-400 mt-1">
+                      已定位 PDF P{e.pdfPage ?? '?'}，条文区域截图待建立
+                    </p>
+                  )}
+                </div>
+
+                {/* 完整 PDF 原页 */}
+                {hasPdf && (
                   <button
-                    onClick={() => setOpenPdf(isOpen ? null : viewerKey)}
-                    className="mt-2 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+                    onClick={() => setOpenFullPdf(isFullOpen ? null : viewerKey)}
+                    className="mt-2 px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700"
                   >
-                    {isOpen ? '收起 PDF 原文' : '查看 PDF 原文'}
+                    {isFullOpen ? '收起完整 PDF' : '查看完整 PDF 原页'}
                   </button>
-                ) : (
-                  <p className="mt-2 text-xs text-gray-400">PDF_SOURCE_MISSING（原始 PDF 暂不可用）</p>
+                )}
+                {!hasPdf && (
+                  <p className="mt-2 text-xs text-gray-400">PDF_SOURCE_MISSING</p>
                 )}
 
-                {isOpen && hasPdf && (
+                {isFullOpen && hasPdf && (
                   <PdfEvidenceViewer
                     pdfUrl={pdfUrl!}
                     pageNumber={e.pdfPage!}
