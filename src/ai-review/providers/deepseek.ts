@@ -133,7 +133,7 @@ export async function callDeepSeekReview(
           { role: 'user', content: reviewPrompt },
         ],
         temperature: 0.1,
-        max_tokens: 8192,
+        max_tokens: 16384,
       }),
       signal: controller.signal,
     });
@@ -163,21 +163,46 @@ export async function callDeepSeekReview(
       return { ok: false, error: 'DeepSeek 返回空内容', errorType: 'PARSE' };
     }
 
-    // 解析 JSON：先直接 parse，失败则从文本中提取 JSON 块
+    // 解析 JSON：预处理中文引号 → 英文引号，然后尝试多种方式解析
+    let cleaned = outputText
+      .replace(/[""]/g, '"')  // 中文引号 → 英文引号
+      .replace(/['']/g, "'");
+
     let parsed: any = null;
-    try {
-      parsed = JSON.parse(outputText);
-    } catch {
-      const jsonMatch = outputText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try { parsed = JSON.parse(jsonMatch[0]); } catch { /* ignore */ }
+    // 方式1: 直接 parse
+    try { parsed = JSON.parse(cleaned); } catch { /* ignore */ }
+    // 方式2: 提取最外层 {} 块
+    if (!parsed) {
+      const start = cleaned.indexOf('{');
+      const end = cleaned.lastIndexOf('}');
+      if (start >= 0 && end > start) {
+        try { parsed = JSON.parse(cleaned.slice(start, end + 1)); } catch { /* ignore */ }
       }
+    }
+    // 方式3: 如果 JSON 被截断，尝试补全
+    if (!parsed) {
+      try {
+        const start = cleaned.indexOf('{');
+        let substr = cleaned.slice(start);
+        // 补全未闭合的引号和括号
+        const openBraces = (substr.match(/\{/g) || []).length;
+        const closeBraces = (substr.match(/\}/g) || []).length;
+        const openBrackets = (substr.match(/\[/g) || []).length;
+        const closeBrackets = (substr.match(/\]/g) || []).length;
+        // 去掉最后一个不完整的字符串
+        const lastComma = Math.max(substr.lastIndexOf(','), substr.lastIndexOf('{'));
+        substr = substr.slice(0, lastComma);
+        substr += '"}' + ']'.repeat(Math.max(0, openBrackets - closeBrackets)) + '}'.repeat(Math.max(0, openBraces - closeBraces));
+        parsed = JSON.parse(substr);
+      } catch { /* ignore */ }
     }
 
     if (!parsed) {
+      // 最终 fallback：至少提取 summary 文本显示
+      const summaryMatch = outputText.match(/"summary"\s*:\s*"([^"]+)"/);
       return {
         ok: false,
-        error: `无法解析 JSON，原始返回前 500 字: ${outputText.slice(0, 500)}`,
+        error: `JSON 解析失败。AI 摘要: ${summaryMatch ? summaryMatch[1].slice(0, 200) : '无'}`,
         errorType: 'PARSE',
         rawContent: outputText,
       };
