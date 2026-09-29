@@ -38,6 +38,18 @@ export const INITIAL_EDITIONS: CodeEdition[] = [
     validityStatus: 'REVIEW_REQUIRED',
     scope: '建筑结构荷载取值',
   },
+  {
+    editionId: 'GB55008-2021',
+    codeNumber: 'GB 55008',
+    codeName: '混凝土结构通用规范',
+    year: '2021',
+    amendment: '2021版',
+    validityStatus: 'CURRENT',
+    validitySource: '住建部第167号公告（2021-09-08发布，2022-04-01实施，全文强制）',
+    scope: '混凝土结构基本规定、材料、设计、施工验收通用要求（全文强制性）',
+    sourcePdfFile: 'GB 55008-2021 混凝土结构通用规范.pdf',
+    sourcePdfHash: '8c59c206d482efe8667e42629f37fe3a304ca31ec8d5625436a53b82c81a4bf4',
+  },
 ];
 
 export const INITIAL_CLAUSES: ClauseEvidence[] = [
@@ -108,6 +120,35 @@ export const INITIAL_CLAUSES: ClauseEvidence[] = [
     verifiedAt: '2026-09-29',
     verifiedBy: '人工核验（PDF原文对照）',
     linkedSkills: ['beam-flexure'],
+  },
+  // GB 55008-2021 条文（全部 UNVERIFIED，等待人工逐条核验）
+  {
+    evidenceId: 'GB55008-3.2.1',
+    editionId: 'GB55008-2021',
+    codeNumber: 'GB 55008',
+    clause: '3.2.1',
+    chapter: '第3.2节 钢筋',
+    originalText: '普通钢筋的材料分项系数取值不应小于表3.2.1的规定。表3.2.1：光圆钢筋300MPa→1.10，热轧钢筋400MPa→1.10，热轧钢筋500MPa→1.15，冷轧带肋→1.25。',
+    pdfPage: 21,
+    printedPage: '7',
+    sourceFile: 'GB 55008-2021 混凝土结构通用规范.pdf',
+    sourceHash: '8c59c206d482efe8667e42629f37fe3a304ca31ec8d5625436a53b82c81a4bf4',
+    verificationStatus: 'UNVERIFIED',
+    linkedSkills: ['beam-flexure', 'column'],
+  },
+  {
+    evidenceId: 'GB55008-4.4.2',
+    editionId: 'GB55008-2021',
+    codeNumber: 'GB 55008',
+    clause: '4.4.2',
+    chapter: '第4.4节 构件设计',
+    originalText: '正截面承载力计算应采用符合工程需求的混凝土应力-应变本构关系，并应满足变形协调和静力平衡条件。正截面承载力简化计算时，应符合下列假定：1 截面应变保持平面；2 不考虑混凝土的抗拉作用；3 应确定混凝土的应力-应变本构关系；4 纵向受拉钢筋的极限拉应变取为0.01；5 纵向钢筋的应力取钢筋应变与其弹性模量的乘积，且钢筋应力不应超过钢筋抗拉、抗压强度设计值；对于轴心受压构件，钢筋的抗压强度设计值取值不应超过400N/mm²。',
+    pdfPage: 25,
+    printedPage: '11',
+    sourceFile: 'GB 55008-2021 混凝土结构通用规范.pdf',
+    sourceHash: '8c59c206d482efe8667e42629f37fe3a304ca31ec8d5625436a53b82c81a4bf4',
+    verificationStatus: 'UNVERIFIED',
+    linkedSkills: ['beam-flexure', 'beam-double-flexure', 'column'],
   },
 ];
 
