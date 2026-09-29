@@ -168,6 +168,36 @@ export const INITIAL_EDITIONS: CodeEdition[] = [
 ];
 
 export const INITIAL_CLAUSES: ClauseEvidence[] = [
+  // 6.2.6 等效矩形应力图系数 α1/β1（印刷页 37-38，PDF 页 52-53）
+  {
+    evidenceId: 'GB50010-6.2.6',
+    editionId: 'GB50010-2010-2015',
+    codeNumber: 'GB 50010',
+    clause: '6.2.6',
+    chapter: '第6.2节 正截面承载力计算',
+    originalText: `受弯构件、偏心受力构件正截面承载力计算时，受压区混凝土的应力图形可简化为等效的矩形应力图。矩形应力图的受压区高度x可取截面应变保持平面的假定所确定的中和轴高度乘以系数β1。当混凝土强度等级不超过C50时，β1取为0.80，当混凝土强度等级为C80时，β1取为0.74，其间按线性内插法确定。矩形应力图的应力值可由混凝土轴心抗压强度设计值fc乘以系数α1确定。当混凝土强度等级不超过C50时，α1取为1.0，当混凝土强度等级为C80时，α1取为0.94，其间按线性内插法确定。`,
+    pdfPage: 52,
+    printedPage: '37-38',
+    sourceFile: PDF_FILE_NAME,
+    sourceHash: PDF_SHA256,
+    verificationStatus: 'REVIEW_REQUIRED',
+    linkedSkills: ['beam-flexure', 'beam-t-flexure', 'beam-double-flexure', 'column'],
+  },
+  // 6.2.7 相对界限受压区高度 ξb（印刷页 38，PDF 页 53）
+  {
+    evidenceId: 'GB50010-6.2.7',
+    editionId: 'GB50010-2010-2015',
+    codeNumber: 'GB 50010',
+    clause: '6.2.7',
+    chapter: '第6.2节 正截面承载力计算',
+    originalText: `纵向受拉钢筋屈服与受压区混凝土破坏同时发生时的相对界限受压区高度ξb应按下列公式计算：1 钢筋混凝土构件：有屈服点普通钢筋 ξb=β1/(1+fy/(Es·εcu))（6.2.7-1）；无屈服点普通钢筋 ξb=β1/(1+0.002/εcu+fy/(Es·εcu))（6.2.7-2）。式中：ξb——相对界限受压区高度，取xb/h0；xb——界限受压区高度；h0——截面有效高度；Es——钢筋弹性模量；εcu——非均匀受压时的混凝土极限压应变，按本规范公式（6.2.1-5）计算；β1——系数，按本规范第6.2.6条的规定计算。注：当截面受拉区内配置有不同种类或不同预应力值的钢筋时，受弯构件的相对界限受压区高度应分别计算，并取其较小值。`,
+    pdfPage: 53,
+    printedPage: '38',
+    sourceFile: PDF_FILE_NAME,
+    sourceHash: PDF_SHA256,
+    verificationStatus: 'REVIEW_REQUIRED',
+    linkedSkills: ['beam-flexure', 'beam-t-flexure', 'beam-double-flexure'],
+  },
   // 6.2.10 矩形截面受弯承载力（印刷页 39-40，PDF 页 54-55）
   {
     evidenceId: 'GB50010-6.2.10',
