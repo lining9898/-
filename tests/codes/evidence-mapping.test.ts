@@ -9,14 +9,14 @@ describe('Evidence mapping: beta1/xi_b clause attribution', () => {
 
   it('β1 应引用 6.2.6（矩形应力图系数），不应仅引 6.2.7', () => {
     // β1 evidence 行必须引用 6.2.6
-    const betaLine = flexureSrc.split('\n').find(l => l.includes('betaEvidence'));
+    const betaLine = flexureSrc.split('\n').find((l: string) => l.includes('betaEvidence'));
     expect(betaLine).toBeDefined();
     expect(betaLine).toContain('6.2.6');
     expect(betaLine).not.toContain('6.2.7');
   });
 
   it('ξb 应引用 6.2.7（相对界限受压区高度）', () => {
-    const xiBLine = flexureSrc.split('\n').find(l => l.includes('xiBEvidence'));
+    const xiBLine = flexureSrc.split('\n').find((l: string) => l.includes('xiBEvidence'));
     expect(xiBLine).toBeDefined();
     expect(xiBLine).toContain('6.2.7');
   });
