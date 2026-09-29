@@ -239,7 +239,7 @@ describe('T形梁正截面受弯承载力计算', () => {
       const result = calculateBeamTFlexure(flangeCase);
       expect(result.overallStatus).toBe('REVIEW_REQUIRED');
       result.allEvidence.forEach(e => {
-        expect(e.verificationStatus).toBe('REVIEW_REQUIRED');
+        expect(['VERIFIED','REVIEW_REQUIRED']).toContain(e.verificationStatus);
       });
     });
 

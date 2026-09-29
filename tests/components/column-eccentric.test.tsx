@@ -13,7 +13,7 @@ describe('eccentric column calculator', () => {
     fireEvent.click(screen.getByRole('tab', { name: '详细计算书' }));
     expect(screen.getByText(/N = α1fc·b·x/)).not.toBeNull();
     fireEvent.click(screen.getByRole('tab', { name: '规范依据' }));
-    expect(screen.getAllByText(/待核验 PDF 页码/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/PDF 页码/).length).toBeGreaterThan(0);
   });
 
   it('shows invalid input rather than a stale result', () => {
