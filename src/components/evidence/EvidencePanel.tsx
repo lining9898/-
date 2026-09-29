@@ -1,6 +1,6 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState } from 'react';
 import { Evidence } from '../../types/evidence';
-const PdfEvidenceViewer = lazy(() => import('./PdfEvidenceViewer'));
+import PdfEvidenceViewer from './PdfEvidenceViewer';
 
 interface EvidencePanelProps {
   evidence: Evidence[];
@@ -83,14 +83,12 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
                 )}
 
                 {isOpen && hasPdf && (
-                  <Suspense fallback={<p className="text-xs text-gray-400 mt-2">PDF 组件加载中…</p>}>
-                    <PdfEvidenceViewer
-                      pdfUrl={pdfUrl!}
-                      pageNumber={e.pdfPage!}
-                      clause={e.clause}
-                      codeLabel={`${e.codeNumber} ${e.edition}`}
-                    />
-                  </Suspense>
+                  <PdfEvidenceViewer
+                    pdfUrl={pdfUrl!}
+                    pageNumber={e.pdfPage!}
+                    clause={e.clause}
+                    codeLabel={`${e.codeNumber} ${e.edition}`}
+                  />
                 )}
               </div>
             );
