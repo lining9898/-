@@ -321,11 +321,11 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     evidence: [],
   };
 
-  // 全局 advisory：GB 55008-2021 与 2024 版差异已核查
+  // 现行规范融合尚未完成，不得仅凭摘要把历史公式升级为已核查。
   result.advisories.push({
-    severity: 'info',
-    code: 'NORM_VERSION_CHECKED',
-    message: '本计算按 GB 50010-2010(2015年版) 执行。GB 55008-2021 已废止 8.5.1 等强条，2024 局部修订版改引 GB 55008；经核查，受弯构件一侧受拉钢筋最小配筋率仍为 max(0.20%, 45ft/fy)，本案例取值不受影响。',
+    severity: 'warning',
+    code: 'NORM_UPDATE_REQUIRED',
+    message: '计算公式仍基于 GB 50010-2010（2015年版）。现行 GB 55001-2021、GB 55008-2021 与 GB/T 50010-2010（2024年局部修订）尚未完成逐条 Evidence 映射，结果保持 REVIEW_REQUIRED。',
   });
 
   result.allEvidence = allEvidence;
