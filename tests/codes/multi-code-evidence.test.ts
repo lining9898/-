@@ -6,9 +6,9 @@ import type { ClauseEvidence, ConflictFinding } from '../../src/codes/registry';
 describe('BATCH 1.2: 多规范关联证据中心', () => {
   it('保护已有 4 条 VERIFIED Evidence', () => {
     const verified = INITIAL_CLAUSES.filter((c: ClauseEvidence) => c.verificationStatus === 'VERIFIED');
-    expect(verified.length).toBe(4);
+    expect(verified.length).toBe(6);
     const ids = verified.map((c: ClauseEvidence) => c.evidenceId).sort();
-    expect(ids).toEqual(['GB50010-4.1.4', 'GB50010-4.2.3', 'GB50010-6.2.10', 'GB50010-6.2.11']);
+    expect(ids).toEqual(['GB50010-4.1.4', 'GB50010-4.2.3', 'GB50010-6.2.10', 'GB50010-6.2.11', 'GB50010-6.2.6', 'GB50010-6.2.7']);
   });
 
   it('每条 VERIFIED Evidence 都有 sourceHash 和 pdfPage', () => {

@@ -43,7 +43,7 @@ describe('BATCH 2.5: Engineering Rule → Engine 映射', () => {
 
   it('VERIFIED Evidence 存在', () => {
     const verified = INITIAL_CLAUSES.filter(c => c.verificationStatus === 'VERIFIED');
-    expect(verified.length).toBe(4);
+    expect(verified.length).toBe(6);
   });
 
   it('规则绑定到真实 Evidence', () => {

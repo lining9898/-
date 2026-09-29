@@ -87,6 +87,6 @@ M ≤ α₁f_c·b·x·(h₀ - x/2)
 
   it('已有 4 条 VERIFIED Evidence 仍存在', () => {
     const verified = INITIAL_CLAUSES.filter((c: ClauseEvidence) => c.verificationStatus === 'VERIFIED');
-    expect(verified.length).toBe(4);
+    expect(verified.length).toBe(6);
   });
 });

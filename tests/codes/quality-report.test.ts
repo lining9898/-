@@ -56,6 +56,6 @@ describe('BATCH 2.0: 解析质量报告与证据缺口', () => {
 
   it('已有 4 条 VERIFIED Evidence 完整保留', () => {
     const verified = INITIAL_CLAUSES.filter(c => c.verificationStatus === 'VERIFIED');
-    expect(verified.length).toBe(4);
+    expect(verified.length).toBe(6);
   });
 });
