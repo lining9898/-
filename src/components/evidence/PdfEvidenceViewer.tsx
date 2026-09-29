@@ -27,9 +27,11 @@ const PdfEvidenceViewer: React.FC<PdfEvidenceViewerProps> = ({
     try {
       // 动态加载 pdfjs，避免 jsdom 测试环境卡 worker
       const pdfjsLib = await import('pdfjs-dist');
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        `${import.meta.env.BASE_URL}pdfs/pdf.worker.min.mjs`;
-      const doc = await pdfjsLib.getDocument({ url: pdfUrl }).promise;
+      // 用 document.baseURI 把相对路径解析为绝对路径，避免子路径部署时 404
+      const resolvedPdfUrl = new URL(pdfUrl, document.baseURI).href;
+      const resolvedWorkerUrl = new URL('pdfs/pdf.worker.min.mjs', document.baseURI).href;
+      pdfjsLib.GlobalWorkerOptions.workerSrc = resolvedWorkerUrl;
+      const doc = await pdfjsLib.getDocument({ url: resolvedPdfUrl }).promise;
       setTotalPages(doc.numPages);
       const clampedPage = Math.max(1, Math.min(page, doc.numPages));
       const pdfPage = await doc.getPage(clampedPage);

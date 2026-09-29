@@ -6,9 +6,9 @@ interface EvidencePanelProps {
   evidence: Evidence[];
 }
 
-// 根据规范编号映射 PDF 文件路径（public/pdfs/ 下，相对 base 路径）
+// 根据规范编号映射 PDF 文件路径（public/pdfs/ 下，相对路径，运行时用 document.baseURI 解析）
 const PDF_MAP: Record<string, string> = {
-  'GB 50010': `${import.meta.env.BASE_URL}pdfs/gb50010-2010-2015.pdf`,
+  'GB 50010': 'pdfs/gb50010-2010-2015.pdf',
 };
 
 const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
