@@ -120,3 +120,90 @@ export function isEvidenceStale(
   );
   return currentHash !== savedHash;
 }
+
+// ============ BATCH 1.2: 多规范关联证据中心 ============
+
+/** 规范文档类型 */
+export type DocumentType = 'GB' | 'GB/T' | 'JGJ' | 'JGJ/T' | 'INDUSTRY' | 'LOCAL' | 'ATLAS' | 'OTHER';
+
+/** 规范状态 */
+export type CodeStatus = 'CURRENT' | 'SUPERSEDED' | 'PARTIALLY_REVISED' | 'UNKNOWN';
+
+/** 规范文档 */
+export interface CodeDocument {
+  id: string;
+  codeNumber: string;
+  codeName: string;
+  edition: string;
+  revision?: string;
+  publishDate?: string;
+  effectiveDate?: string;
+  status: CodeStatus;
+  sourceFileId?: string;
+  sourceFileName?: string;
+  sourceFileHash?: string;
+  pageCount?: number;
+  documentType: DocumentType;
+  supersedes?: string;
+  supersededBy?: string;
+  metadataVerificationStatus: 'VERIFIED' | 'REVIEW_REQUIRED' | 'UNVERIFIED';
+}
+
+/** 设计主题 */
+export type DesignTopic =
+  | 'LOAD' | 'LOAD_COMBINATION' | 'MATERIAL'
+  | 'FLEXURE' | 'SHEAR' | 'AXIAL_COMPRESSION' | 'ECCENTRIC_COMPRESSION'
+  | 'PUNCHING' | 'CRACK' | 'DEFLECTION' | 'REINFORCEMENT_DETAILING'
+  | 'DURABILITY' | 'SEISMIC' | 'FOUNDATION' | 'SLAB' | 'STAIR' | 'CONTINUOUS_BEAM';
+
+/** 证据集合：一个计算步骤可能需要多条规范条文 */
+export interface EvidenceSet {
+  id: string;
+  name: string;
+  topic: DesignTopic;
+  calculationModuleId: string;
+  calculationStepId?: string;
+  evidenceIds: string[];
+  completeness: 'COMPLETE' | 'PARTIAL' | 'MISSING';
+  conflictStatus: 'NONE' | 'DETECTED' | 'REVIEW_REQUIRED';
+  verificationStatus: VerificationStatus | 'CONFLICT';
+}
+
+/** 条文间关系 */
+export type ClauseRelationType =
+  | 'REFERENCES' | 'SUPPLEMENTS' | 'MODIFIES' | 'REPLACES'
+  | 'CONFLICTS_WITH' | 'IMPLEMENTS' | 'RELATED_TO';
+
+export interface ClauseRelation {
+  id: string;
+  sourceEvidenceId: string;
+  targetEvidenceId: string;
+  relationType: ClauseRelationType;
+  reason: string;
+  verificationStatus: 'VERIFIED' | 'REVIEW_REQUIRED';
+  createdBy: string;
+  createdAt: string;
+}
+
+/** SHA-256 evidence hash */
+export async function computeEvidenceHashV2(
+  sourceFileHash: string,
+  codeEditionId: string,
+  clause: string,
+  quotedText: string,
+  pdfPage: number | null,
+  printedPage: string | null
+): Promise<string> {
+  const str = `${sourceFileHash}|${codeEditionId}|${clause}|${quotedText}|${pdfPage}|${printedPage}`;
+  const buf = new TextEncoder().encode(str);
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return 'ev2_' + Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
+}
+
+/** 冲突检测结果 */
+export interface ConflictFinding {
+  type: 'VERSION_MISMATCH' | 'SUPERSEDED_CITED' | 'NEW_OLD_MIXED' | 'CONFLICT_RELATION' | 'HASH_CHANGED' | 'MISSING_CLAUSE' | 'MISSING_PDF' | 'DUPLICATE_TEXT';
+  severity: 'BLOCKER' | 'HIGH' | 'MEDIUM' | 'LOW';
+  message: string;
+  evidenceId?: string;
+}

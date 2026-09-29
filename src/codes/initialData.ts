@@ -116,3 +116,38 @@ export const INITIAL_REGISTRY: CodeRegistry = {
   clauses: INITIAL_CLAUSES,
   auditLogs: [],
 };
+
+import type { EvidenceSet, ClauseRelation, DesignTopic } from './registry';
+
+/** 条文 → DesignTopic 映射（扩展用） */
+export const CLAUSE_TOPIC_MAP: Record<string, DesignTopic[]> = {
+  'GB50010-6.2.10': ['FLEXURE'],
+  'GB50010-6.2.11': ['FLEXURE'],
+  'GB50010-4.1.4': ['MATERIAL'],
+  'GB50010-4.2.3': ['MATERIAL'],
+};
+
+/** 初始 EvidenceSet：矩形梁正截面受弯 */
+export const INITIAL_EVIDENCE_SETS: EvidenceSet[] = [
+  {
+    id: 'eset-beam-flexure-rect',
+    name: '矩形梁正截面受弯证据集',
+    topic: 'FLEXURE',
+    calculationModuleId: 'beam-flexure',
+    calculationStepId: 'flexure-capacity',
+    evidenceIds: ['GB50010-6.2.10', 'GB50010-4.1.4', 'GB50010-4.2.3'],
+    completeness: 'COMPLETE',
+    conflictStatus: 'NONE',
+    verificationStatus: 'VERIFIED',
+  },
+];
+
+/** 初始 ClauseRelation */
+export const INITIAL_CLAUSE_RELATIONS: ClauseRelation[] = [];
+
+/** 扩展后的 Registry 数据 */
+export const INITIAL_REGISTRY_V2 = {
+  ...INITIAL_REGISTRY,
+  evidenceSets: INITIAL_EVIDENCE_SETS,
+  clauseRelations: INITIAL_CLAUSE_RELATIONS,
+};
