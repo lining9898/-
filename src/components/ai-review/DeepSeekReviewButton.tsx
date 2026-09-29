@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { CalculationResult } from '../../types/calculation';
-import { buildReviewPackage, generateReviewPrompt, type ReviewResult } from '../../ai-review';
+import { buildReviewPackage, generateReviewPrompt, type ExtendedReviewResult } from '../../ai-review';
 import { callDeepSeekReview } from '../../ai-review/providers/deepseek';
 import { getApiKey, setApiKey, clearApiKey, hasApiKey } from '../../ai-review/providers/keyStore';
 
@@ -17,7 +17,7 @@ const DeepSeekReviewButton: React.FC<Props> = ({ result, title, internalMechanic
   const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [reviewResult, setReviewResult] = useState<ReviewResult | null>(null);
+  const [reviewResult, setReviewResult] = useState<ExtendedReviewResult | null>(null);
   const [dataWarning, setDataWarning] = useState(false);
 
   const handleReview = async () => {
@@ -141,7 +141,7 @@ const DeepSeekReviewButton: React.FC<Props> = ({ result, title, internalMechanic
                   {reviewResult.issues.length > 0 && (
                     <div>
                       <h4 className="font-semibold mb-2">问题清单 ({reviewResult.issues.length})</h4>
-                      {reviewResult.issues.map((iss, i) => (
+                      {reviewResult.issues.map((iss: any, i: number) => (
                         <div key={i} className="border rounded p-3 mb-2 text-sm">
                           <div className="flex gap-2">
                             <span className={`px-2 py-0.5 rounded text-xs font-bold ${
@@ -156,6 +156,41 @@ const DeepSeekReviewButton: React.FC<Props> = ({ result, title, internalMechanic
                           <div className="text-gray-600 mt-1">{iss.description}</div>
                         </div>
                       ))}
+                    </div>
+                  )}
+
+                  {/* 规范依据待确认 */}
+                  {reviewResult.normativeVerifications && reviewResult.normativeVerifications.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-2 text-amber-700">规范依据待确认 ({reviewResult.normativeVerifications.length})</h4>
+                      {reviewResult.normativeVerifications!.map((nv: any, i: number) => (
+                        <div key={i} className="border border-amber-200 bg-amber-50 rounded p-3 mb-2 text-sm">
+                          <div className="font-medium">{nv.codeNumber} {nv.clause}</div>
+                          <div className="text-gray-600 mt-1">{nv.notes}</div>
+                          <div className="text-xs text-amber-700 mt-1">状态: REVIEW_REQUIRED（AI 审查 ≠ 规范认证）</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* 修改建议（只读） */}
+                  {reviewResult.suggestions && reviewResult.suggestions.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-2 text-blue-700">AI 修改建议 ({reviewResult.suggestions.length})</h4>
+                      {reviewResult.suggestions!.map((s: any, i: number) => (
+                        <div key={i} className="border rounded p-3 mb-2 text-sm">
+                          <div className="flex gap-2">
+                            <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-700">{s.severity}</span>
+                          </div>
+                          <div className="font-medium mt-1">{s.issue}</div>
+                          <div className="text-gray-600 mt-1"><b>原因:</b> {s.reason}</div>
+                          <div className="text-gray-600 mt-1"><b>建议:</b> {s.suggestedChange}</div>
+                          <div className="text-xs text-gray-400 mt-1">需补充证据: {s.evidenceRequired}</div>
+                        </div>
+                      ))}
+                      <p className="text-xs text-gray-400">
+                        以上建议仅供参考，不会自动修改计算结果。需经人工核验和证据确认后才可能进入代码修改。
+                      </p>
                     </div>
                   )}
 

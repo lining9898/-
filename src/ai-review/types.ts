@@ -99,6 +99,47 @@ export const EMPTY_REVIEW_RESULT: ReviewResult = {
   reviewer: '',
 };
 
+/**
+ * 规范确认记录（预留数据结构）
+ * AI 审查 ≠ 规范认证。AI 认为某条规范正确不代表该规范已 VERIFIED。
+ */
+export type NormativeVerificationStatus = 'VERIFIED' | 'REVIEW_REQUIRED' | 'UNVERIFIED' | 'CONFLICT';
+
+export interface NormativeVerification {
+  codeName: string;
+  codeNumber: string;
+  edition: string;
+  clause: string;
+  page: number | null;
+  quotedText: string;
+  evidenceSource: string | null;
+  evidenceStatus: VerificationStatus;
+  verificationStatus: NormativeVerificationStatus;
+  conflictStatus: 'NONE' | 'MINOR' | 'MAJOR';
+  notes: string;
+}
+
+/**
+ * AI 修改建议（只读，不写回工程引擎）
+ * 未来必须经过：AI 建议 → Evidence 核验 → 人工确认 → 才允许进入代码修改
+ */
+export interface ReviewSuggestion {
+  issue: string;
+  severity: ReviewIssueSeverity;
+  location: string;
+  reason: string;
+  suggestedChange: string;
+  evidenceRequired: string;
+}
+
+/** 扩展 ReviewResult */
+export interface ExtendedReviewResult extends ReviewResult {
+  /** AI 发现的规范依据待确认项 */
+  normativeVerifications?: NormativeVerification[];
+  /** AI 建议的修改（不自动执行） */
+  suggestions?: ReviewSuggestion[];
+}
+
 /** 从 CalculationResult 构建复核包（纯转换，不重新计算） */
 export function buildReviewPackage(
   result: CalculationResult,

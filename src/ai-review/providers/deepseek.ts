@@ -1,11 +1,11 @@
-import type { AIReviewPackage, ReviewResult } from '../types';
+import type { ExtendedReviewResult } from '../types';
 
 /**
- * DeepSeek API Provider
- * 文档: https://api-docs.deepseek.com/zh-cn/api/create-chat-completion/
- * Base URL: https://api.deepseek.com
+ * DeepSeek Responses API Provider
+ * 文档: https://api-docs.deepseek.com/zh-cn/api/create-response/
+ * Endpoint: POST https://api.deepseek.com/responses
  * Models: deepseek-flash, deepseek-v4-pro
- * Auth: Bearer <API_KEY>
+ * Structured Output: text.format.type = "json_schema"
  */
 
 export interface DeepSeekConfig {
@@ -17,9 +17,9 @@ export interface DeepSeekConfig {
 
 const DEFAULT_BASE_URL = 'https://api.deepseek.com';
 const DEFAULT_MODEL = 'deepseek-flash';
-const DEFAULT_TIMEOUT = 60000;
+const DEFAULT_TIMEOUT = 90000;
 
-/** 要求 DeepSeek 返回的 JSON schema */
+/** ReviewResult JSON Schema（用于 Responses API json_schema 约束） */
 const REVIEW_RESULT_SCHEMA = {
   type: 'object',
   properties: {
@@ -39,40 +39,68 @@ const REVIEW_RESULT_SCHEMA = {
         required: ['severity', 'category', 'title', 'description'],
       },
     },
+    normativeVerifications: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          codeNumber: { type: 'string' },
+          clause: { type: 'string' },
+          issue: { type: 'string' },
+          notes: { type: 'string' },
+        },
+      },
+    },
+    suggestions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          issue: { type: 'string' },
+          severity: { type: 'string', enum: ['BLOCKER', 'HIGH', 'MEDIUM', 'LOW'] },
+          location: { type: 'string' },
+          reason: { type: 'string' },
+          suggestedChange: { type: 'string' },
+          evidenceRequired: { type: 'string' },
+        },
+      },
+    },
   },
   required: ['status', 'summary', 'issues'],
 };
 
-function buildSystemPrompt(): string {
+function buildSystemInstructions(): string {
   return [
     '你是一名资深结构工程独立复核专家。',
     '你收到的是结构计算程序输出的计算记录。',
     '重要：不要默认程序计算结果正确。你必须独立复算关键步骤。',
     '',
-    '请严格按以下 JSON 格式返回复核结果，不要输出任何其他内容：',
-    JSON.stringify(REVIEW_RESULT_SCHEMA, null, 2),
+    '边界约束：',
+    '- 你只能指出问题和建议，不能修改计算结果',
+    '- 你不能把你的知识当作规范原文',
+    '- 不要编造规范编号、条文号、页码或原文',
+    '- 对 REVIEW_REQUIRED 的 Evidence，必须明确指出待确认',
+    '- AI 审查结果不构成规范认证，最终需人工核验',
     '',
     '复核要求：',
     '1. 独立复算关键承载力、配筋、弯矩、剪力等数值',
     '2. 检查公式选择和适用条件',
     '3. 重点检查 10³/10⁶ 数量级单位换算错误',
     '4. 检查规范 Evidence 是否真正支持所采用公式',
-    '5. 对 REVIEW_REQUIRED Evidence 重点提出质疑',
-    '6. 检查是否遗漏必要验算',
-    '7. 判断结果工程合理性',
-    '8. 发现问题时明确指出错误位置、原因和正确方法',
+    '5. 检查是否遗漏必要验算',
+    '6. 判断结果工程合理性',
   ].join('\n');
 }
 
 export interface DeepSeekCallResult {
   ok: boolean;
-  result?: ReviewResult;
+  result?: ExtendedReviewResult;
   rawContent?: string;
   error?: string;
   errorType?: 'AUTH' | 'RATE_LIMIT' | 'TIMEOUT' | 'NETWORK' | 'PARSE' | 'SERVER' | 'UNKNOWN';
 }
 
-/** 调用 DeepSeek API 进行 AI 复核 */
+/** 调用 DeepSeek Responses API 进行 AI 复核 */
 export async function callDeepSeekReview(
   reviewPrompt: string,
   config: DeepSeekConfig
@@ -89,7 +117,7 @@ export async function callDeepSeekReview(
   const timer = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const resp = await fetch(`${baseUrl}/chat/completions`, {
+    const resp = await fetch(`${baseUrl}/responses`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -97,13 +125,18 @@ export async function callDeepSeekReview(
       },
       body: JSON.stringify({
         model,
-        messages: [
-          { role: 'system', content: buildSystemPrompt() },
-          { role: 'user', content: reviewPrompt },
-        ],
-        response_format: { type: 'json_object' },
-        temperature: 0.1,
-        max_tokens: 4096,
+        input: reviewPrompt,
+        instructions: buildSystemInstructions(),
+        text: {
+          format: {
+            type: 'json_schema',
+            name: 'review_result',
+            schema: REVIEW_RESULT_SCHEMA,
+          },
+        },
+        reasoning: { effort: 'low' },
+        max_output_tokens: 4096,
+        stream: false,
       }),
       signal: controller.signal,
     });
@@ -125,16 +158,23 @@ export async function callDeepSeekReview(
     }
 
     const data = await resp.json();
-    const content: string = data?.choices?.[0]?.message?.content || '';
 
-    if (!content) {
+    // Responses API: output 是 item 数组，找 message 里的 output_text
+    const outputText: string = (data.output || [])
+      .filter((item: any) => item.type === 'message')
+      .flatMap((msg: any) => msg.content || [])
+      .filter((c: any) => c.type === 'output_text')
+      .map((c: any) => c.text)
+      .join('');
+
+    if (!outputText) {
       return { ok: false, error: 'DeepSeek 返回空内容', errorType: 'PARSE' };
     }
 
-    // 解析 JSON
+    // json_schema 模式下应该直接是合法 JSON
     try {
-      const parsed = JSON.parse(content);
-      const result: ReviewResult = {
+      const parsed = JSON.parse(outputText);
+      const result: ExtendedReviewResult = {
         status: parsed.status || 'REVIEW_REQUIRED',
         summary: parsed.summary || '',
         issues: (parsed.issues || []).map((iss: any, i: number) => ({
@@ -144,41 +184,38 @@ export async function callDeepSeekReview(
           title: iss.title || '(无标题)',
           description: iss.description || '',
           location: iss.location,
-          recommendation: iss.recommendation,
         })),
         reviewedAt: new Date().toISOString(),
         reviewer: `DeepSeek (${model})`,
+        normativeVerifications: (parsed.normativeVerifications || []).map((nv: any) => ({
+          codeName: '',
+          codeNumber: nv.codeNumber || '',
+          edition: '',
+          clause: nv.clause || '',
+          page: null,
+          quotedText: '',
+          evidenceSource: null,
+          evidenceStatus: 'REVIEW_REQUIRED',
+          verificationStatus: 'REVIEW_REQUIRED',
+          conflictStatus: 'NONE',
+          notes: nv.notes || nv.issue || '',
+        })),
+        suggestions: (parsed.suggestions || []).map((s: any) => ({
+          issue: s.issue || '',
+          severity: s.severity || 'MEDIUM',
+          location: s.location || '',
+          reason: s.reason || '',
+          suggestedChange: s.suggestedChange || '',
+          evidenceRequired: s.evidenceRequired || '',
+        })),
       };
-      return { ok: true, result, rawContent: content };
+      return { ok: true, result, rawContent: outputText };
     } catch {
-      // Fallback: 尝试从文本中提取 JSON
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          const parsed = JSON.parse(jsonMatch[0]);
-          const result: ReviewResult = {
-            status: parsed.status || 'REVIEW_REQUIRED',
-            summary: parsed.summary || content.slice(0, 500),
-            issues: (parsed.issues || []).map((iss: any, i: number) => ({
-              id: `issue-${i + 1}`,
-              severity: iss.severity || 'MEDIUM',
-              category: iss.category || 'CALCULATION_LOGIC',
-              title: iss.title || '(无标题)',
-              description: iss.description || '',
-            })),
-            reviewedAt: new Date().toISOString(),
-            reviewer: `DeepSeek (${model})`,
-          };
-          return { ok: true, result, rawContent: content };
-        } catch {
-          // Fallback 也失败
-        }
-      }
       return {
         ok: false,
         error: '无法解析 DeepSeek 返回的 JSON',
         errorType: 'PARSE',
-        rawContent: content,
+        rawContent: outputText,
       };
     }
   } catch (err: any) {
