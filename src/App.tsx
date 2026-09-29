@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import StandardStatusNotice from './components/layout/StandardStatusNotice';
 import StandardsStatus from './pages/StandardsStatus';
+import CodeReviewWorkbench from './components/codes/CodeReviewWorkbench';
 import BeamFlexure from './components/calculators/BeamFlexure';
 import BeamShear from './components/calculators/BeamShear';
 import BeamTFlexure from './components/calculators/BeamTFlexure';
@@ -22,7 +23,7 @@ import StaircasePlate from './components/calculators/StaircasePlate';
 type ModuleId = string;
 
 const STANDARDS_STATUS_TAIL = '/standards/status';
-type View = 'calculator' | 'standards-status';
+type View = 'calculator' | 'standards-status' | 'code-review';
 
 const CONCRETE_MODULES = ['beam-flexure', 'beam-shear', 'beam-t-flexure', 'beam-double-flexure', 'column-axial', 'column-eccentric', 'slab-one-way', 'slab-two-way', 'foundation-independent', 'staircase-plate'];
 
@@ -53,6 +54,10 @@ const App: React.FC = () => {
 
   if (view === 'standards-status') {
     return <StandardsStatus onBack={backToCalculator} />;
+  }
+
+  if (view === 'code-review') {
+    return <CodeReviewWorkbench />;
   }
 
   const renderContent = () => {

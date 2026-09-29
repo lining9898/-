@@ -1,49 +1,79 @@
 /**
- * 规范注册表（兼容层）
- *
- * 状态一律委托给 `src/normative/registry.ts`（来源驱动、多版本共存）。
- * 禁止在此硬编码"哪个版本现行"——一律以可靠、可追溯来源为准。
+ * 规范管理数据模型
+ * 用于条文级证据体系和规范确认工作台
  */
 
-import { normativeVersionRegistry } from '../normative/registry';
+import type { VerificationStatus } from '../types/evidence';
 
-export interface CodeEntry {
+/** 规范有效性状态 */
+export type CodeValidityStatus = 'CURRENT' | 'SUPERSEDED' | 'DRAFT' | 'REVIEW_REQUIRED';
+
+/** 规范版本 */
+export interface CodeEdition {
+  editionId: string;
   codeNumber: string;
   codeName: string;
-  edition: string;
-  /** current | superseded | draft（兼容旧接口映射） */
-  status: 'current' | 'superseded' | 'draft';
-  description: string;
-  sourceFile: string | null;
-  importedAt: string | null;
-  /** 版本状态核验来源 */
-  source: string;
-  /** 版本状态核验状态 */
-  verificationStatus: string;
+  year: string;
+  amendment?: string;
+  publishDate?: string;
+  implementDate?: string;
+  validityStatus: CodeValidityStatus;
+  validitySource?: string;
+  scope?: string;
+  sourcePdfFile?: string;
+  sourcePdfHash?: string;
 }
 
-/** 将版本注册表条目映射为旧接口的 CodeEntry */
-export function getRegisteredCodes(): CodeEntry[] {
-  return normativeVersionRegistry.listAll().map(v => ({
-    codeNumber: v.codeNumber,
-    codeName: v.codeName,
-    edition: v.edition,
-    status: v.status === 'CURRENT' ? 'current' : v.status === 'SUPERSEDED' ? 'superseded' : 'draft',
-    description: v.note ?? '',
-    sourceFile: null,
-    importedAt: null,
-    source: v.source,
-    verificationStatus: v.verificationStatus,
-  }));
+/** 条文级 Evidence 记录 */
+export interface ClauseEvidence {
+  evidenceId: string;
+  editionId: string;
+  codeNumber: string;
+  clause: string;
+  chapter: string;
+  originalText: string;
+  pdfPage: number | null;
+  printedPage: string | null;
+  sourceFile: string;
+  sourceHash?: string;
+  verificationStatus: VerificationStatus | 'CONFLICT';
+  verifiedAt?: string;
+  verifiedBy?: string;
+  aiNotes?: string;
+  linkedSkills?: string[];
 }
 
-export function getCodeByNumber(codeNumber: string): CodeEntry | undefined {
-  // 返回该编号下解析到的默认版本（未指定版本时取已核验 CURRENT）
-  const res = normativeVersionRegistry.resolve(codeNumber);
-  if (!res.version) return undefined;
-  return getRegisteredCodes().find(c => c.codeNumber === res.version!.codeNumber && c.edition === res.version!.edition);
+/** 人工确认操作记录 */
+export interface VerificationAuditLog {
+  logId: string;
+  evidenceId: string;
+  action: 'VERIFY' | 'REJECT' | 'REQUEST_REVIEW' | 'FLAG_CONFLICT';
+  fromStatus: string;
+  toStatus: string;
+  operator: string;
+  timestamp: string;
+  notes?: string;
 }
 
-export function getCodeVersions(codeNumber: string): CodeEntry[] {
-  return getRegisteredCodes().filter(c => c.codeNumber === codeNumber);
+/** AI 审查结果（规范级） */
+export interface NormativeAuditResult {
+  auditId: string;
+  evidenceId: string;
+  model: string;
+  checkedAt: string;
+  issues: {
+    severity: 'BLOCKER' | 'HIGH' | 'MEDIUM' | 'LOW';
+    category: 'FORMULA_MISMATCH' | 'MISSING_CLAUSE' | 'WRONG_VERSION' | 'UNIT_ERROR' | 'OTHER';
+    description: string;
+    location?: string;
+  }[];
+  suggestions: string[];
+  attemptedUpgrade: boolean;
+}
+
+/** 规范 Registry */
+export interface CodeRegistry {
+  editions: CodeEdition[];
+  clauses: ClauseEvidence[];
+  auditLogs: VerificationAuditLog[];
 }
