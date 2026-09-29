@@ -1,8 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import * as pdfjsLib from 'pdfjs-dist';
-
-// 使用 CDN worker 避免打包问题
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
 interface PdfEvidenceViewerProps {
   pdfUrl: string;
@@ -29,6 +25,10 @@ const PdfEvidenceViewer: React.FC<PdfEvidenceViewerProps> = ({
     setLoading(true);
     setError(null);
     try {
+      // 动态加载 pdfjs，避免 jsdom 测试环境卡 worker
+      const pdfjsLib = await import('pdfjs-dist');
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
       const doc = await pdfjsLib.getDocument({ url: pdfUrl }).promise;
       setTotalPages(doc.numPages);
       const clampedPage = Math.max(1, Math.min(page, doc.numPages));
