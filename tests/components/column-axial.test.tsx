@@ -17,7 +17,7 @@ describe('axial column calculator', () => {
     expect(screen.getByText(/0.9 × 1 × \(14.3 × 200000/)).not.toBeNull();
     fireEvent.click(screen.getByRole('tab', { name: '规范依据' }));
     expect(screen.getByText('待校核')).not.toBeNull();
-    expect(screen.getByText(/PDF 页码/)).not.toBeNull();
+    expect(screen.getByText(/PDF P/)).not.toBeNull();
   });
 
   it('shows invalid input instead of a passing result', () => {
