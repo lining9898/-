@@ -9,10 +9,15 @@ interface PdfEvidenceViewerProps {
 
 // PDF 完整页面图片映射（从真实 PDF 渲染，避免手机 WebView 触发下载）
 const PAGE_IMAGE_MAP: Record<number, string> = {
+  34: 'evidence-assets/gb50010-2010-2015/pages/p34.jpg',
+  35: 'evidence-assets/gb50010-2010-2015/pages/p35.jpg',
+  38: 'evidence-assets/gb50010-2010-2015/pages/p38.jpg',
+  40: 'evidence-assets/gb50010-2010-2015/pages/p40.jpg',
   52: 'evidence-assets/gb50010-2010-2015/pages/p52.jpg',
   53: 'evidence-assets/gb50010-2010-2015/pages/p53.jpg',
   55: 'evidence-assets/gb50010-2010-2015/pages/p55.jpg',
   56: 'evidence-assets/gb50010-2010-2015/pages/p56.jpg',
+  124: 'evidence-assets/gb50010-2010-2015/pages/p124.jpg',
 };
 
 const PdfEvidenceViewer: React.FC<PdfEvidenceViewerProps> = ({
