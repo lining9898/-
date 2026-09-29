@@ -31,8 +31,8 @@ describe('BATCH 3.1: Golden Case 基准库', () => {
 
   it('Benchmark 统计', () => {
     const results: DetectionResult[] = [
-      { caseId: 'e1', moduleId: '', injectedError: '', category: 'UNIT_ERROR', expectedDetection: true, expectedScope: '', expectedSeverity: 'ERROR', expectedLocation: '', layerA_deterministic: true, layerB_ruleEvidence: false, layerC_deepseek: true, detectedBy: 'MULTIPLE', locationCorrect: true, severityCorrect: true, hallucinatedReference: false },
-      { caseId: 'e2', moduleId: '', injectedError: '', category: 'FORMULA_ERROR', expectedDetection: true, expectedScope: '', expectedSeverity: 'ERROR', expectedLocation: '', layerA_deterministic: false, layerB_ruleEvidence: false, layerC_deepseek: false, detectedBy: 'NONE', locationCorrect: false, severityCorrect: false, hallucinatedReference: false },
+      { caseId: 'e1', injectedError: '', category: 'UNIT_ERROR', expectedDetection: true, expectedScope: '', expectedSeverity: 'ERROR', expectedLocation: '', layerA_deterministic: true, layerB_ruleEvidence: false, layerC_deepseek: true, detectedBy: 'MULTIPLE', locationCorrect: true, severityCorrect: true, hallucinatedReference: false },
+      { caseId: 'e2', injectedError: '', category: 'FORMULA_ERROR', expectedDetection: true, expectedScope: '', expectedSeverity: 'ERROR', expectedLocation: '', layerA_deterministic: false, layerB_ruleEvidence: false, layerC_deepseek: false, detectedBy: 'NONE', locationCorrect: false, severityCorrect: false, hallucinatedReference: false },
     ];
     const bm = computeBenchmark(results);
     expect(bm.sampleSize).toBe(2);
