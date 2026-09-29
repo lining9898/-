@@ -168,6 +168,51 @@ export const INITIAL_EDITIONS: CodeEdition[] = [
 ];
 
 export const INITIAL_CLAUSES: ClauseEvidence[] = [
+  // 6.2.12 T形/I形翼缘计算宽度（印刷页 42，PDF 页 57）
+  {
+    evidenceId: 'GB50010-6.2.12',
+    editionId: 'GB50010-2010-2015',
+    codeNumber: 'GB 50010',
+    clause: '6.2.12',
+    chapter: '第6.2节 正截面承载力计算',
+    originalText: 'T形、I形及倒L形截面受弯构件位于受压区的翼缘计算宽度b′f可按本规范表5.2.4所列情况中的最小值取用。',
+    pdfPage: 57,
+    printedPage: '42',
+    sourceFile: PDF_FILE_NAME,
+    sourceHash: PDF_SHA256,
+    verificationStatus: 'REVIEW_REQUIRED',
+    linkedSkills: ['beam-t-flexure'],
+  },
+  // 6.3.1 斜截面截面限制条件（印刷页 54-55，PDF 页 69-70）
+  {
+    evidenceId: 'GB50010-6.3.1',
+    editionId: 'GB50010-2010-2015',
+    codeNumber: 'GB 50010',
+    clause: '6.3.1',
+    chapter: '第6.3节 斜截面承载力计算',
+    originalText: '矩形、T形和I形截面受弯构件的受剪截面应符合下列条件：当hw/b≤4时，V≤0.25βc·fc·b·h0（6.3.1-1）；当hw/b≥6时，V≤0.20βc·fc·b·h0（6.3.1-2）；当4<hw/b<6时，按线性内插法确定。式中βc为混凝土强度影响系数，当混凝土强度等级不超过C50时取1.0，C80时取0.8，其间线性内插。',
+    pdfPage: 69,
+    printedPage: '54-55',
+    sourceFile: PDF_FILE_NAME,
+    sourceHash: PDF_SHA256,
+    verificationStatus: 'REVIEW_REQUIRED',
+    linkedSkills: ['beam-shear'],
+  },
+  // 6.3.4 斜截面受剪承载力（仅配箍筋）（印刷页 56，PDF 页 71）
+  {
+    evidenceId: 'GB50010-6.3.4',
+    editionId: 'GB50010-2010-2015',
+    codeNumber: 'GB 50010',
+    clause: '6.3.4',
+    chapter: '第6.3节 斜截面承载力计算',
+    originalText: '当仅配置箍筋时，矩形、T形和I形截面受弯构件的斜截面受剪承载力应符合下列规定：V≤Vcs+Vp（6.3.4-1）；Vcs=αcv·ft·b·h0+fyv·(Asv/s)·h0（6.3.4-2）；Vp=0.05Np0（6.3.4-3）。式中αcv为斜截面混凝土受剪承载力系数，对一般受弯构件取0.7；对集中荷载作用下的独立梁，取αcv=1.75/(λ+1)，λ=a/h0，当λ<1.5时取1.5，当λ>3时取3。',
+    pdfPage: 71,
+    printedPage: '56',
+    sourceFile: PDF_FILE_NAME,
+    sourceHash: PDF_SHA256,
+    verificationStatus: 'REVIEW_REQUIRED',
+    linkedSkills: ['beam-shear'],
+  },
   // 6.2.6 等效矩形应力图系数 α1/β1（印刷页 37-38，PDF 页 52-53）
   {
     evidenceId: 'GB50010-6.2.6',
