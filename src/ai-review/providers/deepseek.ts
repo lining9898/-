@@ -219,14 +219,6 @@ export async function callDeepSeekReview(
         })),
       };
       return { ok: true, result, rawContent: outputText };
-    } catch {
-      return {
-        ok: false,
-        error: '无法解析 DeepSeek 返回的 JSON',
-        errorType: 'PARSE',
-        rawContent: outputText,
-      };
-    }
   } catch (err: any) {
     clearTimeout(timer);
     if (err.name === 'AbortError') {
