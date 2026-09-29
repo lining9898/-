@@ -77,3 +77,46 @@ export interface CodeRegistry {
   clauses: ClauseEvidence[];
   auditLogs: VerificationAuditLog[];
 }
+
+/** 导入的 PDF 文件记录 */
+export interface PdfFileRecord {
+  fileId: string;
+  fileName: string;
+  sha256: string;
+  fileSize: number;
+  pageCount: number;
+  importedAt: string;
+  boundEditionId: string;
+}
+
+/** 计算证据指纹 */
+export function computeEvidenceHash(
+  sourceFileHash: string,
+  clause: string,
+  quotedText: string,
+  pdfPage: number | null
+): string {
+  const str = `${sourceFileHash}|${clause}|${quotedText}|${pdfPage}`;
+  // 简单 hash（FNV-1a），不需要加密级，只用于变化检测
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `ev_${hash.toString(16)}`;
+}
+
+/** 检查证据是否被修改（与保存的 evidenceHash 对比） */
+export function isEvidenceStale(
+  clause: ClauseEvidence,
+  savedHash: string | undefined
+): boolean {
+  if (!savedHash) return true;
+  const currentHash = computeEvidenceHash(
+    clause.sourceHash || '',
+    clause.clause,
+    clause.originalText,
+    clause.pdfPage
+  );
+  return currentHash !== savedHash;
+}
