@@ -6,7 +6,7 @@
 import type { VerificationStatus } from '../types/evidence';
 
 /** 规范有效性状态 */
-export type CodeValidityStatus = 'CURRENT' | 'SUPERSEDED' | 'DRAFT' | 'REVIEW_REQUIRED';
+export type CodeValidityStatus = 'CURRENT' | 'SUPERSEDED' | 'DRAFT' | 'REVIEW_REQUIRED' | 'UPCOMING';
 
 /** 规范版本 */
 export interface CodeEdition {
