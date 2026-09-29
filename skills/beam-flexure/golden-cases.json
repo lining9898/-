@@ -20,7 +20,7 @@
         { "label": "相对受压区高度 ξ", "value": 0.2721, "unit": "", "tolerance": 0.0001 },
         { "label": "界限相对受压区高度 ξb", "value": 0.5176, "unit": "", "tolerance": 0.0001 },
         { "label": "最小配筋面积 As,min", "value": 250, "unit": "mm²", "tolerance": 0.01 },
-        { "label": "配筋率 ρ（按 b·h₀）", "value": 1.08, "unit": "%", "tolerance": 0.01 },
+        { "label": "配筋率 ρ（按全截面 b·h，同 8.5.1 口径）", "value": 1.01, "unit": "%", "tolerance": 0.01 },
         { "label": "受弯承载力 Mu", "value": 181.74, "unit": "kN·m", "tolerance": 0.02 }
       ],
       "checks": [

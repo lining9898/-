@@ -69,13 +69,11 @@ describe('矩形梁正截面受弯计算', () => {
       expect(result.overallStatus).toBe('REVIEW_REQUIRED');
     });
 
-    it('配筋率 ρ 按 b·h0 计算（与 ξ 公式一致）', () => {
+    it('配筋率 ρ 按全截面 b·h 计算（与 ρmin 对比口径一致）', () => {
       const result = calculateBeamFlexure(defaultInput);
       const As = 4 * Math.PI * 20 ** 2 / 4;
-      const h0 = 500 - 25 - 10;
-      const expected = Math.round(As / (250 * h0) * 10000) / 100;
-      expect(result.results.find(item => item.label.includes('配筋率'))?.value)
-        .toBe(expected);
+      expect(result.results.find(item => item.label === '配筋率 ρ（按全截面 b·h，同 8.5.1 口径）')?.value)
+        .toBe(Math.round(As / (250 * 500) * 10000) / 100);
     });
 
     it('应返回完整的 CalculationResult 结构', () => {

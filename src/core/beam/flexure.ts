@@ -268,7 +268,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     { label: '界限相对受压区高度 ξb', value: Math.round(xiB * 10000) / 10000, unit: '' },
     { label: '受拉钢筋面积 As', value: Math.round(As * 100) / 100, unit: 'mm²' },
     { label: '最小配筋面积 As,min', value: Math.round(AsMin * 100) / 100, unit: 'mm²' },
-    { label: '配筋率 ρ（按 b·h₀）', value: Math.round(As / (input.b * h0) * 10000) / 100, unit: '%' },
+    { label: '配筋率 ρ（按全截面 b·h，同 8.5.1 口径）', value: Math.round(As / (input.b * input.h) * 10000) / 100, unit: '%', evidence: AsMinEvidence },
     { label: '受弯承载力 Mu', value: Math.round(Mu * 100) / 100, unit: 'kN·m' },
   ];
 
