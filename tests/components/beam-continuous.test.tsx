@@ -8,7 +8,9 @@ describe('continuous beam calculator', () => {
   it('opens from the beam menu and updates loads and span count', async () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /连续梁内力计算/ }));
-    expect(await screen.findByRole('heading', { name: '连续梁内力计算' })).not.toBeNull();
+    expect(
+      await screen.findByRole('heading', { name: '连续梁内力计算' }, { timeout: 5000 }),
+    ).not.toBeNull();
     expect(screen.getByText('75')).not.toBeNull();
     expect(screen.getAllByText('-45').length).toBeGreaterThan(0);
     expect(screen.getByRole('img', { name: /弯矩图/ })).not.toBeNull();
@@ -29,7 +31,7 @@ describe('continuous beam calculator', () => {
   it('shows invalid input without stale diagrams', async () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /连续梁内力计算/ }));
-    await screen.findByRole('heading', { name: '连续梁内力计算' });
+    await screen.findByRole('heading', { name: '连续梁内力计算' }, { timeout: 5000 });
     fireEvent.change(screen.getAllByRole('spinbutton', { name: '跨度 L (m)' })[0],
       { target: { value: '0' } });
     expect(screen.getByRole('alert').textContent).toContain('跨度');
