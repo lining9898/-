@@ -16,6 +16,18 @@ describe('计算页面规范校核状态', () => {
     expect(screen.getAllByText(/待校核|REVIEW_REQUIRED/).length).toBeGreaterThan(0);
   });
 
+  it('规范状态页展示现行融合矩阵并可切换专业', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: '查看详情' }));
+
+    expect(screen.getByText('GB 55001-2021')).not.toBeNull();
+    expect(screen.getByText('GB 55008-2021')).not.toBeNull();
+    expect(screen.getByText('GB/T 50010-2010')).not.toBeNull();
+    fireEvent.click(screen.getByRole('tab', { name: '钢结构' }));
+    expect(screen.getByText('GB 55006-2021')).not.toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: '返回计算' }));
+  });
+
   it('T形梁在结果、计算书和依据中仍保持待校核', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /T形梁正截面受弯/ }));

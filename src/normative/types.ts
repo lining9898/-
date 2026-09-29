@@ -15,6 +15,9 @@ export type CodeStatus = 'CURRENT' | 'UPCOMING' | 'SUPERSEDED' | 'REVIEW_REQUIRE
 /** 证据核验状态（与 src/types/evidence.ts 对齐） */
 export type VerificationStatus = 'VERIFIED' | 'REVIEW_REQUIRED' | 'UNVERIFIED';
 
+/** 规范在融合计算中的约束层级。强制性通用规范不得被配套标准覆盖。 */
+export type NormativeAuthorityLevel = 'MANDATORY_GENERAL_CODE' | 'SUPPORTING_STANDARD';
+
 /**
  * 统一规范版本条目。
  * 以 (codeNumber, edition) 为唯一键，同一 codeNumber 下可共存多个 edition。
@@ -40,6 +43,8 @@ export interface NormativeVersion {
   source: string;
   /** 版本状态核验状态：有可靠来源 => VERIFIED；否则 REVIEW_REQUIRED */
   verificationStatus: VerificationStatus;
+  /** 强制性通用规范或配套设计标准；旧数据未声明时按配套标准处理 */
+  authorityLevel?: NormativeAuthorityLevel;
   /** 补充说明（如"局部修订"、"名称/编号变更"等） */
   note?: string;
 }

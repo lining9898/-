@@ -39,13 +39,13 @@ const StandardStatusNotice: React.FC<StandardStatusNoticeProps> = ({ onViewDetai
           <span className="whitespace-nowrap text-xs font-semibold md:text-sm">规范依据状态</span>
         </span>
         <span className="inline-flex items-center whitespace-nowrap rounded-full bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-600 md:px-2 md:text-xs">
-          版本校核中
+          现行规范融合中
         </span>
         <span className="whitespace-nowrap text-[11px] text-gray-700 md:text-sm">
-          当前计算依据：
+          计算引擎基线：
           <span className="font-medium text-gray-900">GB 50010-2010（2015年版）</span>
         </span>
-        <span className="hidden text-xs text-gray-400 lg:inline">部分规范存在 2024 年局部修订，请查看规范状态。</span>
+        <span className="hidden text-xs text-gray-400 lg:inline">目标依据：GB 55001、GB 55008 与 GB/T 50010-2010（2024 年局部修订）。</span>
       </div>
       <div className="flex shrink-0 items-center gap-1">
         <button
