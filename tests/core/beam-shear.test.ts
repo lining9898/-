@@ -99,7 +99,7 @@ describe('矩形梁斜截面受剪承载力计算', () => {
 
     it('应包含 VERIFIED 信息提示', () => {
       const result = calculateBeamShear(defaultInput);
-      expect(result.advisories.some(a => a.code === 'NORM_UPDATE_REQUIRED')).toBe(true);
+      expect(result.advisories.some(a => a.code === 'NORM_VERSION_CHECKED')).toBe(true);
     });
 
     it('均布荷载不应计算剪跨比步骤', () => {

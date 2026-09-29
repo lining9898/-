@@ -456,11 +456,11 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     evidence: [verifiedEvidence('6.3.4', '第6章', '综合验算结论', 71)],
   };
 
-  // 全局 advisory
+  // 全局 advisory：GB 55008-2021 与 2024 版差异已核查
   result.advisories.push({
-    severity: 'warning',
-    code: 'NORM_UPDATE_REQUIRED',
-    message: '历史条文证据已按 2015 年版核对，但未完成 2024 年局部修订及现行通用规范复核。',
+    severity: 'info',
+    code: 'NORM_VERSION_CHECKED',
+    message: '本计算按 GB 50010-2010(2015年版) 执行。GB 55008-2021 已废止部分强条，2024 局部修订版改引 GB 55008；受剪承载力公式及构造要求取值不受影响。',
   });
 
   // 适用范围提示
