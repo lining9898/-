@@ -166,22 +166,25 @@ describe('矩形梁正截面受弯计算', () => {
     it.todo('边界值真实算例验证（待规范原文）');
   });
 
-  describe('IG-001 最低强度等级 C20→C25 咨询式警告', () => {
-    it('C20 应触发 LOW_CONCRETE_GRADE_2024 警告（不阻断计算）', () => {
+  describe('IG-001 最低强度等级 C20→C25 硬限制', () => {
+    it('C20 应被 BLOCKED（CONCRETE_GRADE_BELOW_MINIMUM，不进入计算）', () => {
       const result = calculateBeamFlexure({ ...defaultInput, concreteGrade: 'C20' });
-      expect(result.advisories.some(a => a.code === 'LOW_CONCRETE_GRADE_2024')).toBe(true);
-      // 不阻断计算：仍应产生 steps 和 results
+      expect(result.advisories.some(a => a.code === 'CONCRETE_GRADE_BELOW_MINIMUM')).toBe(true);
+      // 不进入正式计算：steps/results 为空
+      expect(result.steps.length).toBe(0);
+      expect(result.results.length).toBe(0);
+    });
+
+    it('C25 应通过硬限制', () => {
+      const result = calculateBeamFlexure({ ...defaultInput, concreteGrade: 'C25' });
+      expect(result.advisories.some(a => a.code === 'CONCRETE_GRADE_BELOW_MINIMUM')).toBe(false);
       expect(result.steps.length).toBeGreaterThan(0);
     });
 
-    it('C25 不应触发警告', () => {
-      const result = calculateBeamFlexure({ ...defaultInput, concreteGrade: 'C25' });
-      expect(result.advisories.some(a => a.code === 'LOW_CONCRETE_GRADE_2024')).toBe(false);
-    });
-
-    it('C30 不应触发警告', () => {
+    it('C30 应通过硬限制', () => {
       const result = calculateBeamFlexure({ ...defaultInput, concreteGrade: 'C30' });
-      expect(result.advisories.some(a => a.code === 'LOW_CONCRETE_GRADE_2024')).toBe(false);
+      expect(result.advisories.some(a => a.code === 'CONCRETE_GRADE_BELOW_MINIMUM')).toBe(false);
+      expect(result.steps.length).toBeGreaterThan(0);
     });
   });
 

@@ -19,6 +19,7 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
+import { concreteGradeCompliance } from '../shared/materials';
 
 /** 荷载类型 */
 export type LoadType = 'uniform' | 'concentrated';
@@ -157,6 +158,13 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
 
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
   const steel = STEEL_PARAMS[input.stirrupGrade];
+
+  // IG-001 硬限制
+  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  if (!gradeCheck.passed) {
+    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    return result;
+  }
 
   if (!concrete) {
     result.advisories.push({
