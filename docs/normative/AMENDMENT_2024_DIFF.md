@@ -6,6 +6,8 @@
 > - **2024 局部修订**：`references/codes/GBT50010-2010_2024_amendment.pdf`（40 页，SHA-256 `84c4b768…`）
 > 性质：2024 局部修订共 26 条；本文件只逐条列出与现有 `src/` 计算模块相关的差异。
 > **基线固化 ≠ 模块 VERIFIED**：所有混凝土模块整体仍保持 REVIEW_REQUIRED。
+>
+> **口径说明（2026-10-01 修正）**：本文中"零差异/数值未变"仅指**当前已执行公式的数值计算未发现直接变化**；不等于规范无影响。输入合法性（如 4.1.2 最低强度等级 C20→C25）、构造要求（如 9.1.2 板厚跨厚比）、引用规范（如 8.5.1 新增 GB 55008 强制引用）均可能发生变化，详见 [INPUT_GATE_IMPACT.md](./INPUT_GATE_IMPACT.md)。
 
 ---
 
@@ -126,17 +128,19 @@
 
 ## 2. 对现有模块数值影响汇总
 
-| 模块 | 2024 修订后数值差异 | 结论 |
+> 口径：仅指**当前已执行公式的数值计算未发现直接变化**；输入合法性/构造要求/引用规范变化不在此表内。
+
+| 模块 | 已执行公式的数值计算是否发现直接变化 | 结论 |
 |---|---|---|
-| beam-flexure | 零（C15/HRB335 代码未用；表值未变） | 代码数值与 2024 版一致；仍 REVIEW_REQUIRED |
-| beam-shear | 零（同上） | 代码数值与 2024 版一致；仍 REVIEW_REQUIRED |
-| beam-double-flexure | 零 | 同上 |
-| beam-t-flexure | 零 | 同上 |
-| slab-one-way | 零（材料参数）；9.1.2 未建 Evidence | 仍 REVIEW_REQUIRED |
-| slab-two-way | 零 | 仍 REVIEW_REQUIRED |
-| stair-plate | 零 | 仍 REVIEW_REQUIRED |
-| foundation-independent | 零（材料参数）；GB 50007 不可见 | 仍 REVIEW_REQUIRED |
-| steel-beam | 无影响 | 仍 REVIEW_REQUIRED |
+| beam-flexure | 未发现（C15/HRB335 代码未用；表值未变） | 代码数值与 2024 版一致；仍 REVIEW_REQUIRED |
+| beam-shear | 未发现（同上） | 代码数值与 2024 版一致；仍 REVIEW_REQUIRED |
+| beam-double-flexure | 未发现 | 同上 |
+| beam-t-flexure | 未发现 | 同上 |
+| slab-one-way | 未发现（材料参数）；9.1.2 未建 Evidence | 仍 REVIEW_REQUIRED |
+| slab-two-way | 未发现 | 仍 REVIEW_REQUIRED |
+| stair-plate | 未发现 | 仍 REVIEW_REQUIRED |
+| foundation-independent | 未发现（材料参数）；GB 50007 不可见 | 仍 REVIEW_REQUIRED |
+| steel-beam | 未发现 | 仍 REVIEW_REQUIRED |
 
 ---
 
