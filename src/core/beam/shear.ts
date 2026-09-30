@@ -361,7 +361,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   const rhoSvMin = needsMinStirrupCheck ? 0.24 * concrete.ft / steel.fy : 0;
 
   const minStirrupEvidence = [
-    verifiedEvidence('9.2.9', '第9章', `当 V > 0.7ft·b·h0 时，箍筋的配筋率 ρsv = Asv/(bs) 尚不应小于 0.24ft/fyv。`, 134),
+    verifiedEvidence('9.2.9', '第9章', '当 V 大于 0.7ft·b·h0 + 0.05Np0 时，箍筋配筋率 ρsv = Asv/(b·s) 尚不应小于 0.24ft/fyv。本模块不考虑预应力（Np0=0），条件等价于 V > 0.7ft·b·h0。', 134),
   ];
   allEvidence.push(...minStirrupEvidence);
   steps.push({
@@ -430,7 +430,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
       comparison: '>=',
       passed: rhoSv >= rhoSvMin,
       unit: '%',
-      evidence: [verifiedEvidence('9.2.9', '第9章', '当 V > 0.7ft·b·h0 时，箍筋的配筋率 ρsv 尚不应小于 0.24ft/fyv。', 134)],
+      evidence: [verifiedEvidence('9.2.9', '第9章', '当 V > 0.7ft·b·h0（Np0=0）时，箍筋配筋率 ρsv 尚不应小于 0.24ft/fyv。', 134)],
     });
   } else {
     checks.push({
