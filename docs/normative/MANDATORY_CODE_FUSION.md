@@ -20,18 +20,19 @@
 
 ## 2. 5 本强制性通用规范官方来源核实
 
-| 编号 | 名称 | 公告 URL | 发布日期 | 实施日期 | 全文 PDF 在工作区 |
+| 编号 | 名称 | 公告 URL | 发布日期 | 实施日期 | 附件 PDF 状态 |
 |---|---|---|---|---|---|
-| GB 55001-2021 | 工程结构通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761192.html | 2021-04-09 | 2022-01-01 | **否（SOURCE_NOT_AVAILABLE）** |
-| GB 55002-2021 | 建筑与市政工程抗震通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761174.html | 2021-04-09 | 2022-01-01 | **否（SOURCE_NOT_AVAILABLE）** |
-| GB 55003-2021 | 建筑与市政地基基础通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761185.html | 2021-04-09 | 2022-01-01 | **否（SOURCE_NOT_AVAILABLE）** |
-| GB 55006-2021 | 钢结构通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761191.html | 2021-04-09 | 2022-01-01 | **否（SOURCE_NOT_AVAILABLE）** |
-| GB 55008-2021 | 混凝土结构通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_762454.html | 2021-09-08 | 2022-04-01 | **否（第三方 OCR 已降级为 UNRELIABLE_SOURCE）** |
+| GB 55001-2021 | 工程结构通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761192.html | 2021-04-09 | 2022-01-01 | **已下载候选**（tmp/candidates/mandatory/，30 页，SHA-256 f0397f29…） |
+| GB 55002-2021 | 建筑与市政工程抗震通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761174.html | 2021-04-09 | 2022-01-01 | **已下载候选**（46 页，SHA-256 972d81c9…） |
+| GB 55003-2021 | 建筑与市政地基基础通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761185.html | 2021-04-09 | 2022-01-01 | **已下载候选**（33 页，SHA-256 b8414693…） |
+| GB 55006-2021 | 钢结构通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761191.html | 2021-04-09 | 2022-01-01 | **已下载候选**（24 页，SHA-256 1621e8c1…） |
+| GB 55008-2021 | 混凝土结构通用规范 | https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_762454.html | 2021-09-08 | 2022-04-01 | **已下载候选**（26 页，SHA-256 b7b77f94…） |
 
 说明：
-- MOHURD 公告页本身可访问，但公告页未附全文 PDF；全文须向中国建筑工业出版社购买正式出版物。
-- 合肥市施工图审查中心、达州市城管局等政府网站有转载 PDF，但属第三方转载，本轮不下载、不导入，仅记录为 UNRELIABLE_SOURCE 候选。
-- GB 55008-2021 与 2024 局部修订 8.5.1 条直接相关；正式全文缺失是当前最大证据缺口。
+- 5 个公告页正文下方"附件下载"区均有 2 个附件（主规范 PDF + 废止条文清单）；本轮已下载主规范 PDF 至 `tmp/candidates/mandatory/`。
+- 来源为 MOHURD 官方政府公开附件，可作为候选；但仍走 CANDIDATE → 用户确认导入闸门，不自动升 VERIFIED、不做条文映射。
+- PDF 文本层仅含水印（"用 专 览 浏"），系扫描/图片版；须人工逐页核验封面/版权/目录。
+- 第三方协会 OCR 版 GB 55008（tmp/candidates/gb55008-2021.pdf）维持 UNRELIABLE_SOURCE，不导入。
 
 ## 3. 规范链与模块绑定
 
