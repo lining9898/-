@@ -21,6 +21,7 @@ import {
   reviewRequiredEvidence,
 } from '../shared/materials';
 import {
+import { concreteGradeCompliance } from '../shared/materials';
   designFlexure,
   flexureCapacity,
   limitingRelativeDepth,
@@ -112,6 +113,13 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
   }
   const [lx, ly] = input.spanX <= input.spanY ? [input.spanX, input.spanY] : [input.spanY, input.spanX];
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
+  // IG-001 硬限制
+  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  if (!gradeCheck.passed) {
+    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    return result;
+  }
+
   const steel = STEEL_PARAMS[input.steelGrade];
   if (!concrete) {
     result.advisories.push({ severity: 'error', code: 'UNKNOWN_CONCRETE', message: `未知混凝土等级: ${input.concreteGrade}` });

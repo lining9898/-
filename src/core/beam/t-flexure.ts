@@ -17,6 +17,7 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
+import { concreteGradeCompliance } from '../shared/materials';
 
 /** 梁正截面受弯输入参数 */
 export interface BeamTFlexureInput {
@@ -178,6 +179,13 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   }
 
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
+  // IG-001 硬限制
+  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  if (!gradeCheck.passed) {
+    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    return result;
+  }
+
   const steel = STEEL_PARAMS[input.steelGrade];
 
   if (!concrete) {
