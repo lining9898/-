@@ -4,6 +4,7 @@
     { "id": "normal-hand-calc", "category": "normal", "file": "tests/core/slab-two-way.test.ts", "description": "手算对比：弯矩系数、配筋、承载力" },
     { "id": "boundary-coef-interp", "category": "boundary", "file": "tests/core/slab-two-way.test.ts", "description": "λ 内插与长/短跨边界" },
     { "id": "boundary-capacity", "category": "boundary", "file": "tests/core/slab-two-way.test.ts", "description": "跨越承载力与配筋边界" },
+    { "id": "boundary-thickness", "category": "boundary", "file": "tests/core/slab-two-way.test.ts", "description": "双向实心板短跨/40与80mm厚度边界" },
     { "id": "invalid-input", "category": "invalid", "file": "tests/core/slab-two-way.test.ts", "description": "尺寸、荷载和钢筋输入校验" },
     { "id": "unit-magnitude", "category": "unit", "file": "tests/core/slab-two-way.test.ts", "description": "kN/m²、kN·m/m 与 mm²/m 结果单位/数量级检查" },
     { "id": "formula-trace", "category": "formula", "file": "tests/core/slab-two-way.test.ts", "description": "荷载、弯矩、配筋步骤与 Evidence 追溯" },

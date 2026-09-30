@@ -54,6 +54,18 @@
       "expression": "rhoMin = max(0.20, 45*ft/fy)/100",
       "evidenceId": "clause-8.5.1",
       "requiredInputFields": ["h", "concreteGrade", "steelGrade"]
+    },
+    {
+      "id": "minimum-thickness-ratio",
+      "expression": "h_ratio = lx/40",
+      "evidenceId": "clause-9.1.2-ratio",
+      "requiredInputFields": ["h", "spanX", "spanY"]
+    },
+    {
+      "id": "minimum-thickness-absolute",
+      "expression": "h_absolute = 80mm",
+      "evidenceId": "table-9.1.2-minimum-thickness",
+      "requiredInputFields": ["h", "spanX", "spanY"]
     }
   ],
   "status": "REVIEW_REQUIRED",

@@ -23,7 +23,7 @@
       "checks": [],
       "reference": "σ = M·10⁶/W；τ = V·10³·S/(I·tw)；仓库内独立复算",
       "evidenceStatus": "REVIEW_REQUIRED",
-      "note": "REFERENCE_CASE_REQUIRED：本模块不在 Calculation Skill 注册范围，规范原文依据待校核。"
+      "note": "REFERENCE_CASE_REQUIRED：模块已注册为 Calculation Skill；规范原文、材料强度表及独立外部算例仍待闭环。"
     }
   ]
 }

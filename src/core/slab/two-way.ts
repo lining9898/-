@@ -98,6 +98,22 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
     allEvidence.push(e);
     return e;
   };
+  const currentGb50010 = (clause: string, chapter: string, text: string, page: number) => {
+    const e: Evidence = {
+      codeName: '混凝土结构设计标准',
+      codeNumber: 'GB/T 50010',
+      edition: '2010（2024年局部修订）',
+      chapter,
+      clause,
+      originalText: text,
+      pdfPage: page,
+      status: 'current',
+      verificationStatus: 'VERIFIED',
+      sourceFile: '混凝土结构设计标准.pdf',
+    };
+    allEvidence.push(e);
+    return e;
+  };
 
   const numericFields = [input.h, input.spanX, input.spanY, input.cover, input.barDiameter, input.barSpacing, input.gkExtra, input.qk, input.gammaG, input.gammaQ, width];
   if (
@@ -258,7 +274,19 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
   ];
 
   const evSpacing = rr('9.1.3', '第9章', '板中受力钢筋间距不宜大于 200mm，且不宜小于 70mm。');
-  const evThick = rr('9.1.2', '第9章', '双向板厚度不宜小于短跨的 1/45（构造要求）。');
+  const evThicknessRatio = currentGb50010(
+    '9.1.2',
+    '第9章',
+    '双向板的跨厚比不大于40。',
+    15,
+  );
+  const evMinimumThickness = currentGb50010(
+    '表9.1.2',
+    '第9章',
+    '双向板实心楼板的最小厚度为80mm。',
+    16,
+  );
+  const requiredThickness = Math.max((lx * 1000) / 40, 80);
   const checks: CheckItem[] = [
     {
       name: '短向受压区高度验算', calculatedValue: Math.round(capX.xi * 10000) / 10000,
@@ -294,8 +322,8 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
     },
     {
       name: '板厚构造验算', calculatedValue: input.h,
-      limitValue: Math.round((lx * 1000) / 45 * 100) / 100, comparison: '>=',
-      passed: input.h >= (lx * 1000) / 45, unit: 'mm', evidence: [evThick],
+      limitValue: Math.round(requiredThickness * 100) / 100, comparison: '>=',
+      passed: input.h >= requiredThickness, unit: 'mm', evidence: [evThicknessRatio, evMinimumThickness],
     },
   ];
   result.checks = checks;
@@ -316,7 +344,7 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
   result.advisories.push({
     severity: 'warning',
     code: 'NORM_REVIEW_REQUIRED',
-    message: '荷载取值（GB 50009-2012）与板厚/间距构造（GB 50010 9.1.2、9.1.3）待规范 Agent 核验。',
+    message: '荷载取值（GB 50009-2012）与钢筋间距构造（GB 50010 9.1.3）待规范 Agent 核验；板厚已按 GB/T 50010-2010（2024年局部修订）9.1.2 核验。',
   });
 
   result.allEvidence = allEvidence;

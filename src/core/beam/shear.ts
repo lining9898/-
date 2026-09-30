@@ -53,9 +53,9 @@ interface ConcreteParams {
   ft: number;       // 轴心抗拉强度设计值 (MPa)
 }
 
-/** 钢筋材料参数 */
-interface SteelParams {
-  fy: number;       // 抗拉强度设计值 (MPa)
+/** 箍筋材料参数 */
+interface StirrupSteelParams {
+  fyv: number;      // 箍筋抗拉强度设计值 (MPa)
   Es: number;       // 弹性模量 (MPa)
 }
 
@@ -71,11 +71,11 @@ const CONCRETE_PARAMS: Record<string, ConcreteParams> = {
 };
 
 /** 常用钢筋等级参数 */
-const STEEL_PARAMS: Record<string, SteelParams> = {
-  HPB300: { fy: 270, Es: 210000 },
-  HRB335: { fy: 300, Es: 200000 },
-  HRB400: { fy: 360, Es: 200000 },
-  HRB500: { fy: 435, Es: 200000 },
+const STIRRUP_STEEL_PARAMS: Record<string, StirrupSteelParams> = {
+  HPB300: { fyv: 270, Es: 210000 },
+  HRB335: { fyv: 300, Es: 200000 },
+  HRB400: { fyv: 360, Es: 200000 },
+  HRB500: { fyv: 435, Es: 200000 },
 };
 
 /** 创建已核验的规范证据 */
@@ -156,7 +156,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   }
 
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
-  const steel = STEEL_PARAMS[input.stirrupGrade];
+  const stirrupSteel = STIRRUP_STEEL_PARAMS[input.stirrupGrade];
 
   if (!concrete) {
     result.advisories.push({
@@ -166,7 +166,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     });
     return result;
   }
-  if (!steel) {
+  if (!stirrupSteel) {
     result.advisories.push({
       severity: 'error',
       code: 'UNKNOWN_STEEL',
@@ -214,7 +214,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     { label: 'ft', value: concrete.ft, unit: 'MPa', evidence: concreteEvidence },
     { label: 'βc（混凝土强度影响系数）', value: betaC, unit: '', evidence: [verifiedEvidence('6.3.1', '第6章', '当混凝土强度等级不超过 C50 时，βc 取 1.0。', 70)] },
     { label: '箍筋等级', value: input.stirrupGrade, unit: '', evidence: steelEvidence },
-    { label: 'fyv', value: steel.fy, unit: 'MPa', evidence: steelEvidence },
+    { label: 'fyv', value: stirrupSteel.fyv, unit: 'MPa', evidence: steelEvidence },
   ];
 
   // === 记录截面参数 ===
@@ -317,7 +317,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   });
 
   // 步骤5：箍筋受剪承载力 Vs = fyv·(Asv/s)·h0
-  const Vs = steel.fy * (Asv / input.stirrupSpacing) * input.h0 / 1000; // kN
+  const Vs = stirrupSteel.fyv * (Asv / input.stirrupSpacing) * input.h0 / 1000; // kN
   const VsEvidence = [
     verifiedEvidence('6.3.4', '第6章', 'Vcs = αcv·ft·b·h0 + fyv·(Asv/s)·h0，其中 fyv·(Asv/s)·h0 为箍筋受剪承载力部分。', 71),
   ];
@@ -332,7 +332,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
       { symbol: 's', meaning: '箍筋间距', unit: 'mm' },
       { symbol: 'h_0', meaning: '截面有效高度', unit: 'mm' },
     ],
-    substitutedFormula: `V_s = ${steel.fy} × (${Math.round(Asv * 100) / 100} / ${input.stirrupSpacing}) × ${Math.round(input.h0 * 100) / 100} / 1000`,
+    substitutedFormula: `V_s = ${stirrupSteel.fyv} × (${Math.round(Asv * 100) / 100} / ${input.stirrupSpacing}) × ${Math.round(input.h0 * 100) / 100} / 1000`,
     result: Math.round(Vs * 100) / 100,
     unit: 'kN',
     evidence: VsEvidence,
@@ -358,7 +358,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   // 当 V > 0.7·ft·b·h0 时，ρsv ≥ 0.24·ft/fyv
   const VThreshold = 0.7 * concrete.ft * input.b * input.h0 / 1000; // kN
   const needsMinStirrupCheck = input.V * 1000 > 0.7 * concrete.ft * input.b * input.h0;
-  const rhoSvMin = needsMinStirrupCheck ? 0.24 * concrete.ft / steel.fy : 0;
+  const rhoSvMin = needsMinStirrupCheck ? 0.24 * concrete.ft / stirrupSteel.fyv : 0;
 
   const minStirrupEvidence = [
     verifiedEvidence('9.2.9', '第9章', `当 V > 0.7ft·b·h0 时，箍筋的配筋率 ρsv = Asv/(bs) 尚不应小于 0.24ft/fyv。`, 134),
@@ -371,7 +371,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
       : `V = ${input.V} kN ≤ 0.7·ft·b·h0 = ${Math.round(VThreshold * 100) / 100} kN，按构造配箍`,
     formula: needsMinStirrupCheck ? 'ρ_sv,min = 0.24 · f_t / f_yv' : '按构造要求配置',
     substitutedFormula: needsMinStirrupCheck
-      ? `ρ_sv,min = 0.24 × ${concrete.ft} / ${steel.fy} = ${(0.24 * concrete.ft / steel.fy * 100).toFixed(4)}%`
+      ? `ρ_sv,min = 0.24 × ${concrete.ft} / ${stirrupSteel.fyv} = ${(0.24 * concrete.ft / stirrupSteel.fyv * 100).toFixed(4)}%`
       : `0.7 × ${concrete.ft} × ${input.b} × ${Math.round(input.h0 * 100) / 100} / 1000 = ${Math.round(VThreshold * 100) / 100} kN`,
     result: needsMinStirrupCheck ? Math.round(rhoSvMin * 10000) / 100 : 0,
     unit: needsMinStirrupCheck ? '%' : 'kN（阈值）',
@@ -456,11 +456,11 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     evidence: [verifiedEvidence('6.3.4', '第6章', '综合验算结论', 71)],
   };
 
-  // 全局 advisory：GB 55008-2021 与 2024 版差异已核查
+  // 现行规范融合尚未完成，不得仅凭摘要把历史公式升级为已核查。
   result.advisories.push({
-    severity: 'info',
-    code: 'NORM_VERSION_CHECKED',
-    message: '本计算按 GB 50010-2010(2015年版) 执行。GB 55008-2021 已废止部分强条，2024 局部修订版改引 GB 55008；受剪承载力公式及构造要求取值不受影响。',
+    severity: 'warning',
+    code: 'NORM_UPDATE_REQUIRED',
+    message: '计算公式仍基于 GB 50010-2010（2015年版）。现行 GB 55001-2021、GB 55008-2021 与 GB/T 50010-2010（2024年局部修订）尚未完成逐条 Evidence 映射，结果保持 REVIEW_REQUIRED。',
   });
 
   // 适用范围提示

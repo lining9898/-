@@ -71,6 +71,40 @@ describe('CalculationResult Auditor（运行期结构审查，不执行工程公
     expect(audit.issues.some(i => i.code === 'RESULT_EDITION_MIXED')).toBe(true);
   });
 
+  it('允许不同规范各自使用对应版本', () => {
+    const result = createEmptyResult('beam-flexure');
+    result.allEvidence = [
+      evidence('2010（2024年版）'),
+      {
+        ...evidence('2012'),
+        codeName: '建筑结构荷载规范',
+        codeNumber: 'GB 50009',
+        chapter: '第3章',
+        clause: '3.2.3',
+      },
+      {
+        ...evidence('2021'),
+        codeName: '混凝土结构通用规范',
+        codeNumber: 'GB 55008',
+        chapter: '第4章',
+        clause: '4.1.1',
+      },
+    ];
+
+    const audit = auditCalculationResult(result);
+    expect(audit.issues.some(i => i.code === 'RESULT_EDITION_MIXED')).toBe(false);
+    expect(audit.passed).toBe(true);
+  });
+
+  it('阻止无 Evidence 的材料或设计参数进入计算书', () => {
+    const result = createEmptyResult('steel-beam');
+    result.materials = [{ label: '抗弯强度设计值 f（用户输入）', value: 215, unit: 'N/mm²' }];
+
+    const audit = auditCalculationResult(result);
+    expect(audit.passed).toBe(false);
+    expect(audit.issues.some(i => i.code === 'MATERIAL_EVIDENCE_MISSING')).toBe(true);
+  });
+
   it('检测未校核（UNVERIFIED/REVIEW_REQUIRED）证据', () => {
     const result = createEmptyResult('beam-flexure');
     result.allEvidence = [{

@@ -97,9 +97,12 @@ describe('矩形梁斜截面受剪承载力计算', () => {
       });
     });
 
-    it('应包含 VERIFIED 信息提示', () => {
+    it('应包含现行规范尚待融合的警告', () => {
       const result = calculateBeamShear(defaultInput);
-      expect(result.advisories.some(a => a.code === 'NORM_VERSION_CHECKED')).toBe(true);
+      expect(result.advisories).toContainEqual(expect.objectContaining({
+        code: 'NORM_UPDATE_REQUIRED',
+        severity: 'warning',
+      }));
     });
 
     it('均布荷载不应计算剪跨比步骤', () => {
@@ -146,6 +149,18 @@ describe('矩形梁斜截面受剪承载力计算', () => {
       const result = calculateBeamShear(defaultInput);
       const minStirrupStep = result.steps.find(s => s.name === '计算最小配箍率');
       expect(minStirrupStep).toBeDefined();
+    });
+
+    it('箍筋强度应由独立的 stirrupGrade 决定', () => {
+      const hpb = calculateBeamShear({ ...defaultInput, stirrupGrade: 'HPB300' });
+      const hrb = calculateBeamShear({ ...defaultInput, stirrupGrade: 'HRB400' });
+      const resultValue = (result: ReturnType<typeof calculateBeamShear>, label: string) =>
+        Number(result.results.find(item => item.label === label)?.value);
+
+      expect(hpb.materials.find(item => item.label === 'fyv')?.value).toBe(270);
+      expect(hrb.materials.find(item => item.label === 'fyv')?.value).toBe(360);
+      expect(resultValue(hrb, '箍筋受剪承载力 Vs') / resultValue(hpb, '箍筋受剪承载力 Vs'))
+        .toBeCloseTo(360 / 270, 2);
     });
   });
 

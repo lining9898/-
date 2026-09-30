@@ -93,6 +93,20 @@ describe('双向板计算', () => {
   });
 
   describe('边界值', () => {
+    it('板厚应同时满足短跨/40与80mm绝对下限', () => {
+      const absoluteFail = calculateTwoWaySlab({ ...defaultInput, h: 79, spanX: 3.0 });
+      const absolutePass = calculateTwoWaySlab({ ...defaultInput, h: 80, spanX: 3.0 });
+      const ratioFail = calculateTwoWaySlab({ ...defaultInput, h: 99, spanX: 4.0, spanY: 5.0 });
+
+      expect(absoluteFail.checks.find(c => c.name === '板厚构造验算')).toMatchObject({ limitValue: 80, passed: false });
+      expect(absolutePass.checks.find(c => c.name === '板厚构造验算')).toMatchObject({ limitValue: 80, passed: true });
+      expect(ratioFail.checks.find(c => c.name === '板厚构造验算')).toMatchObject({ limitValue: 100, passed: false });
+      expect(absolutePass.checks.find(c => c.name === '板厚构造验算')?.evidence.map(e => [e.clause, e.pdfPage])).toEqual([
+        ['9.1.2', 15],
+        ['表9.1.2', 16],
+      ]);
+    });
+
     it('配筋率过低时最小配筋率验算不通过', () => {
       const r = calculateTwoWaySlab({ ...defaultInput, barDiameter: 6, barSpacing: 300 });
       expect(r.checks.find(c => c.name === '最小配筋率验算')?.passed).toBe(false);

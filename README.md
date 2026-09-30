@@ -32,6 +32,7 @@ CalculationResult
 | `beam-continuous` | calculation | 连续梁内力（结构力学方法，非 GB 规范公式） |
 | `beam-shear` | calculation | 矩形梁斜截面受剪承载力 |
 | `column` | calculation | 矩形箍筋柱轴压/偏心受压 |
+| `steel-beam` | calculation | 对称工字形钢梁受弯、受剪与整体稳定（用户提供材料强度及 φb，REVIEW_REQUIRED） |
 | `gb50010` | normative | GB 50010-2010（2015年版）条文查询 |
 | `calculation-auditor` | auditor | Skill 结构审查 |
 

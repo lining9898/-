@@ -14,7 +14,15 @@ describe('现行国家规范融合', () => {
   });
 
   it('钢结构与地基基础使用各自的强制性通用规范', () => {
-    expect(resolveCurrentStandardFusion('STEEL').standards.some(item => item.codeNumber === 'GB 55006')).toBe(true);
+    const steel = resolveCurrentStandardFusion('STEEL');
+    expect(steel.standards.some(item => item.codeNumber === 'GB 55006')).toBe(true);
+    expect(steel.standards.map(item => item.version?.designation)).toEqual([
+      'GB 55001-2021',
+      'GB 55006-2021',
+      'GB 50009-2012',
+      'GB 50017-2017',
+    ]);
+    expect(steel.warnings.some(message => message.includes('CURRENT 版本缺少可靠来源核验'))).toBe(true);
     expect(resolveCurrentStandardFusion('FOUNDATION').standards.some(item => item.codeNumber === 'GB 55003')).toBe(true);
   });
 

@@ -50,6 +50,7 @@ const FUSION_PROFILES: Record<StructuralDomain, StandardRequirement[]> = {
     GENERAL[0],
     { codeNumber: 'GB 55006', role: '钢结构强制性要求', clauseEvidenceStatus: 'REVIEW_REQUIRED' },
     GENERAL[1],
+    { codeNumber: 'GB 50017', role: '钢结构构件计算与构造配套标准', clauseEvidenceStatus: 'REVIEW_REQUIRED' },
   ],
   FOUNDATION: [
     GENERAL[0],

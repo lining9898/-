@@ -26,6 +26,20 @@ describe('symmetric I-section steel beam', () => {
     expect(result.stabilityPassed).toBe(true);
   });
 
+  it('returns an auditable CalculationResult without claiming full verification', () => {
+    const report = calculateSteelBeam(base).report;
+    expect(report.calculatorType).toBe('steel-beam');
+    expect(report.overallStatus).toBe('REVIEW_REQUIRED');
+    expect(report.steps).toHaveLength(3);
+    expect(report.steps.every(step => step.evidence.length > 0)).toBe(true);
+    expect(report.allEvidence.map(e => e.clause)).toEqual(['6.1.1', '6.1.3', '6.2.2']);
+    expect(report.advisories.map(a => a.code)).toEqual(expect.arrayContaining([
+      'USER_SUPPLIED_MATERIAL_STRENGTH',
+      'USER_SUPPLIED_STABILITY_FACTOR',
+      'CURRENT_STANDARD_FUSION_PENDING',
+    ]));
+  });
+
   it('reports failed checks without hiding other results', () => {
     const result = calculateSteelBeam({ ...base, moment: 250, shear: 400, stabilityFactor: 0.5 });
     expect(result.bendingPassed).toBe(false);

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["h", "bf", "tf", "tw", "moment", "shear", "bendingStrength", "shearStrength", "stabilityFactor"],
+  "properties": {
+    "h": { "type": "number", "unit": "mm", "description": "截面总高度" },
+    "bf": { "type": "number", "unit": "mm", "description": "翼缘宽度" },
+    "tf": { "type": "number", "unit": "mm", "description": "翼缘厚度" },
+    "tw": { "type": "number", "unit": "mm", "description": "腹板厚度" },
+    "moment": { "type": "number", "unit": "kN·m", "description": "弯矩设计值" },
+    "shear": { "type": "number", "unit": "kN", "description": "剪力设计值" },
+    "bendingStrength": { "type": "number", "unit": "N/mm²", "description": "用户核定的抗弯强度设计值" },
+    "shearStrength": { "type": "number", "unit": "N/mm²", "description": "用户核定的抗剪强度设计值" },
+    "stabilityFactor": { "type": "number", "unit": "dimensionless", "description": "用户核定的整体稳定系数" }
+  }
+}

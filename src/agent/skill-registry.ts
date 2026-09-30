@@ -54,6 +54,10 @@ import staircasePlateManifest from '../../skills/staircase-plate/skill.json';
 import staircasePlateSchema from '../../skills/staircase-plate/schema.json';
 import staircasePlateEvidence from '../../skills/staircase-plate/evidence.json';
 import staircasePlateTests from '../../skills/staircase-plate/tests.json';
+import steelBeamManifest from '../../skills/steel-beam/skill.json';
+import steelBeamSchema from '../../skills/steel-beam/schema.json';
+import steelBeamEvidence from '../../skills/steel-beam/evidence.json';
+import steelBeamTests from '../../skills/steel-beam/tests.json';
 
 import { invokeBeamFlexure, isBeamFlexureInput } from '../../skills/beam-flexure/calculator';
 import { invokeBeamTFlexure, isBeamTFlexureInput } from '../../skills/beam-t-flexure/calculator';
@@ -65,6 +69,7 @@ import { invokeOneWaySlab, isOneWaySlabInput } from '../../skills/slab-one-way/c
 import { invokeTwoWaySlab, isTwoWaySlabInput } from '../../skills/slab-two-way/calculator';
 import { invokeIndependentFoundation, isIndependentFoundationInput } from '../../skills/foundation-independent/calculator';
 import { invokePlateStair, isPlateStairInput } from '../../skills/staircase-plate/calculator';
+import { invokeSteelBeam, isSteelBeamInput } from '../../skills/steel-beam/calculator';
 import { auditSkillPackage, CalculationAuditResult } from './calculation-auditor';
 import { gb50010Skill } from '../../skills/gb50010/resolver';
 import { gb50009Skill } from '../../skills/gb50009/resolver';
@@ -184,6 +189,13 @@ const staircasePlatePackage: SkillPackage = {
   tests: staircasePlateTests as SkillTestCatalog,
 };
 
+const steelBeamPackage: SkillPackage = {
+  manifest: steelBeamManifest as SkillManifest,
+  schema: steelBeamSchema as SkillInputSchema,
+  evidence: steelBeamEvidence as SkillEvidenceCatalog,
+  tests: steelBeamTests as SkillTestCatalog,
+};
+
 // ---------------------------------------------------------------------------
 // Skill instances
 // ---------------------------------------------------------------------------
@@ -248,6 +260,12 @@ const staircasePlateSkill: CalculationSkill = {
   calculate: invokePlateStair,
 };
 
+const steelBeamSkill: CalculationSkill = {
+  package: steelBeamPackage,
+  accepts: isSteelBeamInput,
+  calculate: invokeSteelBeam,
+};
+
 // ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
@@ -278,6 +296,7 @@ export class SkillRegistry {
     this.registerCalculation(slabTwoWaySkill);
     this.registerCalculation(foundationIndependentSkill);
     this.registerCalculation(staircasePlateSkill);
+    this.registerCalculation(steelBeamSkill);
     this.registerNormative(gb50010Skill);
     this.registerNormative(gb50009Skill);
     this.registerNormative(gb50007Skill);

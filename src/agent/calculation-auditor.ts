@@ -5,6 +5,7 @@ import {
 } from './skill-types';
 import { CalculationResult, CalculationStep, CheckItem } from '../types/calculation';
 import { Evidence } from '../types/evidence';
+import { normalizeCode } from '../normative/registry';
 
 export type AuditSeverity = 'error' | 'warning' | 'info';
 
@@ -23,7 +24,7 @@ export interface CalculationAuditResult {
 }
 
 const supportedUnits = new Set([
-  '', 'dimensionless', 'enum', 'grade', '%', 'mm', 'mm²', 'm', 'm²', 'N', 'kN', 'N·m', 'kN·m', 'MPa', 'N/mm²', '肢', '根',
+  '', 'dimensionless', 'enum', 'grade', '%', 'mm', 'mm²', 'mm³', 'mm⁴', 'm', 'm²', 'N', 'kN', 'N·m', 'kN·m', 'MPa', 'N/mm²', '肢', '根',
   'kN/m', 'kN/m²', 'kN/m³', 'kPa', 'mm²/m', 'kN·m/m',
 ]);
 
@@ -168,7 +169,12 @@ export function auditCalculationResult(
     }
   };
   for (const item of result.inputs) collectFinite(`输入 ${item.label}`, item.value);
-  for (const item of result.materials) collectFinite(`材料 ${item.label}`, item.value);
+  for (const item of result.materials) {
+    collectFinite(`材料 ${item.label}`, item.value);
+    if (typeof item.value === 'number' && (!item.evidence || item.evidence.length === 0)) {
+      issue(issues, 'error', 'MATERIAL_EVIDENCE_MISSING', `材料或设计参数 ${item.label} 缺少 Evidence`);
+    }
+  }
   for (const item of result.geometry) collectFinite(`几何 ${item.label}`, item.value);
   for (const step of result.steps) {
     collectFinite(`步骤 ${step.name}`, step.result);
@@ -210,17 +216,37 @@ export function auditCalculationResult(
   }
   const allResultEvidence = [
     ...result.allEvidence,
+    ...result.materials.flatMap(item => item.evidence ?? []),
+    ...result.geometry.flatMap(item => item.evidence ?? []),
     ...result.steps.flatMap(s => s.evidence),
+    ...result.results.flatMap(item => item.evidence ?? []),
     ...result.checks.flatMap(c => c.evidence),
     ...result.conclusion.evidence,
   ];
-  const editions = new Set(allResultEvidence.map(e => e.edition).filter(Boolean));
   for (const e of allResultEvidence) {
     if (!e.edition) issue(issues, 'warning', 'EVIDENCE_EDITION_EMPTY', `证据 ${e.clause} 未声明版本`);
     collectEvidence(e);
   }
-  if (editions.size > 1) {
-    issue(issues, 'error', 'RESULT_EDITION_MIXED', `CalculationResult 内 Evidence 版本混杂：${[...editions].join(' / ')}`);
+  const editionsByCode = new Map<string, { codeNumber: string; editions: Set<string> }>();
+  for (const evidence of allResultEvidence) {
+    if (!evidence.codeNumber || !evidence.edition) continue;
+    const normalized = normalizeCode(evidence.codeNumber);
+    const group = editionsByCode.get(normalized) ?? {
+      codeNumber: evidence.codeNumber,
+      editions: new Set<string>(),
+    };
+    group.editions.add(evidence.edition);
+    editionsByCode.set(normalized, group);
+  }
+  for (const { codeNumber, editions } of editionsByCode.values()) {
+    if (editions.size > 1) {
+      issue(
+        issues,
+        'error',
+        'RESULT_EDITION_MIXED',
+        `CalculationResult 内规范 ${codeNumber} 的 Evidence 版本混杂：${[...editions].join(' / ')}`
+      );
+    }
   }
 
   // 5) unsupported applicability / unknown evidenceId / unverified evidence

@@ -1,0 +1,10 @@
+{
+  "cases": [
+    { "id": "normal-basic", "category": "normal", "file": "tests/core/steel-beam.test.ts", "description": "截面特性和三项应力基准算例" },
+    { "id": "boundary-geometry", "category": "boundary", "file": "tests/core/steel-beam.test.ts", "description": "截面几何和稳定系数边界" },
+    { "id": "invalid-non-finite", "category": "invalid", "file": "tests/core/steel-beam.test.ts", "description": "非有限值和非法输入拒绝" },
+    { "id": "unit-conversion", "category": "unit", "file": "tests/regression/unit-conversion.test.ts", "description": "kN、kN·m到N、N·mm换算" },
+    { "id": "formula-trace", "category": "formula", "file": "tests/agent/steel-beam-registry.test.ts", "description": "三项公式到Evidence的可追溯性" },
+    { "id": "pass-fail", "category": "pass-fail", "file": "tests/core/steel-beam.test.ts", "description": "三项验算独立通过与不通过" }
+  ]
+}

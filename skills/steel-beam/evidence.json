@@ -1,0 +1,43 @@
+{
+  "records": [
+    {
+      "id": "clause-6.1.1",
+      "codeName": "钢结构设计标准",
+      "codeNumber": "GB 50017",
+      "edition": "2017",
+      "chapter": "第6章",
+      "clause": "6.1.1",
+      "sourceFile": "GB 50017-2017 钢结构设计标准.pdf",
+      "pdfPage": 54,
+      "applicability": "对称工字形截面绕强轴弹性受弯强度验算，截面塑性发展系数取1.0",
+      "formulaExpression": "sigma = M / W",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.1.3",
+      "codeName": "钢结构设计标准",
+      "codeNumber": "GB 50017",
+      "edition": "2017",
+      "chapter": "第6章",
+      "clause": "6.1.3",
+      "sourceFile": "GB 50017-2017 钢结构设计标准.pdf",
+      "pdfPage": 55,
+      "applicability": "工字形截面腹板中和轴处受剪强度验算",
+      "formulaExpression": "tau = V * S / (I * tw)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "id": "clause-6.2.2",
+      "codeName": "钢结构设计标准",
+      "codeNumber": "GB 50017",
+      "edition": "2017",
+      "chapter": "第6章",
+      "clause": "6.2.2",
+      "sourceFile": "GB 50017-2017 钢结构设计标准.pdf",
+      "pdfPage": 57,
+      "applicability": "用户已按附录C和侧向支承条件确定φb后的整体稳定验算",
+      "formulaExpression": "sigmaB = M / (phiB * W)",
+      "verificationStatus": "REVIEW_REQUIRED"
+    }
+  ]
+}

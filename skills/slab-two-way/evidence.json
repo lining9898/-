@@ -115,16 +115,30 @@
       "verificationStatus": "REVIEW_REQUIRED"
     },
     {
-      "id": "clause-9.1.2",
-      "codeName": "混凝土结构设计规范",
-      "codeNumber": "GB 50010",
-      "edition": "2010（2015年版）",
+      "id": "clause-9.1.2-ratio",
+      "codeName": "混凝土结构设计标准",
+      "codeNumber": "GB/T 50010",
+      "edition": "2010（2024年局部修订）",
       "chapter": "第9章",
       "clause": "9.1.2",
-      "sourceFile": null,
-      "pdfPage": null,
-      "applicability": "双向板厚度不宜小于短跨 1/45（构造）",
-      "verificationStatus": "REVIEW_REQUIRED"
+      "sourceFile": "混凝土结构设计标准.pdf",
+      "pdfPage": 15,
+      "applicability": "现浇双向板跨厚比不大于40",
+      "formulaExpression": "h_ratio = lx/40",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "table-9.1.2-minimum-thickness",
+      "codeName": "混凝土结构设计标准",
+      "codeNumber": "GB/T 50010",
+      "edition": "2010（2024年局部修订）",
+      "chapter": "第9章",
+      "clause": "表9.1.2",
+      "sourceFile": "混凝土结构设计标准.pdf",
+      "pdfPage": 16,
+      "applicability": "现浇双向实心楼板最小厚度80mm",
+      "formulaExpression": "h_absolute = 80mm",
+      "verificationStatus": "VERIFIED"
     },
     {
       "id": "clause-9.1.3",

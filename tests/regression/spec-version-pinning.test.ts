@@ -32,12 +32,12 @@ describe('规范版本风险：设计依据一致性', () => {
   it('列明各 concrete 计算器声明的设计依据版本为 2010（2015年版）', () => {
     for (const s of skillRegistry.list().filter(x => x.kind === 'calculation')) {
       const pkg = skillRegistry.describe(s.id)!;
-      // 纯结构力学方法的 skill（如连续梁三弯矩）不引用 GB50010，跳过
-      const hasNormative = pkg.evidence.records.some(r =>
-        !/^INTERNAL-/.test(r.codeNumber) && r.edition !== 'platform' && r.edition !== '—'
+      // 只约束实际引用 GB 50010 的混凝土计算器，钢结构等专业有自己的设计依据。
+      const gb50010Records = pkg.evidence.records.filter(r =>
+        r.codeNumber.replace(/[\s/]/g, '').toUpperCase() === 'GB50010'
       );
-      if (!hasNormative) continue;
-      const editions = new Set(pkg.evidence.records.map(r => r.edition));
+      if (gb50010Records.length === 0) continue;
+      const editions = new Set(gb50010Records.map(r => r.edition));
       expect(editions.has(DESIGN_BASIS), `${s.id} 应声明 ${DESIGN_BASIS}`).toBe(true);
     }
   });

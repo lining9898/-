@@ -42,7 +42,7 @@ const SteelBeam: React.FC = () => {
     <div className="max-w-6xl mx-auto space-y-5">
       <header>
         <h2 className="text-2xl font-bold text-gray-800">钢梁受弯、受剪与整体稳定</h2>
-        <p className="text-sm text-gray-500 mt-1">GB 50017-2017 · 对称工字形截面 · 待人工复核</p>
+        <p className="text-sm text-gray-500 mt-1">GB 50017-2017 · 对称工字形截面 · REVIEW_REQUIRED</p>
       </header>
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(260px,340px)_minmax(0,1fr)] gap-6">
         <section className="space-y-3" aria-label="钢梁参数">
@@ -90,11 +90,11 @@ const SteelBeam: React.FC = () => {
             </p>
             <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900 space-y-1">
               <p className="font-bold text-blue-800">规范依据</p>
-              <p>规范：GB 50017-2017 钢结构设计标准</p>
+              <p>规范：GB 50017-2017《钢结构设计标准》</p>
               <p>计算项目：钢梁受弯、受剪、整体稳定</p>
-              <p>条文状态：待原文校核</p>
-              <p>证据来源：规范原文库</p>
-              <p className="text-blue-600">原文未导入，暂不提供条文引用。</p>
+              <p>Evidence：已接入三项公式条文</p>
+              <p>条文状态：{result.report.overallStatus}</p>
+              <p className="text-blue-600">GB 55001-2021、GB 55006-2021 尚待逐条融合；材料强度和 φb 仍为用户输入。</p>
             </div>
           </>}
         </section>
