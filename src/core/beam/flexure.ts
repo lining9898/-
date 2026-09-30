@@ -340,6 +340,10 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     message: '计算公式仍基于 GB 50010-2010（2015年版）。现行 GB 55001-2021、GB 55008-2021 与 GB/T 50010-2010（2024年局部修订）尚未完成逐条 Evidence 映射，结果保持 REVIEW_REQUIRED。',
   });
 
+  // IG-002：GB 55008-2021 §4.4.2 已人工核对（HUMAN_VERIFIED 2026-10-01），
+  // 正截面承载力基本假定与 GB 50010-2010 6.2.1/6.2.6/6.2.7/6.2.10 一致。
+  // 本咨询仅作 Evidence 链补充，不改变 α1/β1/ξb 数值。
+
   result.allEvidence = allEvidence;
   result.overallStatus = 'REVIEW_REQUIRED';
 
