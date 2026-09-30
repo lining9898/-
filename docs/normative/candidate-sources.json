@@ -1,8 +1,9 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.0.1",
   "generatedAt": "2026-10-01",
   "branch": "agent/normative-iteration",
-  "status": "ALL_CANDIDATES_PENDING_USER_CONFIRMATION",
+  "projectStatus": "版本治理与资料盘点完成；正式规范源补齐与条文级认证未完成",
+  "status": "ONE_CANDIDATE_PENDING_USER_CONFIRMATION",
   "gateRule": "仅当用户回复「确认导入：<规范编号+版本>」后，候选方可转为正式 Source PDF；此前不得进入覆盖矩阵正式条文映射。",
   "policy": {
     "commitCandidatePdfToRepo": false,
@@ -37,75 +38,47 @@
       },
       "isFullText": false,
       "integrityNote": "非完整规范，仅 26 条局部修订；须与 GB 50010-2010(2015 年版) 441 页正文叠加。",
+      "verifiedFacts": [
+        {"fact": "实施日期 2024-08-01", "result": "一致", "evidenceUrl": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html"},
+        {"fact": "名称改为《混凝土结构设计标准》", "result": "一致", "evidenceUrl": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html"},
+        {"fact": "编号改为 GB/T 50010-2010", "result": "一致", "evidenceUrl": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html"},
+        {"fact": "共 26 个修订条文", "result": "一致", "evidenceSource": "候选 PDF p.2《局部修订说明》原文"}
+      ],
       "proposedUse": "完成受弯/受剪核心条文（4.1.4/4.2.3/8.5.1）2015→2024 差异核查。",
       "risks": [
         "省级政府驻外机构转载，非住建部官网直接 PDF",
         "SHA-256 与 d7e9ee1 记录 f0d360c050af2e6f 不一致（不同扫描导出）",
         "须人工逐页核对 26 条条文与 MOHURD 公告一致"
       ],
-      "confirmationCard": {
-        "title": "混凝土结构设计标准（2024 年局部修订条文）",
-        "version": "GB/T 50010-2010（2024-08-01 实施）",
-        "source": "http://www.sczjjgfw.gov.cn/clas/wjhb/jsb/24/downloads/jsb202462fj.pdf",
-        "pages": 40,
-        "sha256": "84c4b76867dbac1290142d44bdb66b65b90ae4611818d21de623f9438e5001c2",
-        "integrity": "非完整规范，仅 26 条局部修订",
-        "use": "受弯/受剪核心条文 2015→2024 差异核查",
-        "risk": "省级政府转载；哈希与历史记录不一致"
-      }
-    },
+      "reviewDoc": "docs/normative/CANDIDATE_GB_T_50010_2024_REVIEW.md"
+    }
+  ],
+  "downgradedGapRecords": [
     {
       "id": "GB55008-2021",
       "titleZh": "混凝土结构通用规范",
       "codeNumber": "GB 55008-2021",
-      "edition": "2021",
-      "publishDate": "2021-09-08",
-      "effectiveDate": "2022-04-01",
-      "announcement": "住建部公告 2021 年第 167 号",
-      "sourceUrl": "http://wkxzx.com/upload/20250107/7e1923b6429b00df6dc1b3d6f477c53d.pdf",
+      "originalSourceUrl": "http://wkxzx.com/upload/20250107/7e1923b6429b00df6dc1b3d6f477c53d.pdf",
       "sourceType": "第三方协会 OCR（武汉勘察设计协会技术咨询服务部，非官方出版社）",
-      "corroboratingSources": [
-        "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_762454.html",
-        "https://www.spc.org.cn/online/6bbbdcb237983b48c60f3626da5766b8.html"
-      ],
       "localPath": "tmp/candidates/gb55008-2021.pdf",
       "bytes": 3379182,
       "pages": 78,
       "sha256": "3234c9215c6816f7c8ebbe6545cd07ab99f51615225705a45f1cd81f6b7e26c5",
-      "pdfMetadata": {
-        "creator": "ABBYY FineReader PDF 15",
-        "creationDate": "2022-03-11"
-      },
-      "isFullText": true,
-      "integrityNote": "疑似完整正文（78 页），但来源为第三方协会 OCR，未经官方出版社核验。",
-      "proposedUse": "建立混凝土结构强制性通用规范条文 Evidence。",
-      "risks": [
-        "来源非官方出版社",
-        "ABBYY OCR 可能有识别错误",
-        "页数 78 与 d7e9ee1 记录 74 页不一致",
-        "建议优先获取中国建筑工业出版社正式出版物后再认证"
-      ],
-      "confirmationCard": {
-        "title": "混凝土结构通用规范",
-        "version": "GB 55008-2021（2022-04-01 实施，全文强制）",
-        "source": "http://wkxzx.com/upload/20250107/7e1923b6429b00df6dc1b3d6f477c53d.pdf",
-        "pages": 78,
-        "sha256": "3234c9215c6816f7c8ebbe6545cd07ab99f51615225705a45f1cd81f6b7e26c5",
-        "integrity": "疑似完整正文，第三方协会 OCR",
-        "use": "混凝土结构强制性条文 Evidence",
-        "risk": "来源非官方；建议获取正式出版物后再认证"
-      }
+      "disposition": "不导入、不认证、不做条文映射",
+      "reason": "来源非官方出版社，ABBYY OCR 质量未核；页数 78 与 d7e9ee1 记录 74 页不一致。",
+      "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE; UNRELIABLE_SOURCE",
+      "recommendation": "优先获取中国建筑工业出版社正式出版物后再认证。"
     }
   ],
   "notFoundFromVerifiableSources": [
-    {"id": "GB55001-2021", "title": "工程结构通用规范", "note": "MOHURD 公告可查；未找到政府/出版社官网直接 PDF 下载。"},
-    {"id": "GB55003-2021", "title": "建筑与市政地基基础通用规范", "note": "同上。"},
-    {"id": "GB55006-2021", "title": "钢结构通用规范", "note": "同上。"},
-    {"id": "GB50009-2012", "title": "建筑结构荷载规范", "note": "正式 PDF 需向中国建筑工业出版社购买。"},
-    {"id": "GB50007-2011", "title": "建筑地基基础设计规范", "note": "同上。"},
-    {"id": "GB50017-2017", "title": "钢结构设计标准", "note": "同上。"},
-    {"id": "JGJ3-2010", "title": "高层建筑混凝土结构技术规程", "note": "行业标准，需购买。"},
-    {"id": "TCECS553-2018", "title": "蒸压加气混凝土墙板应用技术规程", "note": "协会标准，需购买。"},
-    {"id": "22G522-1", "title": "钢筋桁架混凝土楼板（国标图集）", "note": "图集需购买。"}
+    {"id": "GB55001-2021", "title": "工程结构通用规范", "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE"},
+    {"id": "GB55003-2021", "title": "建筑与市政地基基础通用规范", "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE"},
+    {"id": "GB55006-2021", "title": "钢结构通用规范", "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE"},
+    {"id": "GB50009-2012", "title": "建筑结构荷载规范", "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE"},
+    {"id": "GB50007-2011", "title": "建筑地基基础设计规范", "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE"},
+    {"id": "GB50017-2017", "title": "钢结构设计标准", "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE"},
+    {"id": "JGJ3-2010", "title": "高层建筑混凝土结构技术规程", "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE"},
+    {"id": "TCECS553-2018", "title": "蒸压加气混凝土墙板应用技术规程", "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE"},
+    {"id": "22G522-1", "title": "钢筋桁架混凝土楼板（国标图集）", "status": "FILE_NOT_AVAILABLE_IN_CURRENT_WORKSPACE"}
   ]
 }

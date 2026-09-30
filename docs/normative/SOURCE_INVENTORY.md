@@ -1,8 +1,11 @@
 # 规范源清单（SOURCE INVENTORY）
 
+> **项目状态**：版本治理与资料盘点完成；正式规范源补齐与条文级认证未完成。
 > 分支：`agent/normative-iteration`　｜　基线 commit：`8170b17c0643a9e36956281103079fffa8c8ed1e`（master）
 > 生成日期：2026-10-01　｜　总控 Agent：规范迭代与版本治理总控
 > 机器可读副本：[`source-inventory.json`](./source-inventory.json)
+>
+> 注：`origin/agent/normative-inventory` 的 P4/P4.1 代码成果未合并到 master；master 的 beam-flexure 测试仍有 1 个既有失败；本分支不修改任何测试、不合并 master。
 
 ## 0. 判据与边界（重要）
 
