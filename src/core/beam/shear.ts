@@ -261,7 +261,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     : 0.25 - (webHeightRatio - 4) * 0.025;
   const VMax = sectionLimitCoefficient * betaC * concrete.fc * input.b * input.h0 / 1000; // kN
   const sectionLimitEvidence = [
-    verifiedEvidence('6.3.1', '第6章', '矩形截面 hw 取 h0；hw/b 不大于 4 时系数为 0.25，不小于 6 时为 0.20，中间线性内插。', 69),
+    verifiedEvidence('6.3.1', '第6章', '矩形截面 hw 取 h0；hw/b 不大于 4 时系数为 0.25，不小于 6 时为 0.20，中间线性内插。', 70),
   ];
   allEvidence.push(...sectionLimitEvidence);
   steps.push({
@@ -433,7 +433,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
     comparison: '<=',
     passed: input.V <= VMax,
     unit: 'kN',
-    evidence: [verifiedEvidence('6.3.1', '第6章', '受剪截面限制按 hw/b 分段取系数；矩形截面 hw 取 h0。', 69)],
+    evidence: [verifiedEvidence('6.3.1', '第6章', '受剪截面限制按 hw/b 分段取系数；矩形截面 hw 取 h0。', 70)],
   });
 
   // 验算2：斜截面受剪承载力 V ≤ Vcs
