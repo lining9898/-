@@ -13,20 +13,8 @@
     "beam-shear"
   ],
   "verifiedClauses": {
-    "beam-flexure": [
-      "4.1.4",
-      "4.2.3",
-      "6.2.1",
-      "6.2.6",
-      "6.2.7",
-      "6.2.10",
-      "8.5.1"
-    ],
-    "beam-shear": [
-      "6.3.1",
-      "6.3.4",
-      "9.2.9"
-    ]
+    "beam-flexure": ["4.1.4", "4.2.3", "6.2.1", "6.2.6", "6.2.7", "6.2.10", "8.5.1"],
+    "beam-shear": ["6.3.1", "6.3.4", "9.2.9"]
   },
   "companionFiles": [
     {
@@ -40,9 +28,76 @@
       "importDate": "2026-10-01",
       "evidenceStatus": "ACTIVE",
       "isPartialAmendment": true,
-      "description": "GB/T 50010-2010《混凝土结构设计标准》2024年局部修订条文（住建部公告2024年第62号，2024-08-01实施），共26条修订；须与GB 50010-2010(2015年版)441页正文叠加使用，单独不构成完整规范。",
+      "description": "GB/T 50010-2010《混凝土结构设计标准》2024年局部修订条文（住建部公告2024年第62号，2024-08-01实施），共26条修订；须与GB 50010-2010(2015年版)441页正文叠加使用。",
       "sourceUrl": "http://www.sczjjgfw.gov.cn/clas/wjhb/jsb/24/downloads/jsb202462fj.pdf",
       "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html"
+    }
+  ],
+  "mandatoryCodes": [
+    {
+      "codeName": "工程结构通用规范",
+      "codeNumber": "GB 55001-2021",
+      "pdfFileName": "GB55001-2021.pdf",
+      "sha256": "f0397f29c8a13785413c65274cb3eacb9384e27af686b3f23e4f70e0c17e19cf",
+      "totalPages": 30,
+      "importDate": "2026-10-01",
+      "effectiveDate": "2022-01-01",
+      "evidenceStatus": "ACTIVE",
+      "pageOffset": "官方扫描件，PDF 页码与印刷页码待逐页核验",
+      "completeness": "MOHURD 官方附件 PDF；扫描/图片版；条文内容须人工逐页核对",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761192.html"
+    },
+    {
+      "codeName": "建筑与市政工程抗震通用规范",
+      "codeNumber": "GB 55002-2021",
+      "pdfFileName": "GB55002-2021.pdf",
+      "sha256": "972d81c91c6e4e1b99c1b31cee7ab4ffe67d07448183c54e589db3a5f04e4e57",
+      "totalPages": 46,
+      "importDate": "2026-10-01",
+      "effectiveDate": "2022-01-01",
+      "evidenceStatus": "ACTIVE",
+      "pageOffset": "待逐页核验",
+      "completeness": "同上",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761174.html"
+    },
+    {
+      "codeName": "建筑与市政地基基础通用规范",
+      "codeNumber": "GB 55003-2021",
+      "pdfFileName": "GB55003-2021.pdf",
+      "sha256": "b8414693333998ac19368ad00bff2abf7cfa3f7776dcb0b5fa650d97a8bb3d62",
+      "totalPages": 33,
+      "importDate": "2026-10-01",
+      "effectiveDate": "2022-01-01",
+      "evidenceStatus": "ACTIVE",
+      "pageOffset": "待逐页核验",
+      "completeness": "同上",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761185.html"
+    },
+    {
+      "codeName": "钢结构通用规范",
+      "codeNumber": "GB 55006-2021",
+      "pdfFileName": "GB55006-2021.pdf",
+      "sha256": "1621e8c131e051ab6d7368e60297eb9dd912ebd12b2b3177e001e7e03d776439",
+      "totalPages": 24,
+      "importDate": "2026-10-01",
+      "effectiveDate": "2022-01-01",
+      "evidenceStatus": "ACTIVE",
+      "pageOffset": "待逐页核验",
+      "completeness": "同上",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761191.html"
+    },
+    {
+      "codeName": "混凝土结构通用规范",
+      "codeNumber": "GB 55008-2021",
+      "pdfFileName": "GB55008-2021.pdf",
+      "sha256": "b7b77f940b8ad0ba0a69ab86aff39bfc821e93dd1bb504e9ec9e33d335930454",
+      "totalPages": 26,
+      "importDate": "2026-10-01",
+      "effectiveDate": "2022-04-01",
+      "evidenceStatus": "ACTIVE",
+      "pageOffset": "PDF p.1=印刷 p.4；PDF p.26=印刷 p.23",
+      "completeness": "正文完整至 6.4.7 第 5 款；缺封面 3 页与参考文献页",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_762454.html"
     }
   ]
 }
