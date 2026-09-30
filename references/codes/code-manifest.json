@@ -27,5 +27,22 @@
       "6.3.4",
       "9.2.9"
     ]
-  }
+  },
+  "companionFiles": [
+    {
+      "codeName": "混凝土结构设计标准",
+      "codeNumber": "GB/T 50010-2010",
+      "edition": "2024局部修订",
+      "pdfFileName": "GBT50010-2010_2024_amendment.pdf",
+      "sha256": "84c4b76867dbac1290142d44bdb66b65b90ae4611818d21de623f9438e5001c2",
+      "md5": "33a2f29191856d561ab572d2bcfcfd6c",
+      "totalPages": 40,
+      "importDate": "2026-10-01",
+      "evidenceStatus": "ACTIVE",
+      "isPartialAmendment": true,
+      "description": "GB/T 50010-2010《混凝土结构设计标准》2024年局部修订条文（住建部公告2024年第62号，2024-08-01实施），共26条修订；须与GB 50010-2010(2015年版)441页正文叠加使用，单独不构成完整规范。",
+      "sourceUrl": "http://www.sczjjgfw.gov.cn/clas/wjhb/jsb/24/downloads/jsb202462fj.pdf",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html"
+    }
+  ]
 }

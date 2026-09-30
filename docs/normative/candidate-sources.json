@@ -3,7 +3,16 @@
   "generatedAt": "2026-10-01",
   "branch": "agent/normative-iteration",
   "projectStatus": "版本治理与资料盘点完成；正式规范源补齐与条文级认证未完成",
-  "status": "ONE_CANDIDATE_PENDING_USER_CONFIRMATION",
+  "status": "NO_CANDIDATES_PENDING",
+  "importedSources": [
+    {
+      "id": "GBT50010-2024-amendment",
+      "repoPath": "references/codes/GBT50010-2010_2024_amendment.pdf",
+      "importedAt": "2026-10-01",
+      "sha256": "84c4b76867dbac1290142d44bdb66b65b90ae4611818d21de623f9438e5001c2"
+    }
+  ],
+  "candidates": [],
   "gateRule": "仅当用户回复「确认导入：<规范编号+版本>」后，候选方可转为正式 Source PDF；此前不得进入覆盖矩阵正式条文映射。",
   "policy": {
     "commitCandidatePdfToRepo": false,
@@ -12,47 +21,6 @@
     "allowedSources": ["规范发布部门官网", "标准服务平台", "出版社授权公开页", "可核实的政府公开来源"],
     "noUnofficialDownloads": "不得从网盘/论坛/OCR文本直接认证"
   },
-  "candidates": [
-    {
-      "id": "GBT50010-2024-amendment",
-      "titleZh": "混凝土结构设计标准（2024 年局部修订条文）",
-      "codeNumber": "GB/T 50010-2010",
-      "edition": "2024 局部修订",
-      "publishDate": "2024-04-24",
-      "effectiveDate": "2024-08-01",
-      "announcement": "住建部公告 2024 年第 62 号",
-      "sourceUrl": "http://www.sczjjgfw.gov.cn/clas/wjhb/jsb/24/downloads/jsb202462fj.pdf",
-      "sourceType": "政府公开来源（四川省人民政府驻北京办事处建筑管理处转载住建部公告）",
-      "corroboratingSources": [
-        "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html",
-        "http://zwgk.changchun.gov.cn/jk/qzfzcbm/jjjskfqjsfzj/zdlyjczwgk/202509/P020250925392908342719.pdf"
-      ],
-      "localPath": "tmp/candidates/gbt50010-2024-amendment.pdf",
-      "bytes": 6400443,
-      "pages": 40,
-      "sha256": "84c4b76867dbac1290142d44bdb66b65b90ae4611818d21de623f9438e5001c2",
-      "pdfMetadata": {
-        "title": "26580-GB50010局部5.21.pdf",
-        "creator": "PScript5.dll Version 5.2.2",
-        "creationDate": "2024-05-22"
-      },
-      "isFullText": false,
-      "integrityNote": "非完整规范，仅 26 条局部修订；须与 GB 50010-2010(2015 年版) 441 页正文叠加。",
-      "verifiedFacts": [
-        {"fact": "实施日期 2024-08-01", "result": "一致", "evidenceUrl": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html"},
-        {"fact": "名称改为《混凝土结构设计标准》", "result": "一致", "evidenceUrl": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html"},
-        {"fact": "编号改为 GB/T 50010-2010", "result": "一致", "evidenceUrl": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html"},
-        {"fact": "共 26 个修订条文", "result": "一致", "evidenceSource": "候选 PDF p.2《局部修订说明》原文"}
-      ],
-      "proposedUse": "完成受弯/受剪核心条文（4.1.4/4.2.3/8.5.1）2015→2024 差异核查。",
-      "risks": [
-        "省级政府驻外机构转载，非住建部官网直接 PDF",
-        "SHA-256 与 d7e9ee1 记录 f0d360c050af2e6f 不一致（不同扫描导出）",
-        "须人工逐页核对 26 条条文与 MOHURD 公告一致"
-      ],
-      "reviewDoc": "docs/normative/CANDIDATE_GB_T_50010_2024_REVIEW.md"
-    }
-  ],
   "downgradedGapRecords": [
     {
       "id": "GB55008-2021",

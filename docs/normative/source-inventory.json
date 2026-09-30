@@ -33,6 +33,30 @@
       "referencedByModules": ["beam-flexure", "beam-shear", "beam-double-flexure", "beam-t-flexure", "slab-one-way", "slab-two-way"],
       "verificationStatus": "FILE_VERIFIED_IN_WORKSPACE",
       "note": "Adobe Acrobat Pro 11.0.16 Paper Capture 扫描件；OCR 对汉字/公式提取不可靠，条文原文以人工逐页核对为准。"
+    },
+    {
+      "id": "GBT50010-2010-2024-amendment",
+      "codeName": "混凝土结构设计标准",
+      "codeNumber": "GB/T 50010-2010",
+      "edition": "2024 局部修订",
+      "publishDate": "2024-04-24",
+      "effectiveDate": "2024-08-01",
+      "repoPath": "references/codes/GBT50010-2010_2024_amendment.pdf",
+      "bytes": 6400443,
+      "pages": 40,
+      "sha256": "84c4b76867dbac1290142d44bdb66b65b90ae4611818d21de623f9438e5001c2",
+      "md5": "33a2f29191856d561ab572d2bcfcfd6c",
+      "isFullText": false,
+      "isPartialAmendment": true,
+      "isAuthenticPdfOriginal": true,
+      "currentValidity": "CURRENT",
+      "currentUseScope": "现行配套标准组成部分：26 条局部修订条文；须与 GB 50010-2010(2015 年版) 441 页正文叠加使用，单独不构成完整规范。",
+      "forbiddenUseScope": "不得单独作为完整规范引用；不得据此把模块整体升级为 VERIFIED（GB 55008 强制条文未映射）。",
+      "referencedByModules": ["beam-flexure", "beam-shear", "beam-double-flexure", "beam-t-flexure", "slab-one-way"],
+      "verificationStatus": "FILE_VERIFIED_IN_WORKSPACE",
+      "sourceUrl": "http://www.sczjjgfw.gov.cn/clas/wjhb/jsb/24/downloads/jsb202462fj.pdf",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html",
+      "note": "住建部公告 2024 年第 62 号；40 页扫描件；封面/修订说明/26 条条文已人工逐页核对。"
     }
   ],
   "notAvailableInWorkspace": [
@@ -234,11 +258,11 @@
   ],
   "currentBaselineConclusion": {
     "usableAsBaseline": [
-      "GB 50010-2010（2015年版）441 页 PDF（历史基线，SUPERSEDED）"
+      "GB 50010-2010（2015年版）441 页 PDF（正文基线，SUPERSEDED 但仍为现行配套标准的正文底）",
+      "GB/T 50010-2010（2024 局部修订）40 页 PDF（26 条修订，CURRENT；与 2015 年版正文叠加构成现行 GB/T 50010-2010）"
     ],
     "noBaselineAvailable": [
-      "GB/T 50010-2010（2024 局部修订）— 本工作区不可见",
-      "GB 55001-2021 / GB 55008-2021 — 本工作区不可见",
+      "GB 55001-2021 / GB 55008-2021 — 本工作区不可见（GB 55008 已被 8.5.1 强制引用）",
       "GB 50009-2012 — 本工作区不可见",
       "GB 50007-2011 / GB 55003-2021 — 本工作区不可见",
       "GB 50017-2017 / GB 55006-2021 — 本工作区不可见"
