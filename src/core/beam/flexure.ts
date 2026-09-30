@@ -17,6 +17,7 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
+import { minConcreteGradeAdvisory } from '../shared/materials';
 
 /** 梁正截面受弯输入参数 */
 export interface BeamFlexureInput {
@@ -327,6 +328,12 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     code: 'NORM_UPDATE_REQUIRED',
     message: '计算公式仍基于 GB 50010-2010（2015年版）。现行 GB 55001-2021、GB 55008-2021 与 GB/T 50010-2010（2024年局部修订）尚未完成逐条 Evidence 映射，结果保持 REVIEW_REQUIRED。',
   });
+
+  // IG-001：4.1.2 条最低强度等级 C20→C25（咨询式警告，不阻断计算）
+  const lowGradeAdvisory = minConcreteGradeAdvisory(input.concreteGrade);
+  if (lowGradeAdvisory) {
+    result.advisories.push(lowGradeAdvisory);
+  }
 
   result.allEvidence = allEvidence;
   result.overallStatus = 'REVIEW_REQUIRED';
