@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-10-01",
+  "branch": "agent/normative-iteration",
+  "projectStatus": "版本治理与资料盘点完成；强制性通用规范全文缺失，条文级融合未完成",
+  "candidates": [
+    {
+      "id": "GB55001-2021",
+      "titleZh": "工程结构通用规范",
+      "codeNumber": "GB 55001-2021",
+      "publishDate": "2021-04-09",
+      "effectiveDate": "2022-01-01",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761192.html",
+      "fullTextInWorkspace": false,
+      "pages": null,
+      "sha256": null,
+      "completeness": "NOT_AVAILABLE",
+      "reliability": "OFFICIAL_ANNOUNCEMENT_ONLY",
+      "risk": "MOHURD 公告页未附全文 PDF；全文须向中国建筑工业出版社购买",
+      "recommendation": "购中国建筑工业出版社正式出版物"
+    },
+    {
+      "id": "GB55002-2021",
+      "titleZh": "建筑与市政工程抗震通用规范",
+      "codeNumber": "GB 55002-2021",
+      "publishDate": "2021-04-09",
+      "effectiveDate": "2022-01-01",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761174.html",
+      "fullTextInWorkspace": false,
+      "pages": null,
+      "sha256": null,
+      "completeness": "NOT_AVAILABLE",
+      "reliability": "OFFICIAL_ANNOUNCEMENT_ONLY",
+      "risk": "同上",
+      "recommendation": "购中国建筑工业出版社正式出版物"
+    },
+    {
+      "id": "GB55003-2021",
+      "titleZh": "建筑与市政地基基础通用规范",
+      "codeNumber": "GB 55003-2021",
+      "publishDate": "2021-04-09",
+      "effectiveDate": "2022-01-01",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761185.html",
+      "fullTextInWorkspace": false,
+      "pages": null,
+      "sha256": null,
+      "completeness": "NOT_AVAILABLE",
+      "reliability": "OFFICIAL_ANNOUNCEMENT_ONLY",
+      "risk": "同上",
+      "recommendation": "购中国建筑工业出版社正式出版物"
+    },
+    {
+      "id": "GB55006-2021",
+      "titleZh": "钢结构通用规范",
+      "codeNumber": "GB 55006-2021",
+      "publishDate": "2021-04-09",
+      "effectiveDate": "2022-01-01",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_761191.html",
+      "fullTextInWorkspace": false,
+      "pages": null,
+      "sha256": null,
+      "completeness": "NOT_AVAILABLE",
+      "reliability": "OFFICIAL_ANNOUNCEMENT_ONLY",
+      "risk": "同上",
+      "recommendation": "购中国建筑工业出版社正式出版物"
+    },
+    {
+      "id": "GB55008-2021",
+      "titleZh": "混凝土结构通用规范",
+      "codeNumber": "GB 55008-2021",
+      "publishDate": "2021-09-08",
+      "effectiveDate": "2022-04-01",
+      "mohurdAnnouncement": "https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2021/art_17339_762454.html",
+      "fullTextInWorkspace": false,
+      "pages": null,
+      "sha256": null,
+      "completeness": "NOT_AVAILABLE",
+      "reliability": "OFFICIAL_ANNOUNCEMENT_ONLY",
+      "knownOcrCandidate": {
+        "localPath": "tmp/candidates/gb55008-2021.pdf",
+        "pages": 78,
+        "sha256": "3234c9215c6816f7c8ebbe6545cd07ab99f51615225705a45f1cd81f6b7e26c5",
+        "disposition": "UNRELIABLE_SOURCE（第三方协会 OCR，不导入、不认证）"
+      },
+      "risk": "与 GB/T 50010-2010 8.5.1 直接相关；正式全文缺失是当前最大证据缺口",
+      "recommendation": "购中国建筑工业出版社正式出版物"
+    }
+  ]
+}
