@@ -21,9 +21,9 @@ import {
   STEEL_PARAMS,
   verifiedEvidence,
   reviewRequiredEvidence,
+  concreteGradeCompliance,
 } from '../shared/materials';
 import {
-import { concreteGradeCompliance } from '../shared/materials';
   designFlexure,
   flexureCapacity,
   limitingRelativeDepth,

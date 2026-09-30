@@ -1,3 +1,5 @@
+import { concreteGradeCompliance } from '../shared/materials';
+
 export interface EccentricColumnInput {
   width: number;
   depth: number;
@@ -63,8 +65,9 @@ export function calculateEccentricColumn(input: EccentricColumnInput): Eccentric
   if (!material || !fy) throw new Error('不支持的材料等级');
 
   // IG-001 硬限制：GB/T 50010-2024 局部修订 4.1.2 条最低强度 C25
-  if (parseInt(input.concreteGrade.replace('C',''), 10) < 25) {
-    throw new Error('CONCRETE_GRADE_BELOW_MINIMUM: 钢筋混凝土结构最低混凝土强度等级为 C25');
+  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  if (!gradeCheck.passed) {
+    throw new Error('CONCRETE_GRADE_BELOW_MINIMUM: ' + gradeCheck.message);
   }
 
   const { width, depth, coverToSteelCentroid: cover, reinforcementAreaEachFace: As,
