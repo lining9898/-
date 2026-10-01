@@ -18,6 +18,7 @@ import {
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
 import { concreteGradeCompliance } from '../shared/materials';
+import { sectionDimensionCompliance } from '../shared/construction';
 
 /** 梁正截面受弯输入参数 */
 export interface BeamFlexureInput {
@@ -29,6 +30,7 @@ export interface BeamFlexureInput {
   barDiameter: number;    // 受拉钢筋直径 (mm)
   barCount: number;       // 受拉钢筋根数
   moment: number;   // 弯矩设计值 M (kN·m)
+  beamType?: 'frameBeam' | 'nonFrameBeam' | 'unknown';  // IG-005 构件分类
 }
 
 /** 混凝土材料参数 */
@@ -123,6 +125,26 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
       message: gradeCheck.message,
     });
     return result;
+  }
+
+  // IG-005 硬限制：GB 55008-2021 §4.4.4 框架梁最小宽度 200mm
+  const beamType = input.beamType ?? 'unknown';
+  if (beamType === 'frameBeam') {
+    const dimCheck = sectionDimensionCompliance({ componentType: 'frameBeam', dimension: input.b });
+    if (!dimCheck.passed) {
+      result.advisories.push({
+        severity: 'error',
+        code: 'SECTION_DIMENSION_BELOW_MINIMUM',
+        message: `${dimCheck.message} 实际值: ${dimCheck.actualValue}mm, 最低要求: ${dimCheck.requiredMinimum}mm。`,
+      });
+      return result;
+    }
+  } else if (beamType === 'unknown') {
+    result.advisories.push({
+      severity: 'info',
+      code: 'BEAM_TYPE_UNKNOWN',
+      message: '未指定构件类型（框架梁/非框架梁），无法判定 GB 55008-2021 §4.4.4 最小梁宽要求。',
+    });
   }
 
   if (!concrete) {
