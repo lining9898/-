@@ -4,8 +4,8 @@
  * 所有版本状态均有可靠、可追溯来源（source）：
  * - GB 50010 2010/2015 年版：来源为仓库内可靠原文 PDF（references/codes/GB50010-2010_2015_.pdf）
  *   —— 修订说明逐字确认 2010-08-18 发布 / 2011-07-01 实施，以及 2015 年版 9 条局部修订。
- * - GB 50010 2024 年版：来源为住建部公告（mohurd.gov.cn），2024-04-24 批准、2024-08-01 实施，
- *   名称改为《混凝土结构设计标准》、编号改为 GB/T 50010-2010。
+ * - GB 50010 2024 年局部修订：住建部公告确认名称/编号及实施日期；修订 PDF 入库于
+ *   references/codes/GBT50010-2010_2024_amendment.pdf，逐条差异见 docs/normative/AMENDMENT_2024_DIFF.md。
  * - GB 50009-2012、GB 50007-2011：来源为住建部发布公告及相关标准库"现行"状态记录。
  *
  * 禁止根据模型记忆判断"哪个版本现行"，一律以上述来源为准。
@@ -105,7 +105,7 @@ export const NORMATIVE_VERSIONS: NormativeVersion[] = [
     source: 'https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html（住建部公告，2024-04-24 批准、2024-08-01 实施）',
     verificationStatus: 'VERIFIED',
     authorityLevel: 'SUPPORTING_STANDARD',
-    note: '名称改为《混凝土结构设计标准》、编号改为 GB/T 50010-2010；删除 C15 强度等级与 HRB335 钢筋。2024 年版原文尚未入库。',
+    note: '名称改为《混凝土结构设计标准》、编号改为 GB/T 50010-2010；2024 局部修订 PDF 已入库，26 条差异记录见 docs/normative/AMENDMENT_2024_DIFF.md。此版本记录已核实不代表各计算模块的 Evidence 已完成复核。',
   },
   {
     codeName: '建筑结构荷载规范',
@@ -156,14 +156,32 @@ export const NORMATIVE_CHANGE_SETS: NormativeChangeSet[] = [
     codeNumber: 'GB 50010',
     fromEdition: '2010（2015年版）',
     toEdition: '2010（2024年版，GB/T 50010-2010）',
-    changedClauses: [],
+    changedClauses: [
+      '2.2.1', '3.4.2', '3.5.3', '4.1.2', '4.1.3', '4.1.4', '4.1.5',
+      '4.2.1', '4.2.2', '4.2.3', '4.2.4', '4.2.5', '4.2.6', '4.2.8',
+      '8.3.1', '8.5.1', '8.5.3', '9.1.2', '9.4.5', '9.5.2', '10.1.2',
+      '11.2.1', '11.4.12', '11.7.14', 'G.0.7', 'G.0.12',
+    ],
     changedFormulas: [],
-    changedParameters: ['C15 混凝土强度等级删除', 'HRB335 钢筋删除', '标准名称改为《混凝土结构设计标准》', '标准编号改为 GB/T 50010-2010'],
-    changedApplicability: ['新版标准适用范围需按 2024 年版原文核验'],
-    affectedSkills: ['beam-flexure', 'beam-shear', 'column'],
-    reviewDate: '2026-09-28',
-    source: 'https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html（住建部公告，2024-08-01 实施）',
-    verificationStatus: 'REVIEW_REQUIRED',
-    note: '2024 年版具体修订条文/公式原文尚未入库，无法逐条比对，故 changedClauses/changedFormulas 为空；新版不得自动把旧 Calculation Skill 置为 VERIFIED，受影响 Skill 保持 REVIEW_REQUIRED。',
+    changedParameters: [
+      '4.1.2：钢筋混凝土结构最低混凝土强度等级由 C20 提高至 C25；采用 500MPa 级钢筋时最低为 C30',
+      '4.1.3/4.1.4/4.1.5：删除 C15 对应参数；C20 及以上现有材料表值未变',
+      '4.2.1/4.2.2/4.2.3：删除 HRB335 牌号及对应参数；现有 HPB300、HRB400、HRB500 参数未变',
+      '8.5.1：最小配筋率表值未变，新增按 GB 55008 执行的强制性引用',
+      '9.1.2：板厚及跨厚比要求列入影响项，板模块仍需补齐条文映射',
+    ],
+    changedApplicability: [
+      '材料输入需执行 2024 版最低混凝土强度等级限制',
+      '8.5.1 计算还需满足 GB 55008 强制性要求',
+      '模块级计算结果仍需结合各自 Evidence、适用条件和未实现条文复核，不能由版本差异记录自动升级为 VERIFIED',
+    ],
+    affectedSkills: [
+      'beam-flexure', 'beam-shear', 'beam-double-flexure', 'beam-t-flexure',
+      'column', 'slab-one-way', 'slab-two-way', 'staircase-plate', 'foundation-independent',
+    ],
+    reviewDate: '2026-10-01',
+    source: 'references/codes/GBT50010-2010_2024_amendment.pdf；docs/normative/AMENDMENT_2024_DIFF.md；https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html',
+    verificationStatus: 'VERIFIED',
+    note: '已基于仓库内 2024 局部修订 PDF 完成 26 条修订清单及现有模块相关差异整理。此状态只确认版本差异记录已核对；混凝土模块整体仍为 REVIEW_REQUIRED，具体待核项见 docs/normative/AMENDMENT_2024_DIFF.md 与 docs/normative/MODULE_EVIDENCE_COVERAGE.md。',
   },
 ];

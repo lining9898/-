@@ -2,7 +2,7 @@ import React from 'react';
 
 interface PdfEvidenceViewerProps {
   pdfUrl: string;
-  pageNumber: number;
+  pageNumber: number | null;
   clause: string;
   codeLabel: string;
 }
@@ -21,43 +21,59 @@ const PAGE_IMAGE_MAP: Record<number, string> = {
 };
 
 const PdfEvidenceViewer: React.FC<PdfEvidenceViewerProps> = ({
+  pdfUrl,
   pageNumber,
   clause,
   codeLabel,
 }) => {
-  const imagePath = PAGE_IMAGE_MAP[pageNumber];
+  const imagePath = pageNumber ? PAGE_IMAGE_MAP[pageNumber] : undefined;
   const imageUrl = imagePath ? new URL(imagePath, document.baseURI).href : null;
+  const pdfPage = pageNumber ?? 1;
+  const pdfPageUrl = `${new URL(pdfUrl, document.baseURI).href}#page=${pdfPage}&toolbar=0`;
 
   return (
     <div className="mt-3 p-3 bg-white border border-blue-200 rounded-lg">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-medium text-blue-700">
-          PDF 原页 · {codeLabel} 第 {clause} 条 · 第 {pageNumber} 页
+          PDF 原页 · {codeLabel} 第 {clause} 条 · {pageNumber ? `第 ${pageNumber} 页` : '页码未登记（从首页开始）'}
         </span>
-        {imageUrl && (
+        <div className="flex items-center gap-3">
+          {imageUrl && (
+            <a
+              href={imageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-600 hover:underline"
+            >
+              放大页面图 ↗
+            </a>
+          )}
           <a
-            href={imageUrl}
+            href={pdfPageUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-blue-600 hover:underline"
           >
-            放大 ↗
+            打开 PDF 原页 ↗
           </a>
-        )}
+        </div>
       </div>
       {imageUrl ? (
         <img
           src={imageUrl}
-          alt={`GB50010 p${pageNumber}`}
+          alt={`${codeLabel} 第 ${pageNumber} 页`}
           className="w-full border border-gray-200 rounded"
         />
       ) : (
-        <p className="text-xs text-gray-400">
-          该页完整页面图片暂未生成，请使用上方局部条文截图。
-        </p>
+        <iframe
+          title={`${codeLabel} ${pageNumber ? `第 ${pageNumber} 页` : '规范原文'}`}
+          src={pdfPageUrl}
+          className="h-[70vh] w-full rounded border border-gray-200 bg-gray-50"
+          loading="lazy"
+        />
       )}
       <p className="text-xs text-gray-400 mt-2">
-        完整 PDF 页面图像（来自真实 PDF 渲染，站内预览，不触发下载）
+        优先显示仓库内的页面截图；缺少截图时直接嵌入对应 PDF 原页。
       </p>
     </div>
   );

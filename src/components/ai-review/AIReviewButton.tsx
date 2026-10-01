@@ -41,13 +41,13 @@ const AIReviewButton: React.FC<Props> = ({ result, title, internalMechanics, mag
         className="px-4 py-3 text-sm font-medium text-gray-500 hover:text-blue-700 transition-colors"
         title="生成可复制到 ChatGPT/DeepSeek/Claude 的独立复核包"
       >
-        复制给 AI 复核
+        复制独立复核包
       </button>
       {showPreview && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowPreview(false)}>
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-bold">AI 独立复核包</h3>
+              <h3 className="text-lg font-bold">独立复核包</h3>
               <button onClick={() => setShowPreview(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
             </div>
             <div className="px-4 py-2 bg-amber-50 text-xs text-amber-800 border-b">

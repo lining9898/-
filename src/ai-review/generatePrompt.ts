@@ -115,7 +115,9 @@ export function generateReviewPrompt(pkg: AIReviewPackage): string {
   if (pkg.normativeVersions.length > 0) {
     lines.push('本计算采用的规范版本:');
     for (const v of pkg.normativeVersions) {
-      lines.push(`  - ${v.codeName} ${v.codeNumber} ${v.edition} [${v.status}]`);
+      lines.push(`  - ${v.codeName} ${v.codeNumber} ${v.designation ?? v.edition} [${v.status}]`);
+      if (v.verificationStatus) lines.push(`    项目核验状态: ${v.verificationStatus}`);
+      if (v.source) lines.push(`    版本来源: ${v.source}`);
     }
   }
   lines.push('');
@@ -126,11 +128,36 @@ export function generateReviewPrompt(pkg: AIReviewPackage): string {
       lines.push(`  ${ev.codeNumber} ${ev.clause} (${ev.edition})`);
       if (ev.text) lines.push(`    原文: ${ev.text}`);
       if (ev.page !== null) lines.push(`    页码: p.${ev.page}`);
-      lines.push(`    状态: ${ev.verificationStatus}`);
+      if (ev.source) lines.push(`    来源文件: ${ev.source}`);
+      lines.push(`    项目 Evidence 状态: ${ev.verificationStatus}`);
       if (ev.verificationStatus === 'REVIEW_REQUIRED') {
-        lines.push('    ⚠️ 该规范依据尚未完成项目内部原文核验，请 AI 特别检查，不得视为已确认依据。');
+        lines.push('    项目记录状态为 REVIEW_REQUIRED：该条在项目内尚未标记为 VERIFIED；这不表示用户未提供规范依据。');
+        lines.push('    请根据上列原文、来源文件和页码核对；若信息已提供，应直接使用并指出仍需确认的具体差异，不要笼统声称“未提供依据”。');
       }
     }
+  }
+  lines.push('');
+
+  // 8A. 与本次计算相关的规范版本差异
+  lines.push('【8A. 规范版本差异】');
+  const normativeChanges = pkg.normativeChanges ?? [];
+  if (normativeChanges.length === 0) {
+    lines.push('（未登记与本次计算规范对应的版本差异记录）');
+  } else {
+    for (const change of normativeChanges) {
+      lines.push(`  ${change.codeNumber}: ${change.fromEdition} → ${change.toEdition} [${change.verificationStatus}]`);
+      if (change.changedClauses.length) lines.push(`    修订条文: ${change.changedClauses.join('、')}`);
+      if (change.changedFormulas.length) lines.push(`    修订公式: ${change.changedFormulas.join('；')}`);
+      if (change.changedParameters.length) lines.push(`    参数/名称变化: ${change.changedParameters.join('；')}`);
+      if (change.changedApplicability.length) lines.push(`    适用性变化: ${change.changedApplicability.join('；')}`);
+      if (change.affectedSkills?.length) lines.push(`    受影响模块: ${change.affectedSkills.join('、')}`);
+      if (change.verificationStatus === 'VERIFIED') {
+        lines.push('    状态说明: VERIFIED 仅表示该版本差异记录已核对，不代表受影响计算模块或其全部 Evidence 已 VERIFIED。');
+      }
+      lines.push(`    差异来源: ${change.source}`);
+      if (change.note) lines.push(`    核验说明: ${change.note}`);
+    }
+    lines.push('请区分“所列版本下的计算式/条文核验”与“后续版本修订差异核查”；一项已完成不代表另一项已完成。');
   }
   lines.push('');
 
