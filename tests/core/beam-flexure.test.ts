@@ -98,7 +98,7 @@ describe('矩形梁正截面受弯计算', () => {
 
     it('应包含现行规范尚待融合的警告', () => {
       const result = calculateBeamFlexure(defaultInput);
-      expect(result.advisories.some(a => a.code === 'NORM_VERSION_CHECKED')).toBe(true);
+      expect(result.advisories.some(a => a.code === 'NORM_UPDATE_REQUIRED')).toBe(true);
     });
 
     it('受弯公式证据应指向 6.2.10（REVIEW_REQUIRED，等待人工核验）', () => {
