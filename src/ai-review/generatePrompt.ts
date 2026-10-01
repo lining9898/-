@@ -6,6 +6,12 @@ import type { AIReviewPackage } from './types';
  */
 export function generateReviewPrompt(pkg: AIReviewPackage): string {
   const lines: string[] = [];
+  const repositoryPdfUrl = (source: string): string | null => {
+    const name = source.split(/[\\/]/).pop();
+    return name && /\.pdf$/i.test(name)
+      ? `https://raw.githubusercontent.com/lining9898/-/master/references/codes/${encodeURIComponent(name)}`
+      : null;
+  };
 
   lines.push('【结构计算独立复核任务】');
   lines.push('');
@@ -112,6 +118,16 @@ export function generateReviewPrompt(pkg: AIReviewPackage): string {
 
   // 8. 规范依据
   lines.push('【8. 规范依据】');
+  lines.push(`现行规范融合状态: ${pkg.normativeBasis.status}`);
+  lines.push(`规范依据快照: ${pkg.normativeBasis.fingerprint}（规范数据变化后应重新生成复核包）`);
+  for (const standard of pkg.normativeBasis.standards) {
+    lines.push(`  ${standard.authorityLevel === 'MANDATORY_GENERAL_CODE' ? '强制性通用规范' : '配套设计标准'}: ${standard.designation} — ${standard.role}`);
+    lines.push(`    当前版本条文: ${standard.currentClauses.length ? standard.currentClauses.join('、') : '尚未建立逐条映射'}`);
+    if (standard.historicalClauses.length) lines.push(`    历史计算证据: ${standard.historicalClauses.join('、')}`);
+    lines.push(`    条文融合状态: ${standard.clauseEvidenceStatus}`);
+    if (standard.versionSource) lines.push(`    版本来源: ${standard.versionSource}`);
+  }
+  lines.push('');
   if (pkg.normativeVersions.length > 0) {
     lines.push('本计算采用的规范版本:');
     for (const v of pkg.normativeVersions) {
@@ -126,9 +142,13 @@ export function generateReviewPrompt(pkg: AIReviewPackage): string {
   } else {
     for (const ev of pkg.evidence) {
       lines.push(`  ${ev.codeNumber} ${ev.clause} (${ev.edition})`);
-      if (ev.text) lines.push(`    原文: ${ev.text}`);
+      if (ev.text) lines.push(`    ${ev.verificationStatus === 'VERIFIED' ? '条文记录' : '待核条文摘要'}: ${ev.text}`);
       if (ev.page !== null) lines.push(`    页码: p.${ev.page}`);
-      if (ev.source) lines.push(`    来源文件: ${ev.source}`);
+      if (ev.source) {
+        lines.push(`    来源文件: ${ev.source}`);
+        const pdfUrl = repositoryPdfUrl(ev.source);
+        if (pdfUrl) lines.push(`    PDF 原文链接: ${pdfUrl}${ev.page !== null ? `#page=${ev.page}` : ''}`);
+      }
       lines.push(`    项目 Evidence 状态: ${ev.verificationStatus}`);
       if (ev.verificationStatus === 'REVIEW_REQUIRED') {
         lines.push('    项目记录状态为 REVIEW_REQUIRED：该条在项目内尚未标记为 VERIFIED；这不表示用户未提供规范依据。');

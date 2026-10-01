@@ -17,7 +17,7 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
-import { concreteGradeCompliance } from '../shared/materials';
+import { materialSelectionCompliance, attachCurrentMaterialSelectionEvidence, currentMinimumReinforcementEvidence, frameBeamSeismicReinforcementEvidence } from '../shared/materials';
 import { sectionDimensionCompliance } from '../shared/construction';
 
 /** 梁正截面受弯输入参数 */
@@ -31,6 +31,10 @@ export interface BeamFlexureInput {
   barCount: number;       // 受拉钢筋根数
   moment: number;   // 弯矩设计值 M (kN·m)
   beamType?: 'frameBeam' | 'nonFrameBeam' | 'unknown';  // IG-005 构件分类
+  seismicGrade?: 'unknown' | 'none' | '1' | '2' | '3' | '4'; // 框架梁抗震等级
+  sectionLocation?: 'unknown' | 'support' | 'span'; // 框架梁受拉区所在梁端/跨中
+  structuralSafetyGrade?: 'unknown' | '1' | '2' | '3'; // GB 55001 表 3.1.12 结构安全等级
+  momentBasis?: string; // 上游荷载组合与内力计算的可追溯编号
 }
 
 /** 混凝土材料参数 */
@@ -117,11 +121,11 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   const steel = STEEL_PARAMS[input.steelGrade];
 
   // IG-001 硬限制：GB/T 50010-2024 局部修订 4.1.2 条最低强度 C25
-  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  const gradeCheck = materialSelectionCompliance(input.concreteGrade, input.steelGrade);
   if (!gradeCheck.passed) {
     result.advisories.push({
       severity: 'error',
-      code: 'CONCRETE_GRADE_BELOW_MINIMUM',
+      code: gradeCheck.code!,
       message: gradeCheck.message,
     });
     return result;
@@ -145,6 +149,27 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
       code: 'BEAM_TYPE_UNKNOWN',
       message: '构件类型未声明（框架梁/非框架梁），GB 55008-2021 §4.4.4 最小截面校核未执行，请补充。',
     });
+  }
+  if (beamType === 'frameBeam' && (!input.seismicGrade || input.seismicGrade === 'unknown')) {
+    result.advisories.push({
+      severity: 'warning', code: 'SEISMIC_GRADE_UNKNOWN',
+      message: '框架梁抗震等级未声明；抗震最小配筋率及相关构造验算未执行。',
+    });
+  }
+  if (beamType === 'frameBeam' && input.seismicGrade && !['unknown', 'none'].includes(input.seismicGrade)
+    && (!input.sectionLocation || input.sectionLocation === 'unknown')) {
+    result.advisories.push({ severity: 'warning', code: 'SEISMIC_LOCATION_UNKNOWN',
+      message: '框架梁已声明抗震等级，但未声明梁端或跨中位置；表 4.4.8-1 抗震最小配筋率未执行。' });
+  }
+  const gamma0 = input.structuralSafetyGrade === '1' ? 1.1
+    : input.structuralSafetyGrade === '3' ? 0.9 : 1.0;
+  if (!input.structuralSafetyGrade || input.structuralSafetyGrade === 'unknown') {
+    result.advisories.push({ severity: 'warning', code: 'SAFETY_GRADE_UNKNOWN',
+      message: '结构安全等级未声明；暂按 γ₀=1.0 显示单项数值，GB 55001 §3.1.10 / 表 3.1.12 的最终承载力判定未闭环。' });
+  }
+  if (!input.momentBasis?.trim()) {
+    result.advisories.push({ severity: 'warning', code: 'MOMENT_BASIS_MISSING',
+      message: '弯矩 M 为外部输入；尚未填写荷载组合及内力计算来源，GB 55001 §3.1.7 与 GB 50009 §3.2.2/3.2.3 的上游核验未闭环。' });
   }
 
   if (!concrete) {
@@ -175,7 +200,12 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     { label: '受拉纵筋外缘距受拉边 c', value: input.cover, unit: 'mm' },
     { label: '受拉钢筋直径', value: input.barDiameter, unit: 'mm' },
     { label: '受拉钢筋根数', value: input.barCount, unit: '根' },
-    { label: '弯矩设计值 M', value: input.moment, unit: 'kN·m' },
+    { label: '作用组合弯矩设计值 M（未乘 γ₀）', value: input.moment, unit: 'kN·m' },
+    { label: '弯矩荷载组合与内力来源', value: input.momentBasis?.trim() || '未提供', unit: '' },
+    { label: '结构安全等级', value: input.structuralSafetyGrade && input.structuralSafetyGrade !== 'unknown' ? `${input.structuralSafetyGrade}级` : '未声明', unit: '' },
+    { label: '构件类型', value: beamType === 'frameBeam' ? '框架梁' : beamType === 'nonFrameBeam' ? '非框架梁' : '未声明', unit: '' },
+    { label: '抗震等级', value: input.seismicGrade && input.seismicGrade !== 'unknown' ? input.seismicGrade : '未声明', unit: '' },
+    { label: '验算位置', value: input.sectionLocation === 'support' ? '梁端' : input.sectionLocation === 'span' ? '跨中' : '未声明', unit: '' },
   ];
 
   // 记录材料参数
@@ -205,7 +235,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   // 记录截面参数
   result.geometry = [
     { label: '有效高度 h₀', value: Math.round(h0 * 100) / 100, unit: 'mm' },
-    { label: 'h₀ 构成', value: `h − c − d/2（c 含保护层+箍筋直径）`, unit: 'mm' },
+    { label: 'h₀ 构成', value: 'h − c − d/2；c 为受拉边至纵筋外缘实测距离，需按保护层和箍筋布置确认', unit: '' },
     { label: '受拉钢筋面积 As', value: Math.round(As * 100) / 100, unit: 'mm²' },
   ];
 
@@ -276,16 +306,34 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   });
 
   // 步骤5：最小配筋面积
-  // 规范 8.5.1：受弯构件最小配筋率 ρmin = max(0.20%, 45ft/fy%)
+  // 一般受弯构件按 8.5.1 / 4.4.6；框架梁再按 4.4.8 梁端/跨中表取较大值。
   // 矩形截面的最小配筋率面积按 b×h 计算。
-  const rhoMinPercent = Math.max(0.20, 45 * concrete.ft / steel.fy);
+  const generalRhoMinPercent = Math.max(0.20, 45 * concrete.ft / steel.fy);
+  const seismicRow = beamType === 'frameBeam' && input.sectionLocation && input.sectionLocation !== 'unknown'
+    && input.seismicGrade && ['1', '2', '3', '4'].includes(input.seismicGrade)
+    ? ({
+      '1': { support: [0.40, 80], span: [0.30, 65] },
+      '2': { support: [0.30, 65], span: [0.25, 55] },
+      '3': { support: [0.25, 55], span: [0.20, 45] },
+      '4': { support: [0.25, 55], span: [0.20, 45] },
+    } as const)[input.seismicGrade as '1' | '2' | '3' | '4'][input.sectionLocation]
+    : null;
+  const rhoMinPercent = seismicRow
+    ? Math.max(generalRhoMinPercent, seismicRow[0], seismicRow[1] * concrete.ft / steel.fy)
+    : generalRhoMinPercent;
   const rhoMin = rhoMinPercent / 100;
   const AsMin = rhoMin * input.b * input.h;
-  const AsMinEvidence = [verifiedEvidence('8.5.1', '第8章', '钢筋混凝土结构构件中纵向受力钢筋的配筋百分率 ρmin 不应小于表 8.5.1 规定的数值。', 124)];
+  const AsMinEvidence = [
+    verifiedEvidence('8.5.1', '第8章', '钢筋混凝土结构构件中纵向受力钢筋的配筋百分率 ρmin 不应小于表 8.5.1 规定的数值。', 124),
+    ...currentMinimumReinforcementEvidence(),
+    ...(seismicRow ? [frameBeamSeismicReinforcementEvidence()] : []),
+  ];
   allEvidence.push(...AsMinEvidence);
   steps.push({
     name: '计算最小配筋面积',
-    description: 'As,min = max(0.2%, 45ft/fy%) · b · h（按全截面面积）',
+    description: seismicRow
+      ? '按 GB 55008 表 4.4.8-1 梁端/跨中抗震下限与一般受弯下限取较大值，再乘 b·h。'
+      : '一般受弯构件 As,min = max(0.2%, 45ft/fy%) · b · h；框架梁抗震下限须另核。',
     formula: 'A_s,min = ρ_min · b · h',
     substitutedFormula: `A_s,min = ${rhoMinPercent.toFixed(3)}% × ${input.b} × ${input.h} / 100`,
     result: Math.round(AsMin * 100) / 100,
@@ -305,6 +353,8 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     { label: '最小配筋面积 As,min', value: Math.round(AsMin * 100) / 100, unit: 'mm²' },
     { label: '配筋率 ρ（按全截面 b·h，同 8.5.1 口径）', value: Math.round(As / (input.b * input.h) * 10000) / 100, unit: '%', evidence: AsMinEvidence },
     { label: '受弯承载力 Mu', value: Math.round(Mu * 100) / 100, unit: 'kN·m' },
+    { label: '重要性系数 γ₀', value: gamma0, unit: '' },
+    { label: '承载力设计弯矩 γ₀M', value: Math.round(gamma0 * input.moment * 100) / 100, unit: 'kN·m' },
   ];
 
   // === 验算项 ===
@@ -332,15 +382,41 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     evidence: AsMinEvidence,
   });
 
-  // 验算3：Mu ≥ M
+  // 验算3：GB 55001 §3.1.10：Mu ≥ γ₀M
+  const safetyEvidence: Evidence[] = [
+    { codeName: '工程结构通用规范', codeNumber: 'GB 55001', edition: '2021',
+      chapter: '第3章 结构设计', clause: '3.1.10',
+      originalText: '承载能力极限状态设计时，作用组合的效应设计值与结构重要性系数的乘积不应超过结构或构件的抗力设计值。',
+      pdfPage: 13, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GB55001-2021.pdf' },
+    { codeName: '工程结构通用规范', codeNumber: 'GB 55001', edition: '2021',
+      chapter: '第3章 结构设计', clause: '3.1.12',
+      originalText: '表 3.1.12：对持久和短暂设计状况，安全等级一、二、三级的结构重要性系数 γ₀ 分别为 1.1、1.0、0.9。',
+      pdfPage: 13, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GB55001-2021.pdf' },
+  ];
+  const actionEvidence: Evidence[] = [
+    { codeName: '工程结构通用规范', codeNumber: 'GB 55001', edition: '2021',
+      chapter: '第3章 结构设计', clause: '3.1.7',
+      originalText: '承载能力极限状态设计时的作用组合应按设计状况选取，并考虑可能同时出现的作用。',
+      pdfPage: 12, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GB55001-2021.pdf' },
+    { codeName: '建筑结构荷载规范', codeNumber: 'GB 50009', edition: '2012',
+      chapter: '第3章 荷载分类和荷载组合', clause: '3.2.2',
+      originalText: '承载能力极限状态按荷载基本组合或偶然组合计算效应设计值，并采用 γ₀Sd ≤ Rd。',
+      pdfPage: 20, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GB50009-2012.pdf' },
+    { codeName: '建筑结构荷载规范', codeNumber: 'GB 50009', edition: '2012',
+      chapter: '第3章 荷载分类和荷载组合', clause: '3.2.3',
+      originalText: '荷载基本组合效应设计值应取各组合中最不利的效应设计值。',
+      pdfPage: 20, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GB50009-2012.pdf' },
+  ];
+  allEvidence.push(...actionEvidence);
+  allEvidence.push(...safetyEvidence);
   checks.push({
     name: '承载力验算',
     calculatedValue: Math.round(Mu * 100) / 100,
-    limitValue: input.moment,
+    limitValue: gamma0 * input.moment,
     comparison: '>=',
-    passed: Mu >= input.moment,
+    passed: Mu >= gamma0 * input.moment,
     unit: 'kN·m',
-    evidence: MuEvidence,
+    evidence: [...MuEvidence, ...safetyEvidence],
   });
 
   result.checks = checks;
@@ -350,7 +426,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   result.conclusion = {
     passed: allPassed,
     summary: allPassed
-      ? '所列验算项满足 2015 年版计算式；尚未完成 2024 年修订差异核查'
+      ? '所列正截面受弯验算数值满足；构造、其他验算及现行规范融合待复核'
       : '存在不满足的验算项，请调整参数（计算公式已根据 GB 50010-2010(2015年版) 原文校核）',
     evidence: [],
   };
@@ -361,12 +437,17 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     code: 'NORM_UPDATE_REQUIRED',
     message: '计算公式仍基于 GB 50010-2010（2015年版）。现行 GB 55001-2021、GB 55008-2021 与 GB/T 50010-2010（2024年局部修订）尚未完成逐条 Evidence 映射，结果保持 REVIEW_REQUIRED。',
   });
+  result.advisories.push({
+    severity: 'warning', code: 'FLEXURE_ONLY_SCOPE',
+    message: '本模块仅计算矩形梁正截面受弯；受剪、裂缝、挠度和其他抗震构造需另行验算。',
+  });
 
   // IG-002：GB 55008-2021 §4.4.2 已人工核对（HUMAN_VERIFIED 2026-10-01），
   // 正截面承载力基本假定与 GB 50010-2010 6.2.1/6.2.6/6.2.7/6.2.10 一致。
   // 本咨询仅作 Evidence 链补充，不改变 α1/β1/ξb 数值。
 
   result.allEvidence = allEvidence;
+  attachCurrentMaterialSelectionEvidence(result);
   result.overallStatus = 'REVIEW_REQUIRED';
 
   return result;

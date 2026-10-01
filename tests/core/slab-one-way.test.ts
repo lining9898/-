@@ -94,7 +94,9 @@ describe('单向板计算', () => {
         expect(e.pdfPage).not.toBeNull();
         expect(e.sourceFile).toBeTruthy();
       });
-      review.forEach(e => expect(e.pdfPage).toBeNull());
+      review.filter(e => e.sourceFile === null)
+        .forEach(e => expect(e.pdfPage).toBeNull());
+      expect(review.some(e => e.clause === '4.1.2' && e.pdfPage === 6)).toBe(true);
       expect(review.length).toBeGreaterThan(0); // 荷载/构造不虚构页码
     });
   });

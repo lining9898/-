@@ -128,7 +128,7 @@ const ResultView: React.FC<{ result: CalculationResult }> = ({ result }) => {
 
       {activeTab === 'evidence' && (
         <div className="bg-white rounded-b-lg shadow-sm border border-gray-200 p-5">
-          <EvidencePanel evidence={result.allEvidence} />
+          <EvidencePanel evidence={result.allEvidence} moduleId={result.calculatorType} />
         </div>
       )}
     </div>

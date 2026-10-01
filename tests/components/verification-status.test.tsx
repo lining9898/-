@@ -39,7 +39,7 @@ describe('计算页面规范校核状态', () => {
     expect(screen.getAllByText('REVIEW_REQUIRED')).toHaveLength(2);
 
     fireEvent.click(screen.getByRole('button', { name: '规范依据' }));
-    expect(screen.getByText(/条规范依据尚未完成原文校核/)).not.toBeNull();
+    expect(screen.getByText(/条规范依据的项目核验状态待确认/)).not.toBeNull();
     expect(screen.getAllByText('待校核').length).toBeGreaterThan(0);
     expect(screen.getAllByText(/解析条文：/).length).toBeGreaterThan(0);
   });

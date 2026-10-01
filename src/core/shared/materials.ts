@@ -51,13 +51,13 @@ export const STEEL_PARAMS: Record<string, SteelParams> = {
 /** 混凝土强度等级清单（供 schema/UI 使用） */
 export const CONCRETE_GRADES = Object.keys(CONCRETE_PARAMS);
 
-/** 钢筋等级清单 */
-export const STEEL_GRADES = Object.keys(STEEL_PARAMS);
+/** 现行钢筋等级清单；历史 HRB335 参数仅供旧版项目追溯。 */
+export const STEEL_GRADES = Object.keys(STEEL_PARAMS).filter(grade => grade !== 'HRB335');
 
 /**
  * IG-001：GB/T 50010-2010（2024 局部修订）4.1.2 条——
  * 钢筋混凝土结构最低混凝土强度等级由 C20 提高至 C25。
- * 人工核对完成（2026-10-01），升级为 HUMAN_VERIFIED。
+ * 已定位修订原页；模块公式、强制规范映射及独立算例仍待复核。
  *
  * 硬限制：actualGrade < requiredMinimumGrade → BLOCKED，禁止进入正式计算。
  * requiredMinimumGrade 作为参数入口，未来调整为 C30 时无需改各模块。
@@ -83,6 +83,94 @@ export function concreteGradeCompliance(
     };
   }
   return { passed: true, code: null, message: '' };
+}
+
+/**
+ * 2024 局部修订的材料选用入口。
+ * GB/T 50010-2010 第 4.1.2 条跨修订 PDF 第 5—6 页；第 4.2.1 条位于第 7 页。
+ * 保留历史参数表供旧版项目追溯，现行计算在此统一拦截已删除的钢筋牌号。
+ */
+export function materialSelectionCompliance(
+  concreteGrade: string,
+  steelGrades: string | string[],
+  requiredMinimumGrade = 25
+): { passed: boolean; code: 'CONCRETE_GRADE_BELOW_MINIMUM' | 'STEEL_GRADE_RETIRED' | null; message: string } {
+  const grades = (Array.isArray(steelGrades) ? steelGrades : [steelGrades]).map(g => g.toUpperCase());
+  if (grades.includes('HRB335')) {
+    return {
+      passed: false,
+      code: 'STEEL_GRADE_RETIRED',
+      message: 'GB/T 50010-2010（2024 局部修订）4.2.1 条已删除 HRB335；当前材料选用不适用于现行标准。',
+    };
+  }
+  const minimum = grades.some(g => /500$/.test(g))
+    ? Math.max(requiredMinimumGrade, 30)
+    : requiredMinimumGrade;
+  return concreteGradeCompliance(concreteGrade, minimum);
+}
+
+/** 现行材料输入规则的条文证据；计算模块整体仍需独立复核。 */
+export function currentMaterialSelectionEvidence(): Evidence[] {
+  const edition = '2010（2024年版，GB/T 50010-2010）';
+  const sourceFile = 'GBT50010-2010_2024_amendment.pdf';
+  const basis = (clause: string, originalText: string, pdfPage: number): Evidence => ({
+    codeName: '混凝土结构设计标准', codeNumber: 'GB 50010', edition,
+    chapter: '第4章 材料', clause, originalText, pdfPage,
+    status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile,
+  });
+  return [
+    basis('4.1.2', '钢筋混凝土结构最低混凝土强度等级为 C25；采用 500MPa 及以上钢筋时不低于 C30。', 6),
+    basis('4.2.1', '2024 局部修订从普通钢筋与箍筋的选用清单删除 HRB335。', 7),
+  ];
+}
+
+/** 2024 版 8.5.1 对强制规范的引用及 GB 55008 表 4.4.6；原页已定位，模块复核未闭环。 */
+export function currentMinimumReinforcementEvidence(): Evidence[] {
+  return [
+    {
+      codeName: '混凝土结构设计标准', codeNumber: 'GB 50010',
+      edition: '2010（2024年版，GB/T 50010-2010）', chapter: '第8章 纵向受力钢筋的最小配筋率',
+      clause: '8.5.1',
+      originalText: '纵向受力钢筋最小配筋百分率应按 GB 55008 执行，且不小于表 8.5.1 的数值；受弯、偏心受拉及轴心受拉构件一侧受拉钢筋取 0.20% 与 45ft/fy% 的较大值。',
+      pdfPage: 14, status: 'current', verificationStatus: 'REVIEW_REQUIRED',
+      sourceFile: 'GBT50010-2010_2024_amendment.pdf',
+    },
+    {
+      codeName: '混凝土结构通用规范', codeNumber: 'GB 55008', edition: '2021',
+      chapter: '第4章 构件设计', clause: '4.4.6',
+      originalText: '表 4.4.6 规定受弯构件、偏心受拉及轴心受拉构件一侧受拉钢筋的最小配筋率为 0.20% 与 45ft/fy% 的较大值；框架梁抗震构造另需核对 4.4.8。',
+      pdfPage: 16, status: 'current', verificationStatus: 'REVIEW_REQUIRED',
+      sourceFile: 'GB55008-2021.pdf',
+    },
+  ];
+}
+
+/** 框架梁抗震纵筋最小配筋率表；仅当抗震等级和梁端/跨中位置已知时参与数值验算。 */
+export function frameBeamSeismicReinforcementEvidence(): Evidence {
+  return {
+    codeName: '混凝土结构通用规范', codeNumber: 'GB 55008', edition: '2021',
+    chapter: '第4章 构件设计', clause: '4.4.8',
+    originalText: '表 4.4.8-1 按抗震等级及梁端、跨中位置分别规定框架梁纵向受拉钢筋最小配筋率；需取表列百分率与 ft/fy 公式值的较大值。',
+    pdfPage: 17, status: 'current', verificationStatus: 'REVIEW_REQUIRED',
+    sourceFile: 'GB55008-2021.pdf',
+  };
+}
+
+/** 将现行材料规则接入计算结果的材料项和规范证据汇总。 */
+export function attachCurrentMaterialSelectionEvidence<T extends { allEvidence: Evidence[]; materials: { label: string; value: number | string; unit: string; evidence?: Evidence[] }[] }>(result: T): T {
+  const currentEvidence = currentMaterialSelectionEvidence();
+  result.allEvidence = [...result.allEvidence, ...currentEvidence];
+  result.materials = result.materials.map(item => {
+    const matching = /混凝土|\bfc\b|\bft\b/i.test(item.label)
+      ? currentEvidence.filter(ev => ev.clause === '4.1.2')
+      : /钢筋|钢材|^fy|^Es$/i.test(item.label)
+        ? currentEvidence.filter(ev => ev.clause === '4.2.1')
+        : [];
+    return matching.length
+      ? { ...item, evidence: [...(item.evidence ?? []), ...matching] }
+      : item;
+  });
+  return result;
 }
 
 /**

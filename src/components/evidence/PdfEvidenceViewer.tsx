@@ -8,17 +8,28 @@ interface PdfEvidenceViewerProps {
 }
 
 // PDF 完整页面图片映射（从真实 PDF 渲染，避免手机 WebView 触发下载）
-const PAGE_IMAGE_MAP: Record<number, string> = {
-  34: 'evidence-assets/gb50010-2010-2015/pages/p34.jpg',
-  35: 'evidence-assets/gb50010-2010-2015/pages/p35.jpg',
-  38: 'evidence-assets/gb50010-2010-2015/pages/p38.jpg',
-  40: 'evidence-assets/gb50010-2010-2015/pages/p40.jpg',
-  52: 'evidence-assets/gb50010-2010-2015/pages/p52.jpg',
-  53: 'evidence-assets/gb50010-2010-2015/pages/p53.jpg',
-  55: 'evidence-assets/gb50010-2010-2015/pages/p55.jpg',
-  56: 'evidence-assets/gb50010-2010-2015/pages/p56.jpg',
-  124: 'evidence-assets/gb50010-2010-2015/pages/p124.jpg',
+const PAGE_IMAGE_MAP: Record<string, Record<number, string>> = {
+  'gb50010-2010-2015.pdf': Object.fromEntries(
+    [34, 35, 38, 40, 52, 53, 55, 56, 124].map(page =>
+      [page, `evidence-assets/gb50010-2010-2015/pages/p${page}.jpg`])
+  ),
+  'gbt50010-2010_2024_amendment.pdf': Object.fromEntries(
+    [6, 7, 14].map(page => [page, `evidence-assets/gbt50010-2024/pages/p${page}.jpg`])
+  ),
+  'gb55008-2021.pdf': Object.fromEntries(
+    [15, 16, 17].map(page => [page, `evidence-assets/gb55008-2021/pages/p${page}.jpg`])
+  ),
+  'gb55001-2021.pdf': Object.fromEntries(
+    [12, 13].map(page => [page, `evidence-assets/gb55001-2021/pages/p${page}.jpg`])
+  ),
+  'gb50009-2012.pdf': { 20: 'evidence-assets/gb50009-2012/pages/p20.jpg' },
 };
+
+export function evidencePageImagePath(pdfUrl: string, pageNumber: number | null): string | null {
+  if (pageNumber === null) return null;
+  const fileName = pdfUrl.split(/[?#]/)[0].split('/').pop()?.toLowerCase() ?? '';
+  return PAGE_IMAGE_MAP[fileName]?.[pageNumber] ?? null;
+}
 
 const PdfEvidenceViewer: React.FC<PdfEvidenceViewerProps> = ({
   pdfUrl,
@@ -26,7 +37,7 @@ const PdfEvidenceViewer: React.FC<PdfEvidenceViewerProps> = ({
   clause,
   codeLabel,
 }) => {
-  const imagePath = pageNumber ? PAGE_IMAGE_MAP[pageNumber] : undefined;
+  const imagePath = evidencePageImagePath(pdfUrl, pageNumber);
   const imageUrl = imagePath ? new URL(imagePath, document.baseURI).href : null;
   const pdfPage = pageNumber ?? 1;
   const pdfPageUrl = `${new URL(pdfUrl, document.baseURI).href}#page=${pdfPage}&toolbar=0`;

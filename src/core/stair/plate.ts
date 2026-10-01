@@ -21,7 +21,9 @@ import {
   STEEL_PARAMS,
   verifiedEvidence,
   reviewRequiredEvidence,
-  concreteGradeCompliance,
+  materialSelectionCompliance,
+  attachCurrentMaterialSelectionEvidence,
+  currentMinimumReinforcementEvidence,
 } from '../shared/materials';
 import {
   designFlexure,
@@ -85,9 +87,9 @@ export function calculatePlateStair(input: PlateStairInput): CalculationResult {
   }
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
   // IG-001 硬限制
-  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  const gradeCheck = materialSelectionCompliance(input.concreteGrade, input.steelGrade);
   if (!gradeCheck.passed) {
-    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    result.advisories.push({ severity: 'error', code: gradeCheck.code!, message: gradeCheck.message });
     return result;
   }
 
@@ -232,6 +234,8 @@ export function calculatePlateStair(input: PlateStairInput): CalculationResult {
   ];
 
   const evRhoMin = gb10('8.5.1', '第8章', '受弯构件最小配筋率 ρmin = max(0.20%, 45ft/fy%)。', 124);
+  const minReinforcementEvidence = [evRhoMin, ...currentMinimumReinforcementEvidence()];
+  allEvidence.push(...minReinforcementEvidence.slice(1));
   const evSpacing = rr('9.1.3', '第9章', '板中受力钢筋间距不宜大于 200mm，且不宜小于 70mm。');
   const evThick = rr('6.1.2', '第6章', '板式楼梯梯板厚度建议不宜小于水平投影跨度的 1/30（工程经验构造，待核验）');
   const evXiB = gb10('6.2.7', '第6章', 'ξb = β1 / (1 + fy / (Es·εcu))，εcu=0.0033。', 53);
@@ -243,7 +247,7 @@ export function calculatePlateStair(input: PlateStairInput): CalculationResult {
     },
     {
       name: '最小配筋率验算', calculatedValue: Math.round(rhoProv * 10000) / 100,
-      limitValue: Math.round(rhoMin * 10000) / 100, comparison: '>=', passed: rhoProv >= rhoMin, unit: '%', evidence: [evRhoMin],
+      limitValue: Math.round(rhoMin * 10000) / 100, comparison: '>=', passed: rhoProv >= rhoMin, unit: '%', evidence: minReinforcementEvidence,
     },
     {
       name: '实配面积验算', calculatedValue: Math.round(AsProv * 100) / 100,
@@ -285,6 +289,7 @@ export function calculatePlateStair(input: PlateStairInput): CalculationResult {
   });
 
   result.allEvidence = allEvidence;
+  attachCurrentMaterialSelectionEvidence(result);
   result.overallStatus = 'REVIEW_REQUIRED';
   return result;
 }

@@ -9,7 +9,7 @@ import { calculateEccentricColumn } from '../../src/core/column/eccentric';
 /**
  * 规范版本风险回归（Part 6）
  * 目的：
- * 1) 确保 CalculationResult 的 Evidence edition 与指定设计依据一致、且结果内部不混杂多个版本；
+ * 1) 历史计算公式绑定 2015 版，现行材料门槛单独绑定 2024 修订证据；
  * 2) 确保未来出现新版规范时，旧算例不会因默认规范变化而悄悄改变数值结果；
  * 3) 版本一致性审计能力（EDITION_INCONSISTENT / EDITION_MISMATCH）可被触发。
  */
@@ -42,17 +42,20 @@ describe('规范版本风险：设计依据一致性', () => {
     }
   });
 
-  it('运行期 CalculationResult 的 Evidence 版本非空、单一且与设计依据一致', () => {
+  it('运行期公式证据保持 2015 基线，材料门槛追踪 2024 修订', () => {
     const flexure = calculateBeamFlexure({
       b: 250, h: 500, concreteGrade: 'C30', steelGrade: 'HRB400',
       cover: 25, barDiameter: 20, barCount: 4, moment: 120,
     });
-    const editions = new Set(flexure.allEvidence.map(e => e.edition).filter(Boolean));
-    expect(editions.size, '受弯结果应使用单一规范版本').toBe(1);
-    const edition = [...editions][0];
-    // 结果内版本单一、非空；与目录所用版本语义一致（字符串形态以目录为准，见审计报告 Finding 2）
-    expect(edition).toBeTruthy();
-    expect(edition.toUpperCase().includes('2010')).toBe(true);
+    const formulaEditions = new Set(flexure.steps
+      .filter(step => step.name !== '计算最小配筋面积')
+      .flatMap(step => step.evidence.map(e => e.edition)));
+    expect(formulaEditions.size, '公式步骤应绑定单一历史计算基线').toBe(1);
+    expect([...formulaEditions][0]).toContain('2015');
+    expect(flexure.allEvidence).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clause: '4.1.2', edition: '2010（2024年版，GB/T 50010-2010）', pdfPage: 6 }),
+      expect.objectContaining({ codeNumber: 'GB 55008', clause: '4.4.6', pdfPage: 16 }),
+    ]));
   });
 
   it('旧算例基准被冻结：默认版本变化会破坏以下数值回归（防悄悄漂移）', () => {

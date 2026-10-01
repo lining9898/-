@@ -1,8 +1,9 @@
 import type { CalculationResult } from '../types/calculation';
 import type { VerificationStatus } from '../types/evidence';
 import { normalizeCode, normativeVersionRegistry } from '../normative/registry';
+import { resolveCalculationNormativeBasis, type FusedCalculationBasis } from '../normative/calculationBasis';
 
-export const REVIEW_PACKAGE_VERSION = '1.1.0';
+export const REVIEW_PACKAGE_VERSION = '1.2.0';
 
 /** 规范版本信息（从 Evidence 汇总） */
 export interface NormativeVersionInfo {
@@ -71,6 +72,7 @@ export interface AIReviewPackage {
   conclusion: { passed: boolean; summary: string };
   evidence: ReviewEvidenceRef[];
   normativeVersions: NormativeVersionInfo[];
+  normativeBasis: FusedCalculationBasis;
   normativeChanges?: ReviewNormativeChange[];
   warnings: string[];
   verificationStatus: VerificationStatus;
@@ -198,6 +200,7 @@ export function buildReviewPackage(
   for (const g of result.geometry) if (g.evidence) collectEvidence(g.evidence);
   collectEvidence(result.conclusion.evidence);
   for (const r of result.results) if (r.evidence) collectEvidence(r.evidence);
+  const normativeBasis = resolveCalculationNormativeBasis(result.calculatorType, result.allEvidence);
 
   // 汇总规范版本
   const versions = new Map<string, NormativeVersionInfo>();
@@ -219,6 +222,21 @@ export function buildReviewPackage(
       });
     }
   }
+  for (const standard of normativeBasis.standards) {
+    const key = `${standard.codeNumber}|${standard.edition}`;
+    if (!versions.has(key)) {
+      const registeredVersion = normativeVersionRegistry.getVersion(standard.codeNumber, standard.edition);
+      versions.set(key, {
+        codeNumber: standard.codeNumber,
+        codeName: registeredVersion?.codeName ?? standard.role,
+        edition: standard.edition,
+        designation: standard.designation,
+        status: registeredVersion?.status ?? 'UNRESOLVED',
+        verificationStatus: registeredVersion?.verificationStatus,
+        source: standard.versionSource,
+      });
+    }
+  }
 
   // 步骤
   const steps: ReviewStep[] = result.steps.map((s, i) => ({
@@ -236,7 +254,10 @@ export function buildReviewPackage(
     })),
   }));
 
-  const warnings = result.advisories.map(a => `[${a.severity}] ${a.code}: ${a.message}`);
+  const warnings = [
+    ...result.advisories.map(a => `[${a.severity}] ${a.code}: ${a.message}`),
+    ...normativeBasis.warnings,
+  ];
 
   return {
     reviewPackageVersion: REVIEW_PACKAGE_VERSION,
@@ -255,11 +276,12 @@ export function buildReviewPackage(
     conclusion: { passed: result.conclusion.passed, summary: result.conclusion.summary },
     evidence: [...evidenceMap.values()],
     normativeVersions: [...versions.values()],
+    normativeBasis,
     normativeChanges: normativeVersionRegistry.listChangeSets().filter(change =>
-      [...evidenceMap.values()].some(ev => normalizeCode(ev.codeNumber) === normalizeCode(change.codeNumber))
+      normativeBasis.changeSetIds.includes(change.id)
     ),
     warnings,
-    verificationStatus: result.overallStatus,
+    verificationStatus: normativeBasis.status === 'VERIFIED' ? result.overallStatus : 'REVIEW_REQUIRED',
     internalMechanics: options?.internalMechanics,
     magnitudeHighRisk: options?.magnitudeHighRisk,
   };

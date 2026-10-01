@@ -1,4 +1,4 @@
-import { concreteGradeCompliance } from '../shared/materials';
+import { materialSelectionCompliance } from '../shared/materials';
 import { sectionDimensionCompliance } from '../shared/construction';
 
 export interface EccentricColumnInput {
@@ -67,9 +67,9 @@ export function calculateEccentricColumn(input: EccentricColumnInput): Eccentric
   if (!material || !fy) throw new Error('不支持的材料等级');
 
   // IG-001 硬限制：GB/T 50010-2024 局部修订 4.1.2 条最低强度 C25
-  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  const gradeCheck = materialSelectionCompliance(input.concreteGrade, input.steelGrade);
   if (!gradeCheck.passed) {
-    throw new Error('CONCRETE_GRADE_BELOW_MINIMUM: ' + gradeCheck.message);
+    throw new Error(`${gradeCheck.code}: ${gradeCheck.message}`);
   }
 
   // IG-005 硬限制：GB 55008-2021 §4.4.4 柱最小截面

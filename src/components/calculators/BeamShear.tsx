@@ -5,9 +5,9 @@ import EvidencePanel from '../evidence/EvidencePanel';
 import VerificationBadge from '../evidence/VerificationBadge';
 import CalculationReportView from '../report/CalculationReportView';
 import AIReviewButton from '../ai-review/AIReviewButton';
+import { STEEL_GRADES } from '../../core/shared/materials';
 
 const CONCRETE_GRADES = ['C20', 'C25', 'C30', 'C35', 'C40', 'C45', 'C50'];
-const STEEL_GRADES = ['HPB300', 'HRB335', 'HRB400', 'HRB500'];
 
 /** 梁截面 + 箍筋示意图 */
 const BeamShearSVG: React.FC<{ b: number; h: number; h0: number; stirrupDiameter: number; stirrupLegs: number }> = ({
@@ -419,7 +419,7 @@ const BeamShear: React.FC = () => {
           {/* 规范依据 */}
           {activeTab === 'evidence' && (
             <div className="bg-white rounded-b-lg shadow-sm border border-gray-200 p-5">
-              <EvidencePanel evidence={result.allEvidence} />
+              <EvidencePanel evidence={result.allEvidence} moduleId={result.calculatorType} />
             </div>
           )}
         </div>

@@ -200,13 +200,17 @@ describe('双筋矩形梁正截面受弯承载力计算', () => {
   });
 
   describe('规范依据与 Evidence', () => {
-    it('所有规范依据应标记为 REVIEW_REQUIRED 且状态为现行', () => {
+    it('历史公式证据和现行材料条文分别保留来源与状态', () => {
       const result = calculateBeamDoubleFlexure(normalCase);
       expect(result.overallStatus).toBe('REVIEW_REQUIRED');
       result.allEvidence.forEach(e => {
         expect(['VERIFIED','REVIEW_REQUIRED']).toContain(e.verificationStatus);
         expect(e.status).toBe('current');
-        expect(e.sourceFile).toBe('GB50010-2010_2015_.pdf');
+        expect(e.sourceFile).toBe(e.codeNumber === 'GB 55008'
+          ? 'GB55008-2021.pdf'
+          : e.edition.includes('2024')
+            ? 'GBT50010-2010_2024_amendment.pdf'
+            : 'GB50010-2010_2015_.pdf');
       });
     });
 

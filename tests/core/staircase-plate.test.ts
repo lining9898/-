@@ -68,7 +68,9 @@ describe('板式楼梯计算', () => {
       expect(verified.length).toBeGreaterThan(0);
       expect(review.length).toBeGreaterThan(0);
       verified.forEach(e => expect(e.pdfPage).not.toBeNull());
-      review.forEach(e => expect(e.pdfPage).toBeNull());
+      review.filter(e => e.sourceFile === null)
+        .forEach(e => expect(e.pdfPage).toBeNull());
+      expect(review.some(e => e.clause === '4.1.2' && e.pdfPage === 6)).toBe(true);
       expect(result.overallStatus).toBe('REVIEW_REQUIRED');
     });
   });

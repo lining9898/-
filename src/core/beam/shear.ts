@@ -19,7 +19,7 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
-import { concreteGradeCompliance } from '../shared/materials';
+import { materialSelectionCompliance, attachCurrentMaterialSelectionEvidence } from '../shared/materials';
 import { sectionDimensionCompliance } from '../shared/construction';
 
 /** 荷载类型 */
@@ -162,9 +162,9 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   const steel = STEEL_PARAMS[input.stirrupGrade];
 
   // IG-001 硬限制
-  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  const gradeCheck = materialSelectionCompliance(input.concreteGrade, input.stirrupGrade);
   if (!gradeCheck.passed) {
-    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    result.advisories.push({ severity: 'error', code: gradeCheck.code!, message: gradeCheck.message });
     return result;
   }
 
@@ -499,6 +499,7 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   }
 
   result.allEvidence = allEvidence;
+  attachCurrentMaterialSelectionEvidence(result);
   result.overallStatus = 'REVIEW_REQUIRED';
 
   return result;
