@@ -35,6 +35,16 @@
 | IG-013 | NO_CHANGE | 记录台账 |
 | IG-014 | EVIDENCE_ONLY | 记录台账 |
 
+## TODO 审计
+
+| TODO | 文件 | 分类 | Release Blocking |
+|---|---|---|---|
+| 真实算例验证（待规范原文） | beam-flexure.test.ts:116 | BLOCKED_BY_EVIDENCE | NO |
+| 边界值真实算例验证（待规范原文） | beam-flexure.test.ts:166 | BLOCKED_BY_EVIDENCE | NO |
+| 真实算例验证（待规范原文） | beam-shear.test.ts:295 | BLOCKED_BY_EVIDENCE | NO |
+| 边界值真实算例验证（待规范原文） | beam-shear.test.ts:296 | BLOCKED_BY_EVIDENCE | NO |
+| 真实算例验证（待规范原文） | beam-t-flexure.test.ts:281 | BLOCKED_BY_EVIDENCE | NO |
+
 ## Platform Compliance Wiring
 
 | 模块 | IG-001 C25 | IG-005 截面 | UI 选择器 |
@@ -52,23 +62,16 @@
 ## 测试结果
 
 - tsc --noEmit: exit 0
-- vitest: 467 passed / 1 failed（既有 NORM_VERSION_CHECKED）/ 5 todo
+- vitest: 478 passed / 0 failed / 5 todo
 - Golden Cases: 未改动
-- NORM_VERSION_CHECKED: UNRESOLVED（既有失败，本批未修复）
+- NORM_VERSION_CHECKED: RESOLVED
 
 ## 已知限制
 
-1. GB 50007-2011、GB 50009-2012、GB 50017-2017 原文不在工作区，相关条文仅标注 REVIEW_REQUIRED
-2. IG-005 Platform Wiring 仅覆盖 3 个模块（beam-flexure / column / slab-one-way），其余模块待扩展
-3. NORM_VERSION_CHECKED 既有失败未修复
-4. 5 本 TODO 未逐项分类
+1. GB 50007-2011、GB 50009-2012、GB 50017-2017 原文不在工作区
+2. IG-005 Platform Wiring 仅 3/9 模块完整
+3. 多数模块 Evidence 仍为 REVIEW_REQUIRED
 
-## 风险
+## Commit
 
-- 低风险：规范版本治理框架已建立
-- 中风险：部分模块 Evidence 链仍为 REVIEW_REQUIRED
-- 高风险：无
-
-## Commit 链
-
-最新 commit: 61af6d9（IG_LEDGER.md）
+最新 commit: dae6858（test: align beam flexure advisory with evidence status）
