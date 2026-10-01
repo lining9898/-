@@ -80,7 +80,8 @@ export function calculateEccentricColumn(input: EccentricColumnInput): Eccentric
       throw new Error('SECTION_DIMENSION_BELOW_MINIMUM: ' + dimCheck.message);
     }
   } else if (shape === 'circular') {
-    const dimCheck = sectionDimensionCompliance({ componentType: 'frameCircColumn', dimension: Math.min(input.width, input.depth) });
+    // 输入模型无独立直径字段，用 width 作为直径判据（待后续补 diameter 字段）
+    const dimCheck = sectionDimensionCompliance({ componentType: 'frameCircColumn', dimension: input.width });
     if (!dimCheck.passed) {
       throw new Error('SECTION_DIMENSION_BELOW_MINIMUM: ' + dimCheck.message);
     }

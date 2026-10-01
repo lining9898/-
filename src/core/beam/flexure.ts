@@ -141,9 +141,9 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     }
   } else if (beamType === 'unknown') {
     result.advisories.push({
-      severity: 'info',
+      severity: 'warning',
       code: 'BEAM_TYPE_UNKNOWN',
-      message: '未指定构件类型（框架梁/非框架梁），无法判定 GB 55008-2021 §4.4.4 最小梁宽要求。',
+      message: '构件类型未声明（框架梁/非框架梁），GB 55008-2021 §4.4.4 最小截面校核未执行，请补充。',
     });
   }
 

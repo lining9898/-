@@ -104,6 +104,12 @@ export function calculateOneWaySlab(input: OneWaySlabInput): CalculationResult {
       result.advisories.push({ severity: 'error', code: 'SECTION_DIMENSION_BELOW_MINIMUM', message: dimCheck.message });
       return result;
     }
+  } else if (slabType === 'unknown') {
+    result.advisories.push({
+      severity: 'warning',
+      code: 'SLAB_TYPE_UNKNOWN',
+      message: '板类型未声明，GB 55008-2021 §4.4.4 最小截面校核未执行，请补充。',
+    });
   }
 
   const steel = STEEL_PARAMS[input.steelGrade];
