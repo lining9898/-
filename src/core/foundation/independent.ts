@@ -362,6 +362,14 @@ export function calculateIndependentFoundation(input: IndependentFoundationInput
     code: 'AXIAL_ONLY_MODEL',
     message: '本模块按轴心受压独立基础建模，未计入弯矩与水平剪力的偏心作用；存在偏心时宜按偏心受压公式另行验算。',
   });
+  // IG-003：GB 55003-2021 §6.2.4（HUMAN_VERIFIED 2026-10-01）
+  // 扩展基础混凝土强度≥C25、受力钢筋最小配筋率≥0.15%、保护层≥40mm。
+  // 旧 GB 50007-2011 配套依据保留；本条为现行强制性依据。
+  result.advisories.push({
+    severity: 'info',
+    code: 'GB55003_6_2_4_EVIDENCE',
+    message: 'GB 55003-2021 §6.2.4：扩展基础混凝土强度不应低于 C25，受力钢筋最小配筋率不应小于 0.15%。',
+  });
 
   result.allEvidence = allEvidence;
   result.overallStatus = 'REVIEW_REQUIRED';
