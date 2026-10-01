@@ -23,6 +23,7 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
+import { concreteGradeCompliance } from '../shared/materials';
 
 /** 双筋矩形梁正截面受弯输入参数 */
 export interface BeamDoubleFlexureInput {
@@ -173,6 +174,13 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
   }
 
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
+  // IG-001 硬限制
+  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  if (!gradeCheck.passed) {
+    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    return result;
+  }
+
   const steel = STEEL_PARAMS[input.steelGrade];
   const compressionSteel = STEEL_PARAMS[input.compressionSteelGrade];
 

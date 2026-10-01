@@ -55,6 +55,37 @@ export const CONCRETE_GRADES = Object.keys(CONCRETE_PARAMS);
 export const STEEL_GRADES = Object.keys(STEEL_PARAMS);
 
 /**
+ * IG-001：GB/T 50010-2010（2024 局部修订）4.1.2 条——
+ * 钢筋混凝土结构最低混凝土强度等级由 C20 提高至 C25。
+ * 人工核对完成（2026-10-01），升级为 HUMAN_VERIFIED。
+ *
+ * 硬限制：actualGrade < requiredMinimumGrade → BLOCKED，禁止进入正式计算。
+ * requiredMinimumGrade 作为参数入口，未来调整为 C30 时无需改各模块。
+ */
+export function concreteGradeCompliance(
+  actualGrade: string,
+  requiredMinimumGrade: number = 25
+): {
+  passed: boolean;
+  code: 'CONCRETE_GRADE_BELOW_MINIMUM' | null;
+  message: string;
+} {
+  const m = /^C(\d+)$/i.exec(actualGrade);
+  if (!m) {
+    return { passed: false, code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: `无法解析混凝土等级: ${actualGrade}` };
+  }
+  const gradeNum = parseInt(m[1], 10);
+  if (gradeNum < requiredMinimumGrade) {
+    return {
+      passed: false,
+      code: 'CONCRETE_GRADE_BELOW_MINIMUM',
+      message: `GB/T 50010-2010（2024 局部修订）4.1.2 条：钢筋混凝土结构最低混凝土强度等级为 C${requiredMinimumGrade}；当前输入 ${actualGrade} 低于该要求，计算已被阻断。`,
+    };
+  }
+  return { passed: true, code: null, message: '' };
+}
+
+/**
  * 已校核的 GB 50010-2010(2015年版) 证据。
  * 仅当条文页码来自仓库内 PDF 校核记录时才可标记 VERIFIED，否则用 reviewRequiredEvidence。
  */

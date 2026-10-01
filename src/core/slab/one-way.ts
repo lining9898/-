@@ -20,7 +20,9 @@ import {
   STEEL_PARAMS,
   verifiedEvidence,
   reviewRequiredEvidence,
+  concreteGradeCompliance,
 } from '../shared/materials';
+import { sectionDimensionCompliance } from '../shared/construction';
 import {
   designFlexure,
   flexureCapacity,
@@ -42,6 +44,7 @@ export interface OneWaySlabInput {
   gammaG: number;       // 恒载分项系数
   gammaQ: number;       // 活载分项系数
   width?: number;       // 计算单元宽度 (mm)，默认 1000
+  slabType?: 'solidCastInPlace' | 'hollow' | 'composite' | 'unknown';  // IG-005
 }
 
 const DEFAULT_WIDTH = 1000;
@@ -86,6 +89,29 @@ export function calculateOneWaySlab(input: OneWaySlabInput): CalculationResult {
     return result;
   }
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
+  // IG-001 硬限制
+  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  if (!gradeCheck.passed) {
+    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    return result;
+  }
+
+  // IG-005 硬限制：GB 55008-2021 §4.4.4 现浇实心板最小厚度 80mm
+  const slabType = input.slabType ?? 'unknown';
+  if (slabType === 'solidCastInPlace') {
+    const dimCheck = sectionDimensionCompliance({ componentType: 'solidSlab', dimension: input.h });
+    if (!dimCheck.passed) {
+      result.advisories.push({ severity: 'error', code: 'SECTION_DIMENSION_BELOW_MINIMUM', message: dimCheck.message });
+      return result;
+    }
+  } else if (slabType === 'unknown') {
+    result.advisories.push({
+      severity: 'warning',
+      code: 'SLAB_TYPE_UNKNOWN',
+      message: '板类型未声明，GB 55008-2021 §4.4.4 最小截面校核未执行，请补充。',
+    });
+  }
+
   const steel = STEEL_PARAMS[input.steelGrade];
   if (!concrete) {
     result.advisories.push({ severity: 'error', code: 'UNKNOWN_CONCRETE', message: `未知混凝土等级: ${input.concreteGrade}` });
@@ -295,6 +321,13 @@ export function calculateOneWaySlab(input: OneWaySlabInput): CalculationResult {
     severity: 'warning',
     code: 'NORM_REVIEW_REQUIRED',
     message: '荷载取值（GB 50009-2012）与板厚/间距构造（GB 50010 9.1.2、9.1.3、8.2.1）无对应 PDF 页码，保持 REVIEW_REQUIRED，待规范 Agent 核验。',
+  });
+  // IG-004：GB 55008-2021 §4.4.6（HUMAN_VERIFIED 2026-10-01）
+  // 纵向受力钢筋最小配筋率表与 GB/T 50010-2010 8.5.1 一致。
+  result.advisories.push({
+    severity: 'info',
+    code: 'GB55008_4_4_6_EVIDENCE',
+    message: 'GB 55008-2021 §4.4.6：纵向受力普通钢筋最小配筋率表与 GB/T 50010-2010 8.5.1 一致。',
   });
 
   result.allEvidence = allEvidence;

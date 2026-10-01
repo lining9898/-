@@ -98,7 +98,7 @@ describe('矩形梁正截面受弯计算', () => {
 
     it('应包含现行规范尚待融合的警告', () => {
       const result = calculateBeamFlexure(defaultInput);
-      expect(result.advisories.some(a => a.code === 'NORM_VERSION_CHECKED')).toBe(true);
+      expect(result.advisories.some(a => a.code === 'NORM_UPDATE_REQUIRED')).toBe(true);
     });
 
     it('受弯公式证据应指向 6.2.10（REVIEW_REQUIRED，等待人工核验）', () => {
@@ -164,6 +164,28 @@ describe('矩形梁正截面受弯计算', () => {
 
     // REFERENCE_CASE_REQUIRED
     it.todo('边界值真实算例验证（待规范原文）');
+  });
+
+  describe('IG-001 最低强度等级 C20→C25 硬限制', () => {
+    it('C20 应被 BLOCKED（CONCRETE_GRADE_BELOW_MINIMUM，不进入计算）', () => {
+      const result = calculateBeamFlexure({ ...defaultInput, concreteGrade: 'C20' });
+      expect(result.advisories.some(a => a.code === 'CONCRETE_GRADE_BELOW_MINIMUM')).toBe(true);
+      // 不进入正式计算：steps/results 为空
+      expect(result.steps.length).toBe(0);
+      expect(result.results.length).toBe(0);
+    });
+
+    it('C25 应通过硬限制', () => {
+      const result = calculateBeamFlexure({ ...defaultInput, concreteGrade: 'C25' });
+      expect(result.advisories.some(a => a.code === 'CONCRETE_GRADE_BELOW_MINIMUM')).toBe(false);
+      expect(result.steps.length).toBeGreaterThan(0);
+    });
+
+    it('C30 应通过硬限制', () => {
+      const result = calculateBeamFlexure({ ...defaultInput, concreteGrade: 'C30' });
+      expect(result.advisories.some(a => a.code === 'CONCRETE_GRADE_BELOW_MINIMUM')).toBe(false);
+      expect(result.steps.length).toBeGreaterThan(0);
+    });
   });
 
   describe('CalculationResult Schema 验证', () => {

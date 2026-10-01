@@ -17,6 +17,8 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
+import { concreteGradeCompliance } from '../shared/materials';
+import { sectionDimensionCompliance } from '../shared/construction';
 
 /** 梁正截面受弯输入参数 */
 export interface BeamFlexureInput {
@@ -28,6 +30,7 @@ export interface BeamFlexureInput {
   barDiameter: number;    // 受拉钢筋直径 (mm)
   barCount: number;       // 受拉钢筋根数
   moment: number;   // 弯矩设计值 M (kN·m)
+  beamType?: 'frameBeam' | 'nonFrameBeam' | 'unknown';  // IG-005 构件分类
 }
 
 /** 混凝土材料参数 */
@@ -112,6 +115,37 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
 
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
   const steel = STEEL_PARAMS[input.steelGrade];
+
+  // IG-001 硬限制：GB/T 50010-2024 局部修订 4.1.2 条最低强度 C25
+  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  if (!gradeCheck.passed) {
+    result.advisories.push({
+      severity: 'error',
+      code: 'CONCRETE_GRADE_BELOW_MINIMUM',
+      message: gradeCheck.message,
+    });
+    return result;
+  }
+
+  // IG-005 硬限制：GB 55008-2021 §4.4.4 框架梁最小宽度 200mm
+  const beamType = input.beamType ?? 'unknown';
+  if (beamType === 'frameBeam') {
+    const dimCheck = sectionDimensionCompliance({ componentType: 'frameBeam', dimension: input.b });
+    if (!dimCheck.passed) {
+      result.advisories.push({
+        severity: 'error',
+        code: 'SECTION_DIMENSION_BELOW_MINIMUM',
+        message: `${dimCheck.message} 实际值: ${dimCheck.actualValue}mm, 最低要求: ${dimCheck.requiredMinimum}mm。`,
+      });
+      return result;
+    }
+  } else if (beamType === 'unknown') {
+    result.advisories.push({
+      severity: 'warning',
+      code: 'BEAM_TYPE_UNKNOWN',
+      message: '构件类型未声明（框架梁/非框架梁），GB 55008-2021 §4.4.4 最小截面校核未执行，请补充。',
+    });
+  }
 
   if (!concrete) {
     result.advisories.push({
@@ -327,6 +361,10 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     code: 'NORM_UPDATE_REQUIRED',
     message: '计算公式仍基于 GB 50010-2010（2015年版）。现行 GB 55001-2021、GB 55008-2021 与 GB/T 50010-2010（2024年局部修订）尚未完成逐条 Evidence 映射，结果保持 REVIEW_REQUIRED。',
   });
+
+  // IG-002：GB 55008-2021 §4.4.2 已人工核对（HUMAN_VERIFIED 2026-10-01），
+  // 正截面承载力基本假定与 GB 50010-2010 6.2.1/6.2.6/6.2.7/6.2.10 一致。
+  // 本咨询仅作 Evidence 链补充，不改变 α1/β1/ξb 数值。
 
   result.allEvidence = allEvidence;
   result.overallStatus = 'REVIEW_REQUIRED';

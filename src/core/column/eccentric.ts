@@ -1,3 +1,6 @@
+import { concreteGradeCompliance } from '../shared/materials';
+import { sectionDimensionCompliance } from '../shared/construction';
+
 export interface EccentricColumnInput {
   width: number;
   depth: number;
@@ -7,6 +10,7 @@ export interface EccentricColumnInput {
   firstOrderMoment: number;
   concreteGrade: 'C20' | 'C25' | 'C30' | 'C35' | 'C40' | 'C45' | 'C50';
   steelGrade: 'HPB300' | 'HRB400' | 'HRB500';
+  columnShape?: 'rectangular' | 'circular' | 'unknown';  // IG-005
 }
 
 export interface EccentricColumnResult {
@@ -61,6 +65,27 @@ export function calculateEccentricColumn(input: EccentricColumnInput): Eccentric
   const material = concrete[input.concreteGrade];
   const fy = steel[input.steelGrade];
   if (!material || !fy) throw new Error('不支持的材料等级');
+
+  // IG-001 硬限制：GB/T 50010-2024 局部修订 4.1.2 条最低强度 C25
+  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  if (!gradeCheck.passed) {
+    throw new Error('CONCRETE_GRADE_BELOW_MINIMUM: ' + gradeCheck.message);
+  }
+
+  // IG-005 硬限制：GB 55008-2021 §4.4.4 柱最小截面
+  const shape = input.columnShape ?? 'unknown';
+  if (shape === 'rectangular') {
+    const dimCheck = sectionDimensionCompliance({ componentType: 'frameRectColumn', dimension: Math.min(input.width, input.depth) });
+    if (!dimCheck.passed) {
+      throw new Error('SECTION_DIMENSION_BELOW_MINIMUM: ' + dimCheck.message);
+    }
+  } else if (shape === 'circular') {
+    // 输入模型无独立直径字段，用 width 作为直径判据（待后续补 diameter 字段）
+    const dimCheck = sectionDimensionCompliance({ componentType: 'frameCircColumn', dimension: input.width });
+    if (!dimCheck.passed) {
+      throw new Error('SECTION_DIMENSION_BELOW_MINIMUM: ' + dimCheck.message);
+    }
+  }
 
   const { width, depth, coverToSteelCentroid: cover, reinforcementAreaEachFace: As,
     axialForce, firstOrderMoment } = input;

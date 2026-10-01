@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-10-01",
+  "branch": "agent/normative-iteration",
+  "items": [
+    {"id": "MC-001", "code": "GB 55008-2021", "clause": "材料章节", "printPage": "待核", "pdfPage": "待核", "modules": ["all concrete"], "impactType": "材料基本要求", "pendingAction": "逐页渲染核验材料章节", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-002", "code": "GB 55008-2021", "clause": "承载力章节", "printPage": "待核", "pdfPage": "待核", "modules": ["beam-flexure", "beam-shear"], "impactType": "承载力计算", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-003", "code": "GB 55008-2021", "clause": "正常使用", "printPage": "待核", "pdfPage": "待核", "modules": ["slab", "stair"], "impactType": "挠度/裂缝", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-004", "code": "GB 55008-2021", "clause": "构造章节", "printPage": "待核", "pdfPage": "待核", "modules": ["all concrete"], "impactType": "构造要求", "pendingAction": "逐页渲染核验（对应 GB/T 50010-2010 8.5.1/9.1.2）", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-005", "code": "GB 55008-2021", "clause": "与 GB/T 50010-2010 8.5.1 关系", "printPage": "待核", "pdfPage": "待核", "modules": ["beam-flexure", "beam-shear"], "impactType": "最小配筋率", "pendingAction": "人工比对 ρmin 表值", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-006", "code": "GB 55001-2021", "clause": "可靠度", "printPage": "待核", "pdfPage": "待核", "modules": ["all"], "impactType": "分项系数", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-007", "code": "GB 55001-2021", "clause": "荷载", "printPage": "待核", "pdfPage": "待核", "modules": ["continuous-beam-load"], "impactType": "荷载分项系数", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-008", "code": "GB 55001-2021", "clause": "作用组合", "printPage": "待核", "pdfPage": "待核", "modules": ["all"], "impactType": "作用组合", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-009", "code": "GB 55003-2021", "clause": "地基承载力", "printPage": "待核", "pdfPage": "待核", "modules": ["foundation-independent"], "impactType": "承载力特征值", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-010", "code": "GB 55003-2021", "clause": "基础构造", "printPage": "待核", "pdfPage": "待核", "modules": ["foundation-independent"], "impactType": "基础构造", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-011", "code": "GB 55006-2021", "clause": "材料", "printPage": "待核", "pdfPage": "待核", "modules": ["steel-beam"], "impactType": "钢材牌号", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-012", "code": "GB 55006-2021", "clause": "承载力", "printPage": "待核", "pdfPage": "待核", "modules": ["steel-beam"], "impactType": "构件承载力", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-013", "code": "GB 55002-2021", "clause": "地震作用", "printPage": "待核", "pdfPage": "待核", "modules": ["seismic"], "impactType": "地震动参数", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"},
+    {"id": "MC-014", "code": "GB 55002-2021", "clause": "抗震措施", "printPage": "待核", "pdfPage": "待核", "modules": ["seismic"], "impactType": "抗震构造", "pendingAction": "逐页渲染核验", "status": "REVIEW_REQUIRED"}
+  ]
+}
