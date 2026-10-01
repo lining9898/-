@@ -22,7 +22,7 @@
 import { CalculationResult, CalculationStep, CheckItem, createEmptyResult } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
 import { CONCRETE_PARAMS, STEEL_PARAMS, verifiedEvidence, reviewRequiredEvidence } from '../shared/materials';
-import { concreteGradeCompliance } from '../shared/materials';
+import { materialSelectionCompliance, attachCurrentMaterialSelectionEvidence } from '../shared/materials';
 
 /** 柱下独立基础输入参数（轴心受压） */
 export interface IndependentFoundationInput {
@@ -79,9 +79,9 @@ export function calculateIndependentFoundation(input: IndependentFoundationInput
   }
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
   // IG-001 硬限制
-  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  const gradeCheck = materialSelectionCompliance(input.concreteGrade, input.steelGrade);
   if (!gradeCheck.passed) {
-    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    result.advisories.push({ severity: 'error', code: gradeCheck.code!, message: gradeCheck.message });
     return result;
   }
 
@@ -372,6 +372,7 @@ export function calculateIndependentFoundation(input: IndependentFoundationInput
   });
 
   result.allEvidence = allEvidence;
+  attachCurrentMaterialSelectionEvidence(result);
   result.overallStatus = 'REVIEW_REQUIRED';
   return result;
 }

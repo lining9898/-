@@ -26,7 +26,9 @@ const PdfEvidenceViewer: React.FC<PdfEvidenceViewerProps> = ({
   clause,
   codeLabel,
 }) => {
-  const imagePath = pageNumber ? PAGE_IMAGE_MAP[pageNumber] : undefined;
+  // 页图仅来自 2015 版 GB 50010；其他规范即使页码相同也必须打开自己的 PDF。
+  const is2015ConcretePdf = /(?:^|\/)gb50010-2010-2015\.pdf(?:$|[?#])/i.test(pdfUrl);
+  const imagePath = is2015ConcretePdf && pageNumber ? PAGE_IMAGE_MAP[pageNumber] : undefined;
   const imageUrl = imagePath ? new URL(imagePath, document.baseURI).href : null;
   const pdfPage = pageNumber ?? 1;
   const pdfPageUrl = `${new URL(pdfUrl, document.baseURI).href}#page=${pdfPage}&toolbar=0`;

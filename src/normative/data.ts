@@ -181,7 +181,7 @@ export const NORMATIVE_CHANGE_SETS: NormativeChangeSet[] = [
     ],
     reviewDate: '2026-10-01',
     source: 'references/codes/GBT50010-2010_2024_amendment.pdf；docs/normative/AMENDMENT_2024_DIFF.md；https://www.mohurd.gov.cn/gongkai/zc/wjk/art/2024/art_17339_778180.html',
-    verificationStatus: 'VERIFIED',
-    note: '已基于仓库内 2024 局部修订 PDF 完成 26 条修订清单及现有模块相关差异整理。此状态只确认版本差异记录已核对；混凝土模块整体仍为 REVIEW_REQUIRED，具体待核项见 docs/normative/AMENDMENT_2024_DIFF.md 与 docs/normative/MODULE_EVIDENCE_COVERAGE.md。',
+    verificationStatus: 'REVIEW_REQUIRED',
+    note: '已整理 2024 局部修订的 26 条清单和模块差异；逐条原文页码、强制规范融合及独立计算算例尚未闭环。混凝土模块整体仍为 REVIEW_REQUIRED，待核项见 docs/normative/AMENDMENT_2024_DIFF.md 与 docs/normative/MODULE_EVIDENCE_COVERAGE.md。',
   },
 ];

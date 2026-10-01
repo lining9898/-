@@ -23,7 +23,7 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
-import { concreteGradeCompliance } from '../shared/materials';
+import { materialSelectionCompliance, attachCurrentMaterialSelectionEvidence, currentMinimumReinforcementEvidence } from '../shared/materials';
 
 /** 双筋矩形梁正截面受弯输入参数 */
 export interface BeamDoubleFlexureInput {
@@ -175,9 +175,9 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
 
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
   // IG-001 硬限制
-  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  const gradeCheck = materialSelectionCompliance(input.concreteGrade, [input.steelGrade, input.compressionSteelGrade]);
   if (!gradeCheck.passed) {
-    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    result.advisories.push({ severity: 'error', code: gradeCheck.code!, message: gradeCheck.message });
     return result;
   }
 
@@ -398,6 +398,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
   const AsMin = rhoMin * input.b * input.h;
   const AsMinEvidence = [
     reviewEvidence('8.5.1', '第8章', '受弯构件一侧受拉钢筋的最小配筋百分率取 0.20 与 45ft/fy 中的较大值；As,min = ρmin·b·h。', 124),
+    ...currentMinimumReinforcementEvidence(),
   ];
   allEvidence.push(...AsMinEvidence);
   steps.push({
@@ -447,7 +448,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
     comparison: '>=',
     passed: As >= AsMin,
     unit: 'mm²',
-    evidence: [reviewEvidence('8.5.1', '第8章', '纵向受力钢筋的配筋百分率不应小于表 8.5.1 规定的数值。', 124)],
+    evidence: AsMinEvidence,
   });
 
   checks.push({
@@ -496,6 +497,7 @@ export function calculateBeamDoubleFlexure(input: BeamDoubleFlexureInput): Calcu
   });
 
   result.allEvidence = allEvidence;
+  attachCurrentMaterialSelectionEvidence(result);
   result.overallStatus = 'REVIEW_REQUIRED';
 
   return result;

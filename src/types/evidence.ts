@@ -16,7 +16,7 @@ export interface Evidence {
   chapter: string;
   /** 条文号，如 "6.2.10" */
   clause: string;
-  /** 条文原文（未校核时为空字符串） */
+  /** 条文记录；REVIEW_REQUIRED 时可能仅是待核摘要，不能当作原文引用 */
   originalText: string;
   /** PDF 页码（未校核时为 null） */
   pdfPage: number | null;

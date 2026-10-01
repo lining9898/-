@@ -17,7 +17,7 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
-import { concreteGradeCompliance } from '../shared/materials';
+import { materialSelectionCompliance, attachCurrentMaterialSelectionEvidence, currentMinimumReinforcementEvidence } from '../shared/materials';
 import { sectionDimensionCompliance } from '../shared/construction';
 
 /** 梁正截面受弯输入参数 */
@@ -31,6 +31,7 @@ export interface BeamFlexureInput {
   barCount: number;       // 受拉钢筋根数
   moment: number;   // 弯矩设计值 M (kN·m)
   beamType?: 'frameBeam' | 'nonFrameBeam' | 'unknown';  // IG-005 构件分类
+  seismicGrade?: 'unknown' | 'none' | '1' | '2' | '3' | '4'; // 抗震等级；仅记录，不据此臆造配筋限值
 }
 
 /** 混凝土材料参数 */
@@ -117,11 +118,11 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   const steel = STEEL_PARAMS[input.steelGrade];
 
   // IG-001 硬限制：GB/T 50010-2024 局部修订 4.1.2 条最低强度 C25
-  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  const gradeCheck = materialSelectionCompliance(input.concreteGrade, input.steelGrade);
   if (!gradeCheck.passed) {
     result.advisories.push({
       severity: 'error',
-      code: 'CONCRETE_GRADE_BELOW_MINIMUM',
+      code: gradeCheck.code!,
       message: gradeCheck.message,
     });
     return result;
@@ -144,6 +145,12 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
       severity: 'warning',
       code: 'BEAM_TYPE_UNKNOWN',
       message: '构件类型未声明（框架梁/非框架梁），GB 55008-2021 §4.4.4 最小截面校核未执行，请补充。',
+    });
+  }
+  if (beamType === 'frameBeam' && (!input.seismicGrade || input.seismicGrade === 'unknown')) {
+    result.advisories.push({
+      severity: 'warning', code: 'SEISMIC_GRADE_UNKNOWN',
+      message: '框架梁抗震等级未声明；抗震最小配筋率及相关构造验算未执行。',
     });
   }
 
@@ -176,6 +183,8 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     { label: '受拉钢筋直径', value: input.barDiameter, unit: 'mm' },
     { label: '受拉钢筋根数', value: input.barCount, unit: '根' },
     { label: '弯矩设计值 M', value: input.moment, unit: 'kN·m' },
+    { label: '构件类型', value: beamType === 'frameBeam' ? '框架梁' : beamType === 'nonFrameBeam' ? '非框架梁' : '未声明', unit: '' },
+    { label: '抗震等级', value: input.seismicGrade && input.seismicGrade !== 'unknown' ? input.seismicGrade : '未声明', unit: '' },
   ];
 
   // 记录材料参数
@@ -205,7 +214,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   // 记录截面参数
   result.geometry = [
     { label: '有效高度 h₀', value: Math.round(h0 * 100) / 100, unit: 'mm' },
-    { label: 'h₀ 构成', value: `h − c − d/2（c 含保护层+箍筋直径）`, unit: 'mm' },
+    { label: 'h₀ 构成', value: 'h − c − d/2；c 为受拉边至纵筋外缘实测距离，需按保护层和箍筋布置确认', unit: '' },
     { label: '受拉钢筋面积 As', value: Math.round(As * 100) / 100, unit: 'mm²' },
   ];
 
@@ -281,7 +290,10 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   const rhoMinPercent = Math.max(0.20, 45 * concrete.ft / steel.fy);
   const rhoMin = rhoMinPercent / 100;
   const AsMin = rhoMin * input.b * input.h;
-  const AsMinEvidence = [verifiedEvidence('8.5.1', '第8章', '钢筋混凝土结构构件中纵向受力钢筋的配筋百分率 ρmin 不应小于表 8.5.1 规定的数值。', 124)];
+  const AsMinEvidence = [
+    verifiedEvidence('8.5.1', '第8章', '钢筋混凝土结构构件中纵向受力钢筋的配筋百分率 ρmin 不应小于表 8.5.1 规定的数值。', 124),
+    ...currentMinimumReinforcementEvidence(),
+  ];
   allEvidence.push(...AsMinEvidence);
   steps.push({
     name: '计算最小配筋面积',
@@ -350,7 +362,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   result.conclusion = {
     passed: allPassed,
     summary: allPassed
-      ? '所列验算项满足 2015 年版计算式；尚未完成 2024 年修订差异核查'
+      ? '所列正截面受弯验算数值满足；构造、其他验算及现行规范融合待复核'
       : '存在不满足的验算项，请调整参数（计算公式已根据 GB 50010-2010(2015年版) 原文校核）',
     evidence: [],
   };
@@ -361,12 +373,17 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     code: 'NORM_UPDATE_REQUIRED',
     message: '计算公式仍基于 GB 50010-2010（2015年版）。现行 GB 55001-2021、GB 55008-2021 与 GB/T 50010-2010（2024年局部修订）尚未完成逐条 Evidence 映射，结果保持 REVIEW_REQUIRED。',
   });
+  result.advisories.push({
+    severity: 'warning', code: 'FLEXURE_ONLY_SCOPE',
+    message: '本模块仅计算矩形梁正截面受弯；受剪、裂缝、挠度和完整抗震构造需另行验算。',
+  });
 
   // IG-002：GB 55008-2021 §4.4.2 已人工核对（HUMAN_VERIFIED 2026-10-01），
   // 正截面承载力基本假定与 GB 50010-2010 6.2.1/6.2.6/6.2.7/6.2.10 一致。
   // 本咨询仅作 Evidence 链补充，不改变 α1/β1/ξb 数值。
 
   result.allEvidence = allEvidence;
+  attachCurrentMaterialSelectionEvidence(result);
   result.overallStatus = 'REVIEW_REQUIRED';
 
   return result;

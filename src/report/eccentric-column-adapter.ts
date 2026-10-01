@@ -1,6 +1,7 @@
 import { EccentricColumnInput, EccentricColumnResult } from '../core/column/eccentric';
 import { CalculationResult, createEmptyResult } from '../types/calculation';
 import { Evidence } from '../types/evidence';
+import { attachCurrentMaterialSelectionEvidence } from '../core/shared/materials';
 
 const number = (value: number) => Number(value.toFixed(4));
 
@@ -96,5 +97,6 @@ export function eccentricColumnReport(input: EccentricColumnInput, result: Eccen
     message: '未验算 6.2.3、6.2.4 的二阶效应条件及挠曲附加弯矩；也未验算双向偏心、最小配筋、箍筋构造、抗震与现行通用规范要求。',
   }];
   report.allEvidence = [sectionAssumption, geometry, additionalEccentricity, stressBlock, secondOrder];
+  attachCurrentMaterialSelectionEvidence(report);
   return report;
 }

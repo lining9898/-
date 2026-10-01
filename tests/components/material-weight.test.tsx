@@ -15,7 +15,7 @@ describe('material weight calculator', () => {
     fireEvent.click(screen.getByRole('tab', { name: '详细计算书' }));
     expect(screen.getByText(/Gk = γ · V/)).not.toBeNull();
     fireEvent.click(screen.getByRole('tab', { name: '规范依据' }));
-    expect(screen.getByText(/PDF P/)).not.toBeNull();
+    expect(screen.getByText(/PDF 第 84 页/)).not.toBeNull();
   });
 
   it('shows errors instead of a stale result', () => {

@@ -37,7 +37,7 @@ const ResultTabs: React.FC<ResultTabsProps> = ({ result, children }) => {
         {result.allEvidence.length === 0 && <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 p-3">
           当前仅为力学分析，尚无可关联的中国规范条文；未作设计验算。
         </p>}
-        <EvidencePanel evidence={result.allEvidence} />
+        <EvidencePanel evidence={result.allEvidence} moduleId={result.calculatorType} />
       </>}
     </div>
   </div>;

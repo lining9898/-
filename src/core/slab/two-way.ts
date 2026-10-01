@@ -19,7 +19,9 @@ import {
   STEEL_PARAMS,
   verifiedEvidence,
   reviewRequiredEvidence,
-  concreteGradeCompliance,
+  materialSelectionCompliance,
+  attachCurrentMaterialSelectionEvidence,
+  currentMinimumReinforcementEvidence,
 } from '../shared/materials';
 import { sectionDimensionCompliance } from '../shared/construction';
 import {
@@ -116,9 +118,9 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
   const [lx, ly] = input.spanX <= input.spanY ? [input.spanX, input.spanY] : [input.spanY, input.spanX];
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
   // IG-001 硬限制
-  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  const gradeCheck = materialSelectionCompliance(input.concreteGrade, input.steelGrade);
   if (!gradeCheck.passed) {
-    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    result.advisories.push({ severity: 'error', code: gradeCheck.code!, message: gradeCheck.message });
     return result;
   }
 
@@ -231,6 +233,8 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
   // ---- 配筋（两个方向）----
   const evFlex = gb10('6.2.10', '第6章', '正截面受弯承载力：M ≤ α1·fc·b·x·(h0 - x/2)。', 55);
   const evRhoMin = gb10('8.5.1', '第8章', '受弯构件最小配筋率 ρmin = max(0.20%, 45ft/fy%)。', 124);
+  const minReinforcementEvidence = [evRhoMin, ...currentMinimumReinforcementEvidence()];
+  allEvidence.push(...minReinforcementEvidence.slice(1));
   const rhoMin = minimumReinforcementRatio(concrete.ft, steel.fy);
   const AsMin = rhoMin * width * input.h;
   const AsProv = (Math.PI * input.barDiameter * input.barDiameter) / 4 * (1000 / input.barSpacing);
@@ -263,7 +267,7 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
     substitutedFormula: `As,prov = (π×${input.barDiameter}²/4)×(1000/${input.barSpacing})`,
     result: Math.round(AsProv * 100) / 100,
     unit: 'mm²/m',
-    evidence: [evRhoMin],
+    evidence: minReinforcementEvidence,
   });
 
   const capX = flexureCapacity(AsProv, concrete.fc, steel.fy, width, h0x, concrete.alpha1);
@@ -304,7 +308,7 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
     },
     {
       name: '最小配筋率验算', calculatedValue: Math.round(rhoProv * 10000) / 100,
-      limitValue: Math.round(rhoMin * 10000) / 100, comparison: '>=', passed: rhoProv >= rhoMin, unit: '%', evidence: [evRhoMin],
+      limitValue: Math.round(rhoMin * 10000) / 100, comparison: '>=', passed: rhoProv >= rhoMin, unit: '%', evidence: minReinforcementEvidence,
     },
     {
       name: '短向承载力验算', calculatedValue: Math.round(capX.Mu * 100) / 100,
@@ -346,6 +350,7 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
   });
 
   result.allEvidence = allEvidence;
+  attachCurrentMaterialSelectionEvidence(result);
   result.overallStatus = 'REVIEW_REQUIRED';
   return result;
 }

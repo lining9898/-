@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Evidence } from '../../types/evidence';
 import PdfEvidenceViewer from './PdfEvidenceViewer';
+import { resolveCalculationNormativeBasis } from '../../normative/calculationBasis';
 
 interface EvidencePanelProps {
   evidence: Evidence[];
+  moduleId?: string;
 }
 
 const REPOSITORY_RAW = 'https://raw.githubusercontent.com/lining9898/-/master/references/codes';
@@ -52,28 +54,43 @@ const CLAUSE_IMAGE_MAP: Record<string, string> = {
 
 const normalizeCode = (code: string) => code.replace(/[^a-z0-9]/gi, '').toUpperCase();
 
-const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
+const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, moduleId }) => {
   const [openFullPdf, setOpenFullPdf] = useState<string | null>(null);
+  const basis = moduleId ? resolveCalculationNormativeBasis(moduleId, evidence) : null;
 
   const unique = evidence.filter(
-    (e, i, arr) => arr.findIndex(x => x.clause === e.clause && x.codeNumber === e.codeNumber) === i
+    (e, i, arr) => arr.findIndex(x => x.clause === e.clause && x.codeNumber === e.codeNumber && x.edition === e.edition) === i
   );
   const pendingCount = unique.filter(e => e.verificationStatus !== 'VERIFIED').length;
 
   const getPdfUrl = (e: Evidence): string | null => {
-    const sourceKey = normalizeCode(e.sourceFile ?? '');
+    const sourceKey = normalizeCode(e.sourceFile?.split(/[\\/]/).pop() ?? '');
     // 先按证据记录中的具体文件匹配，避免同一规范不同版次误显示为同一 PDF。
-    return PDF_BY_SOURCE[sourceKey] ?? PDF_BY_CODE[normalizeCode(e.codeNumber)] ?? null;
+    return PDF_BY_SOURCE[sourceKey]
+      ?? (e.sourceFile ? null : PDF_BY_CODE[normalizeCode(e.codeNumber)] ?? null);
   };
 
   const getClauseImage = (e: Evidence): string | null => {
     const key = `${normalizeCode(e.codeNumber)}|${e.clause.trim()}`;
-    return CLAUSE_IMAGE_MAP[key] ?? null;
+    // 局部截图也只对应 2015 版，不能用它冒充 2024 修订条文。
+    return /2015/.test(e.edition) ? CLAUSE_IMAGE_MAP[key] ?? null : null;
   };
 
   return (
     <div>
       <h3 className="text-sm font-bold text-gray-700 mb-4">规范依据</h3>
+      {basis && <section className="mb-4 rounded border border-blue-200 bg-blue-50 p-4 text-xs text-gray-700">
+        <div className="font-semibold text-blue-800">现行规范融合：{basis.status}</div>
+        <div className="mt-1 text-gray-500">依据快照 {basis.fingerprint}；规范版本或条文变动后需重新生成计算与复核包。</div>
+        <div className="mt-3 space-y-2">
+          {basis.standards.map(standard => <div key={standard.codeNumber} className="rounded bg-white p-2 border border-blue-100">
+            <div className="font-medium">{standard.designation} · {standard.authorityLevel === 'MANDATORY_GENERAL_CODE' ? '强制性通用规范' : '配套设计标准'}</div>
+            <div className="mt-1">{standard.role}；现行版条文：{standard.currentClauses.length ? standard.currentClauses.join('、') : '待映射'}</div>
+            {standard.historicalClauses.length > 0 && <div className="mt-1 text-amber-700">历史版计算证据：{standard.historicalClauses.join('、')}</div>}
+            <div className="mt-1 text-amber-700">条文融合状态：{standard.clauseEvidenceStatus}</div>
+          </div>)}
+        </div>
+      </section>}
 
       {pendingCount > 0 && (
         <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg mb-4">
@@ -90,7 +107,7 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
           {unique.map((e, i) => {
             const pdfUrl = getPdfUrl(e);
             const imageUrl = getClauseImage(e);
-            const viewerKey = `${e.codeNumber}-${e.clause}`;
+            const viewerKey = `${e.codeNumber}-${e.edition}-${e.clause}`;
             const isFullOpen = openFullPdf === viewerKey;
             const hasPdf = Boolean(pdfUrl);
             const resolvedImage = imageUrl ? new URL(imageUrl, document.baseURI).href : null;
@@ -113,6 +130,7 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence }) => {
                 <div className="text-xs text-gray-500 space-y-1">
                   <div>规范名称：{e.codeName}</div>
                   <div>版本：{e.edition || '待填写'}</div>
+                  <div>{e.pdfPage ? `PDF 第 ${e.pdfPage} 页` : 'PDF 页码未登记'}</div>
                 </div>
 
                 {/* 解析条文 */}

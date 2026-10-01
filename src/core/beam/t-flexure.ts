@@ -17,7 +17,7 @@ import {
   createEmptyResult,
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
-import { concreteGradeCompliance } from '../shared/materials';
+import { materialSelectionCompliance, attachCurrentMaterialSelectionEvidence, currentMinimumReinforcementEvidence } from '../shared/materials';
 
 /** 梁正截面受弯输入参数 */
 export interface BeamTFlexureInput {
@@ -180,9 +180,9 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
 
   const concrete = CONCRETE_PARAMS[input.concreteGrade];
   // IG-001 硬限制
-  const gradeCheck = concreteGradeCompliance(input.concreteGrade, 25);
+  const gradeCheck = materialSelectionCompliance(input.concreteGrade, input.steelGrade);
   if (!gradeCheck.passed) {
-    result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
+    result.advisories.push({ severity: 'error', code: gradeCheck.code!, message: gradeCheck.message });
     return result;
   }
 
@@ -404,6 +404,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
 
   const AsMinEvidence = [
     reviewEvidence('8.5.1', '第8章', '受弯构件一侧受拉钢筋的最小配筋百分率：0.20和45ft/fy中的较大值。注5：T形截面受拉钢筋配筋率应按全截面面积扣除受压翼缘面积后的截面面积计算。', 124),
+    ...currentMinimumReinforcementEvidence(),
   ];
   allEvidence.push(...AsMinEvidence);
   steps.push({
@@ -453,7 +454,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
     comparison: '>=',
     passed: As >= AsMin,
     unit: 'mm²',
-    evidence: [reviewEvidence('8.5.1', '第8章', '纵向受力钢筋的配筋百分率不应小于表 8.5.1 规定的数值。', 124)],
+    evidence: AsMinEvidence,
   });
 
   // 验算3：Mu ≥ M
@@ -492,6 +493,7 @@ export function calculateBeamTFlexure(input: BeamTFlexureInput): CalculationResu
   });
 
   result.allEvidence = allEvidence;
+  attachCurrentMaterialSelectionEvidence(result);
   result.overallStatus = 'REVIEW_REQUIRED';
 
   return result;

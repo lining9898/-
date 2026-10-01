@@ -101,6 +101,24 @@ describe('矩形梁正截面受弯计算', () => {
       expect(result.advisories.some(a => a.code === 'NORM_UPDATE_REQUIRED')).toBe(true);
     });
 
+    it('框架梁未填抗震等级时保留缺项与单项计算范围提示', () => {
+      const result = calculateBeamFlexure({ ...defaultInput, beamType: 'frameBeam' });
+      expect(result.advisories.map(item => item.code)).toEqual(expect.arrayContaining([
+        'SEISMIC_GRADE_UNKNOWN', 'FLEXURE_ONLY_SCOPE',
+      ]));
+      expect(result.inputs).toEqual(expect.arrayContaining([
+        expect.objectContaining({ label: '抗震等级', value: '未声明' }),
+      ]));
+      expect(result.overallStatus).toBe('REVIEW_REQUIRED');
+    });
+
+    it('已声明等级只记录条件，不会自动给出抗震构造通过结论', () => {
+      const result = calculateBeamFlexure({ ...defaultInput, beamType: 'frameBeam', seismicGrade: '2' });
+      expect(result.advisories.some(item => item.code === 'SEISMIC_GRADE_UNKNOWN')).toBe(false);
+      expect(result.advisories.some(item => item.code === 'FLEXURE_ONLY_SCOPE')).toBe(true);
+      expect(result.overallStatus).toBe('REVIEW_REQUIRED');
+    });
+
     it('受弯公式证据应指向 6.2.10（REVIEW_REQUIRED，等待人工核验）', () => {
       const result = calculateBeamFlexure(defaultInput);
       const capacityStep = result.steps.find(step => step.name === '计算正截面受弯承载力');
