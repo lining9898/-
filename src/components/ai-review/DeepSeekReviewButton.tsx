@@ -216,7 +216,7 @@ const DeepSeekReviewButton: React.FC<Props> = ({ result, title, internalMechanic
                 关闭
               </button>
               <span className="text-xs text-gray-400 self-center ml-auto">
-                失败后仍可使用"复制给 AI 复核"
+                失败后仍可使用"复制独立复核包"
               </span>
             </div>
           </div>

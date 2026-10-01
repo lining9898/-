@@ -1,14 +1,34 @@
 import type { CalculationResult } from '../types/calculation';
 import type { VerificationStatus } from '../types/evidence';
+import { normalizeCode, normativeVersionRegistry } from '../normative/registry';
 
-export const REVIEW_PACKAGE_VERSION = '1.0.0';
+export const REVIEW_PACKAGE_VERSION = '1.1.0';
 
 /** 规范版本信息（从 Evidence 汇总） */
 export interface NormativeVersionInfo {
   codeNumber: string;
   codeName: string;
   edition: string;
+  designation?: string;
   status: string;
+  verificationStatus?: VerificationStatus;
+  source?: string | null;
+}
+
+/** 复核包内与本次计算规范有关的版本差异 */
+export interface ReviewNormativeChange {
+  codeNumber: string;
+  fromEdition: string;
+  toEdition: string;
+  changedClauses: string[];
+  changedFormulas: string[];
+  changedParameters: string[];
+  changedApplicability: string[];
+  reviewDate: string;
+  source: string;
+  verificationStatus: VerificationStatus;
+  note?: string;
+  affectedSkills?: string[];
 }
 
 /** Evidence 在复核包中的投影 */
@@ -51,6 +71,7 @@ export interface AIReviewPackage {
   conclusion: { passed: boolean; summary: string };
   evidence: ReviewEvidenceRef[];
   normativeVersions: NormativeVersionInfo[];
+  normativeChanges?: ReviewNormativeChange[];
   warnings: string[];
   verificationStatus: VerificationStatus;
   /** 特殊标记：INTERNAL-MECHANICS（连续梁等结构力学方法） */
@@ -184,11 +205,17 @@ export function buildReviewPackage(
     if (/^INTERNAL-/.test(ev.codeNumber) || !ev.edition) continue;
     const key = `${ev.codeNumber}|${ev.edition}`;
     if (!versions.has(key)) {
+      const registeredVersion = normativeVersionRegistry.getVersions(ev.codeNumber).find(
+        v => v.edition === ev.edition || v.designation === ev.edition
+      );
       versions.set(key, {
         codeNumber: ev.codeNumber,
         codeName: ev.codeName,
         edition: ev.edition,
-        status: 'current',
+        designation: registeredVersion?.designation,
+        status: registeredVersion?.status ?? 'UNRESOLVED',
+        verificationStatus: registeredVersion?.verificationStatus,
+        source: registeredVersion?.source ?? null,
       });
     }
   }
@@ -228,6 +255,9 @@ export function buildReviewPackage(
     conclusion: { passed: result.conclusion.passed, summary: result.conclusion.summary },
     evidence: [...evidenceMap.values()],
     normativeVersions: [...versions.values()],
+    normativeChanges: normativeVersionRegistry.listChangeSets().filter(change =>
+      [...evidenceMap.values()].some(ev => normalizeCode(ev.codeNumber) === normalizeCode(change.codeNumber))
+    ),
     warnings,
     verificationStatus: result.overallStatus,
     internalMechanics: options?.internalMechanics,
