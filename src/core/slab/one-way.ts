@@ -304,6 +304,13 @@ export function calculateOneWaySlab(input: OneWaySlabInput): CalculationResult {
     code: 'NORM_REVIEW_REQUIRED',
     message: '荷载取值（GB 50009-2012）与板厚/间距构造（GB 50010 9.1.2、9.1.3、8.2.1）无对应 PDF 页码，保持 REVIEW_REQUIRED，待规范 Agent 核验。',
   });
+  // IG-004：GB 55008-2021 §4.4.6（HUMAN_VERIFIED 2026-10-01）
+  // 纵向受力钢筋最小配筋率表与 GB/T 50010-2010 8.5.1 一致。
+  result.advisories.push({
+    severity: 'info',
+    code: 'GB55008_4_4_6_EVIDENCE',
+    message: 'GB 55008-2021 §4.4.6：纵向受力普通钢筋最小配筋率表与 GB/T 50010-2010 8.5.1 一致。',
+  });
 
   result.allEvidence = allEvidence;
   result.overallStatus = 'REVIEW_REQUIRED';
