@@ -22,6 +22,8 @@ const BeamFlexure: React.FC = () => {
     moment: 120,
     beamType: 'unknown',
     seismicGrade: 'unknown',
+    sectionLocation: 'unknown',
+    structuralSafetyGrade: 'unknown',
   });
 
   const [activeTab, setActiveTab] = useState<'result' | 'report' | 'evidence'>('result');
@@ -112,7 +114,28 @@ const BeamFlexure: React.FC = () => {
                   <option value="1">一级</option><option value="2">二级</option>
                   <option value="3">三级</option><option value="4">四级</option>
                 </select>
-                <p className="mt-1 text-xs text-amber-700">仅记录条件；抗震最小配筋率及构造条文尚未映射，仍需单独核验。</p>
+                <p className="mt-1 text-xs text-amber-700">框架梁按等级及验算位置核算表 4.4.8-1；其他抗震构造仍需单独核验。</p>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">验算位置</label>
+                <select value={input.sectionLocation ?? 'unknown'}
+                  onChange={e => updateInput('sectionLocation', e.target.value as BeamFlexureInput['sectionLocation'])}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                  <option value="unknown">未声明</option>
+                  <option value="support">梁端（支座）</option>
+                  <option value="span">跨中</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">结构安全等级 (GB 55001 表 3.1.12)</label>
+                <select value={input.structuralSafetyGrade ?? 'unknown'}
+                  onChange={e => updateInput('structuralSafetyGrade', e.target.value as BeamFlexureInput['structuralSafetyGrade'])}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                  <option value="unknown">未声明（暂按 γ₀=1.0）</option>
+                  <option value="1">一级（γ₀=1.1）</option>
+                  <option value="2">二级（γ₀=1.0）</option>
+                  <option value="3">三级（γ₀=0.9）</option>
+                </select>
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">受拉纵筋外缘距受拉边 c (mm)</label>
@@ -143,13 +166,21 @@ const BeamFlexure: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">弯矩设计值 M (kN·m)</label>
+                <label className="block text-xs text-gray-500 mb-1">作用组合弯矩设计值 M（未乘 γ₀，kN·m）</label>
                 <input
                   type="number"
                   value={input.moment}
                   onChange={e => updateInput('moment', Number(e.target.value))}
                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
                 />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">弯矩荷载组合／内力计算来源</label>
+                <input type="text" value={input.momentBasis ?? ''}
+                  onChange={e => updateInput('momentBasis', e.target.value)}
+                  placeholder="例如：荷载组合计算书编号与工况"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+                <p className="mt-1 text-xs text-gray-500">本模块不生成荷载组合；请输入可追溯的 M 来源。</p>
               </div>
             </div>
           </div>

@@ -26,6 +26,7 @@ describe('计算项跟随现行规范融合依据', () => {
     expect(pkg.normativeVersions.map(v => v.codeNumber)).toContain('GB 55001');
     expect(pkg.normativeChanges?.some(change => change.toEdition.includes('2024'))).toBe(true);
     expect(generateReviewPrompt(pkg)).toContain('强制性通用规范: GB 55008-2021');
+    expect(generateReviewPrompt(pkg)).toContain('GB55008-2021.pdf#page=16');
   });
 
   it('依据原文或页码变动会改变快照，旧复核包须重新生成', () => {

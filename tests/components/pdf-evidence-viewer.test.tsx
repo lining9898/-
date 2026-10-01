@@ -18,4 +18,14 @@ describe('规范 PDF 页图版次隔离', () => {
     expect(screen.getByTitle('GB 55008 2021 第 34 页').getAttribute('src'))
       .toContain('GB55008-2021.pdf#page=34');
   });
+
+  it('2024 修订与强制规范显示各自 PDF 原页图', () => {
+    const { rerender } = render(<PdfEvidenceViewer
+      pdfUrl="https://example.com/GBT50010-2010_2024_amendment.pdf"
+      pageNumber={14} clause="8.5.1" codeLabel="GB/T 50010 2024" />);
+    expect(screen.getByRole('img').getAttribute('src')).toContain('/gbt50010-2024/pages/p14.jpg');
+    rerender(<PdfEvidenceViewer pdfUrl="https://example.com/GB55008-2021.pdf"
+      pageNumber={16} clause="4.4.6" codeLabel="GB 55008 2021" />);
+    expect(screen.getByRole('img').getAttribute('src')).toContain('/gb55008-2021/pages/p16.jpg');
+  });
 });

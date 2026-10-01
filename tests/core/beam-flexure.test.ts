@@ -115,8 +115,49 @@ describe('矩形梁正截面受弯计算', () => {
     it('已声明等级只记录条件，不会自动给出抗震构造通过结论', () => {
       const result = calculateBeamFlexure({ ...defaultInput, beamType: 'frameBeam', seismicGrade: '2' });
       expect(result.advisories.some(item => item.code === 'SEISMIC_GRADE_UNKNOWN')).toBe(false);
+      expect(result.advisories.some(item => item.code === 'SEISMIC_LOCATION_UNKNOWN')).toBe(true);
       expect(result.advisories.some(item => item.code === 'FLEXURE_ONLY_SCOPE')).toBe(true);
       expect(result.overallStatus).toBe('REVIEW_REQUIRED');
+    });
+
+    it('按 GB 55008 表 4.4.8-1 提高一级框架梁梁端和跨中最小配筋率', () => {
+      const support = calculateBeamFlexure({ ...defaultInput, beamType: 'frameBeam', seismicGrade: '1', sectionLocation: 'support' });
+      const span = calculateBeamFlexure({ ...defaultInput, beamType: 'frameBeam', seismicGrade: '1', sectionLocation: 'span' });
+      const minimum = (result: CalculationResult) => result.results.find(item => item.label === '最小配筋面积 As,min')?.value;
+      expect(minimum(support)).toBe(500);
+      expect(minimum(span)).toBe(375);
+      expect(support.checks.find(item => item.name === '最小配筋率验算')?.evidence)
+        .toEqual(expect.arrayContaining([expect.objectContaining({ codeNumber: 'GB 55008', clause: '4.4.8', pdfPage: 17 })]));
+      expect(support.overallStatus).toBe('REVIEW_REQUIRED');
+    });
+
+    it('GB 55001 安全等级改变 γ₀M 承载力判定，并附条文页码', () => {
+      const ordinary = calculateBeamFlexure({ ...defaultInput, moment: 170, structuralSafetyGrade: '2' });
+      const important = calculateBeamFlexure({ ...defaultInput, moment: 170, structuralSafetyGrade: '1' });
+      expect(ordinary.checks.find(item => item.name === '承载力验算')?.passed).toBe(true);
+      expect(important.checks.find(item => item.name === '承载力验算')?.passed).toBe(false);
+      expect(important.results.find(item => item.label === '承载力设计弯矩 γ₀M')?.value).toBe(187);
+      expect(important.checks.find(item => item.name === '承载力验算')?.evidence)
+        .toEqual(expect.arrayContaining([
+          expect.objectContaining({ codeNumber: 'GB 55001', clause: '3.1.10', pdfPage: 13 }),
+          expect.objectContaining({ codeNumber: 'GB 55001', clause: '3.1.12', pdfPage: 13 }),
+        ]));
+      expect(important.overallStatus).toBe('REVIEW_REQUIRED');
+    });
+
+    it('外部弯矩缺少荷载组合来源时明确待核，并登记两个规范的原页', () => {
+      const missing = calculateBeamFlexure(defaultInput);
+      expect(missing.advisories.some(item => item.code === 'MOMENT_BASIS_MISSING')).toBe(true);
+      const traced = calculateBeamFlexure({ ...defaultInput, momentBasis: 'LOAD-07 基本组合控制工况' });
+      expect(traced.advisories.some(item => item.code === 'MOMENT_BASIS_MISSING')).toBe(false);
+      expect(traced.inputs).toEqual(expect.arrayContaining([
+        expect.objectContaining({ label: '弯矩荷载组合与内力来源', value: 'LOAD-07 基本组合控制工况' }),
+      ]));
+      expect(traced.allEvidence).toEqual(expect.arrayContaining([
+        expect.objectContaining({ codeNumber: 'GB 55001', clause: '3.1.7', pdfPage: 12 }),
+        expect.objectContaining({ codeNumber: 'GB 50009', clause: '3.2.3', pdfPage: 20 }),
+      ]));
+      expect(traced.overallStatus).toBe('REVIEW_REQUIRED');
     });
 
     it('受弯公式证据应指向 6.2.10（REVIEW_REQUIRED，等待人工核验）', () => {

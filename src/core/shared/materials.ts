@@ -145,6 +145,17 @@ export function currentMinimumReinforcementEvidence(): Evidence[] {
   ];
 }
 
+/** 框架梁抗震纵筋最小配筋率表；仅当抗震等级和梁端/跨中位置已知时参与数值验算。 */
+export function frameBeamSeismicReinforcementEvidence(): Evidence {
+  return {
+    codeName: '混凝土结构通用规范', codeNumber: 'GB 55008', edition: '2021',
+    chapter: '第4章 构件设计', clause: '4.4.8',
+    originalText: '表 4.4.8-1 按抗震等级及梁端、跨中位置分别规定框架梁纵向受拉钢筋最小配筋率；需取表列百分率与 ft/fy 公式值的较大值。',
+    pdfPage: 17, status: 'current', verificationStatus: 'REVIEW_REQUIRED',
+    sourceFile: 'GB55008-2021.pdf',
+  };
+}
+
 /** 将现行材料规则接入计算结果的材料项和规范证据汇总。 */
 export function attachCurrentMaterialSelectionEvidence<T extends { allEvidence: Evidence[]; materials: { label: string; value: number | string; unit: string; evidence?: Evidence[] }[] }>(result: T): T {
   const currentEvidence = currentMaterialSelectionEvidence();

@@ -6,6 +6,12 @@ import type { AIReviewPackage } from './types';
  */
 export function generateReviewPrompt(pkg: AIReviewPackage): string {
   const lines: string[] = [];
+  const repositoryPdfUrl = (source: string): string | null => {
+    const name = source.split(/[\\/]/).pop();
+    return name && /\.pdf$/i.test(name)
+      ? `https://raw.githubusercontent.com/lining9898/-/master/references/codes/${encodeURIComponent(name)}`
+      : null;
+  };
 
   lines.push('【结构计算独立复核任务】');
   lines.push('');
@@ -138,7 +144,11 @@ export function generateReviewPrompt(pkg: AIReviewPackage): string {
       lines.push(`  ${ev.codeNumber} ${ev.clause} (${ev.edition})`);
       if (ev.text) lines.push(`    ${ev.verificationStatus === 'VERIFIED' ? '条文记录' : '待核条文摘要'}: ${ev.text}`);
       if (ev.page !== null) lines.push(`    页码: p.${ev.page}`);
-      if (ev.source) lines.push(`    来源文件: ${ev.source}`);
+      if (ev.source) {
+        lines.push(`    来源文件: ${ev.source}`);
+        const pdfUrl = repositoryPdfUrl(ev.source);
+        if (pdfUrl) lines.push(`    PDF 原文链接: ${pdfUrl}${ev.page !== null ? `#page=${ev.page}` : ''}`);
+      }
       lines.push(`    项目 Evidence 状态: ${ev.verificationStatus}`);
       if (ev.verificationStatus === 'REVIEW_REQUIRED') {
         lines.push('    项目记录状态为 REVIEW_REQUIRED：该条在项目内尚未标记为 VERIFIED；这不表示用户未提供规范依据。');

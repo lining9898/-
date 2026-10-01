@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Evidence } from '../../types/evidence';
-import PdfEvidenceViewer from './PdfEvidenceViewer';
+import PdfEvidenceViewer, { evidencePageImagePath } from './PdfEvidenceViewer';
 import { resolveCalculationNormativeBasis } from '../../normative/calculationBasis';
 
 interface EvidencePanelProps {
@@ -106,7 +106,7 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, moduleId }) => 
         <div className="space-y-3">
           {unique.map((e, i) => {
             const pdfUrl = getPdfUrl(e);
-            const imageUrl = getClauseImage(e);
+            const imageUrl = getClauseImage(e) ?? (pdfUrl ? evidencePageImagePath(pdfUrl, e.pdfPage) : null);
             const viewerKey = `${e.codeNumber}-${e.edition}-${e.clause}`;
             const isFullOpen = openFullPdf === viewerKey;
             const hasPdf = Boolean(pdfUrl);
@@ -139,9 +139,9 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, moduleId }) => 
                   {e.originalText}
                 </div>
 
-                {/* PDF 原文局部截图 */}
+                {/* PDF 原文局部截图或完整页图 */}
                 <div className="mt-2">
-                  <span className="text-xs font-medium text-gray-600">PDF 原文：</span>
+                  <span className="text-xs font-medium text-gray-600">PDF 原文页图：</span>
                   {resolvedImage ? (
                     <div className="mt-1">
                       <img
