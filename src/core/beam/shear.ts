@@ -20,6 +20,7 @@ import {
 } from '../../types/calculation';
 import { Evidence } from '../../types/evidence';
 import { concreteGradeCompliance } from '../shared/materials';
+import { sectionDimensionCompliance } from '../shared/construction';
 
 /** 荷载类型 */
 export type LoadType = 'uniform' | 'concentrated';
@@ -40,6 +41,7 @@ export interface BeamShearInput {
 
   // 箍筋配置
   stirrupLegs: number;      // 箍筋肢数
+  beamType?: 'frameBeam' | 'nonFrameBeam' | 'unknown';  // IG-005
   stirrupSpacing: number;   // 箍筋间距 (mm)
   stirrupDiameter: number;  // 箍筋直径 (mm)
 
@@ -164,6 +166,22 @@ export function calculateBeamShear(input: BeamShearInput): CalculationResult {
   if (!gradeCheck.passed) {
     result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
     return result;
+  }
+
+  // IG-005 硬限制：GB 55008-2021 §4.4.4 框架梁最小宽度 200mm
+  const beamType = input.beamType ?? 'unknown';
+  if (beamType === 'frameBeam') {
+    const dimCheck = sectionDimensionCompliance({ componentType: 'frameBeam', dimension: input.b });
+    if (!dimCheck.passed) {
+      result.advisories.push({ severity: 'error', code: 'SECTION_DIMENSION_BELOW_MINIMUM', message: dimCheck.message });
+      return result;
+    }
+  } else if (beamType === 'unknown') {
+    result.advisories.push({
+      severity: 'warning',
+      code: 'BEAM_TYPE_UNKNOWN',
+      message: '构件类型未声明（框架梁/非框架梁），GB 55008-2021 §4.4.4 最小截面校核未执行，请补充。',
+    });
   }
 
   if (!concrete) {

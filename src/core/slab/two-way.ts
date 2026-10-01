@@ -21,6 +21,7 @@ import {
   reviewRequiredEvidence,
   concreteGradeCompliance,
 } from '../shared/materials';
+import { sectionDimensionCompliance } from '../shared/construction';
 import {
   designFlexure,
   flexureCapacity,
@@ -43,6 +44,7 @@ export interface TwoWaySlabInput {
   gammaG: number;       // 恒载分项系数
   gammaQ: number;       // 活载分项系数
   width?: number;       // 计算单元宽度 (mm)，默认 1000
+  slabType?: 'solidCastInPlace' | 'hollow' | 'composite' | 'unknown';  // IG-005
 }
 
 const DEFAULT_WIDTH = 1000;
@@ -118,6 +120,22 @@ export function calculateTwoWaySlab(input: TwoWaySlabInput): CalculationResult {
   if (!gradeCheck.passed) {
     result.advisories.push({ severity: 'error', code: 'CONCRETE_GRADE_BELOW_MINIMUM', message: gradeCheck.message });
     return result;
+  }
+
+  // IG-005 硬限制：GB 55008-2021 §4.4.4 现浇实心板最小厚度 80mm
+  const slabType = input.slabType ?? 'unknown';
+  if (slabType === 'solidCastInPlace') {
+    const dimCheck = sectionDimensionCompliance({ componentType: 'solidSlab', dimension: input.h });
+    if (!dimCheck.passed) {
+      result.advisories.push({ severity: 'error', code: 'SECTION_DIMENSION_BELOW_MINIMUM', message: dimCheck.message });
+      return result;
+    }
+  } else if (slabType === 'unknown') {
+    result.advisories.push({
+      severity: 'warning',
+      code: 'SLAB_TYPE_UNKNOWN',
+      message: '板类型未声明，GB 55008-2021 §4.4.4 最小截面校核未执行，请补充。',
+    });
   }
 
   const steel = STEEL_PARAMS[input.steelGrade];
