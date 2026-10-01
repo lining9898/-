@@ -8,6 +8,7 @@ const OneWaySlab: React.FC = () => {
   const [input, setInput] = useState<OneWaySlabInput>({
     h: 120, span: 3.0, concreteGrade: 'C30', steelGrade: 'HRB400', cover: 20,
     barDiameter: 10, barSpacing: 200, gkExtra: 1.0, qk: 2.0, gammaG: 1.3, gammaQ: 1.5,
+    slabType: 'unknown',
   });
   const result = useMemo(() => calculateOneWaySlab(input), [input]);
   const set = <K extends keyof OneWaySlabInput>(key: K, value: OneWaySlabInput[K]) => setInput(p => ({ ...p, [key]: value }));
@@ -47,6 +48,16 @@ const OneWaySlab: React.FC = () => {
               {num('计算跨度 l0', 'span', 'm')}
               {sel('混凝土强度等级', 'concreteGrade', CONCRETE_GRADES)}
               {sel('钢筋等级', 'steelGrade', STEEL_GRADES)}
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">板类型 (GB 55008 §4.4.4)</label>
+                <select value={input.slabType} onChange={e => set('slabType', e.target.value as never)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                  <option value="unknown">未声明</option>
+                  <option value="solidCastInPlace">现浇实心板</option>
+                  <option value="hollow">空心板</option>
+                  <option value="composite">叠合板</option>
+                </select>
+              </div>
               {num('保护层 c', 'cover', 'mm')}
               {num('受力钢筋直径', 'barDiameter', 'mm')}
               {num('受力钢筋间距', 'barSpacing', 'mm')}

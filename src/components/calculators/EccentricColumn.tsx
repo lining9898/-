@@ -13,6 +13,7 @@ const initial: EccentricColumnInput = {
   firstOrderMoment: 60,
   concreteGrade: 'C30',
   steelGrade: 'HRB400',
+  columnShape: 'unknown',
 };
 
 const number = (value: number, digits = 2) => value.toLocaleString('zh-CN', { maximumFractionDigits: digits });
@@ -61,6 +62,14 @@ const EccentricColumn: React.FC = () => {
           <select value={input.steelGrade} onChange={event => setInput(previous => ({ ...previous, steelGrade: event.target.value as EccentricColumnInput['steelGrade'] }))}
             className="w-full mt-1 border border-gray-300 rounded px-3 py-2 text-sm bg-white">
             {['HPB300', 'HRB400', 'HRB500'].map(grade => <option key={grade}>{grade}</option>)}
+          </select>
+        </label>
+        <label className="block text-xs text-gray-600">截面形状 (GB 55008 §4.4.4)
+          <select value={input.columnShape} onChange={event => setInput(previous => ({ ...previous, columnShape: event.target.value as EccentricColumnInput['columnShape'] }))}
+            className="w-full mt-1 border border-gray-300 rounded px-3 py-2 text-sm bg-white">
+            <option value="unknown">未声明</option>
+            <option value="rectangular">矩形</option>
+            <option value="circular">圆形</option>
           </select>
         </label>
         <p className="text-xs text-gray-500">M0 应为未计入附加偏心距的一阶弯矩设计值。本页不进行二阶效应计算。</p>

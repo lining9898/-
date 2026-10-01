@@ -20,6 +20,7 @@ const BeamFlexure: React.FC = () => {
     barDiameter: 20,
     barCount: 4,
     moment: 120,
+    beamType: 'unknown',
   });
 
   const [activeTab, setActiveTab] = useState<'result' | 'report' | 'evidence'>('result');
@@ -86,6 +87,18 @@ const BeamFlexure: React.FC = () => {
                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
                 >
                   {STEEL_GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">构件类型 (GB 55008 §4.4.4)</label>
+                <select
+                  value={input.beamType}
+                  onChange={e => updateInput('beamType', e.target.value as 'frameBeam' | 'nonFrameBeam' | 'unknown')}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                >
+                  <option value="unknown">未声明</option>
+                  <option value="frameBeam">框架梁</option>
+                  <option value="nonFrameBeam">非框架梁</option>
                 </select>
               </div>
               <div>
