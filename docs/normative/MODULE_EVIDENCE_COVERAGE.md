@@ -14,7 +14,7 @@
 
 | 核对顺序 | 模块 | 已接入现行材料规则 | 下一项必须核对的公式、条文或适用条件 | 当前结论 |
 |---|---|---|---|---|
-| 1 | 矩形梁受弯 `beam-flexure` | 是 | 2015/2024 材料表逐页对照、6.2 节修订清单与 GB 55008 4.4.2、8.5.1/4.4.6/4.4.8 最小配筋率、GB 55001 3.1.7/3.1.10/3.1.12、GB 55002 4.3.1 地震调整及 GB 50009 3.2.2/3.2.3 已定位；第四轮算例见 `BEAM_FLEXURE_ROUND4_REVIEW.md`。仍待核原始荷载组合及图纸、截面简化计算适用条件、其他抗震构造、受剪、裂缝和挠度 | REVIEW_REQUIRED |
+| 1 | 矩形梁受弯 `beam-flexure` | 是 | 本模块逐条页码及代码映射见 `BEAM_FLEXURE_CLAUSE_MAP.md` 和 `src/normative/beamFlexureClauseMap.ts`；已补 §6.2.1 与 GB 55008 §4.4.4 的本次 Evidence。第四轮算例见 `BEAM_FLEXURE_ROUND4_REVIEW.md`。原始荷载组合、图纸、截面适用条件及其他抗震构造、受剪、裂缝和挠度仍待项目核验 | REVIEW_REQUIRED |
 | 2 | 矩形梁受剪 `beam-shear` | 是 | 6.3.1、6.3.4、9.2.9 的适用域及最大箍筋间距；核 GB 55008 | REVIEW_REQUIRED |
 | 3 | 双筋梁 `beam-double-flexure` | 是（受拉和受压钢筋） | 6.2.10 中受压钢筋强度、`x < 2a′s` 分支；轴心受压专属 400 MPa 限值不得误用于梁 | REVIEW_REQUIRED |
 | 4 | T 形梁 `beam-t-flexure` | 是 | 6.2.11、6.2.12 和表 5.2.4 的翼缘宽度条件 | REVIEW_REQUIRED |
@@ -62,6 +62,8 @@ P4 分支（`agent/normative-inventory`）已产出：
 ---
 
 ## 1. 矩形梁正截面受弯（beam-flexure）
+
+> 以下表格是早期审核快照；当前模块条文、页码与实现位置以 [BEAM_FLEXURE_CLAUSE_MAP.md](./BEAM_FLEXURE_CLAUSE_MAP.md) 为准。早期“2024 尚未比对／GB 55008 尚未映射”的文字已被后续工作取代，项目签核状态仍为 `REVIEW_REQUIRED`。
 
 代码位置：`src/core/beam/flexure.ts`　｜　入口：`calculateBeamFlexure`
 

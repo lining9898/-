@@ -1,6 +1,7 @@
 import type { Evidence, VerificationStatus } from '../types/evidence';
 import { resolveCurrentStandardFusion, type StructuralDomain } from './fusion';
 import { normalizeCode, normativeVersionRegistry } from './registry';
+import { resolveBeamFlexureClauseMap } from './beamFlexureClauseMap';
 import type { NormativeAuthorityLevel } from './types';
 
 export interface FusedBasisStandard {
@@ -22,6 +23,7 @@ export interface FusedCalculationBasis {
   fingerprint: string;
   standards: FusedBasisStandard[];
   changeSetIds: string[];
+  moduleClauseMap?: ReturnType<typeof resolveBeamFlexureClauseMap>;
   warnings: string[];
 }
 
@@ -77,10 +79,14 @@ export function resolveCalculationNormativeBasis(
       standard.edition === change.toEdition
     )
   );
+  const moduleClauseMap = moduleId === 'beam-flexure'
+    ? resolveBeamFlexureClauseMap(evidence) : undefined;
   const warnings = [...fusion.warnings];
   for (const standard of standards) {
     if (standard.clauseEvidenceStatus !== 'VERIFIED') {
-      warnings.push(`${standard.designation} 的逐条融合证据仍待核验。`);
+      warnings.push(moduleClauseMap?.status === 'MAPPED'
+        ? `${standard.designation} 的本模块条文与原页已映射；项目适用性和独立签核仍待确认。`
+        : `${standard.designation} 的逐条融合证据仍待核验。`);
     }
     if (standard.historicalClauses.length) {
       warnings.push(`${standard.designation} 仍引用历史版计算证据：${standard.historicalClauses.join('、')}。`);
@@ -88,13 +94,19 @@ export function resolveCalculationNormativeBasis(
   }
   for (const change of changeSets) {
     if (change.verificationStatus !== 'VERIFIED') {
-      warnings.push(`${change.toEdition} 的差异记录及受影响计算项仍待独立复核。`);
+      warnings.push(moduleClauseMap?.status === 'MAPPED'
+        ? `${change.toEdition} 的本模块条文映射已建立；跨模块差异记录及项目计算仍待独立复核。`
+        : `${change.toEdition} 的差异记录及受影响计算项仍待独立复核。`);
     }
+  }
+  if (moduleClauseMap?.missing.length) {
+    warnings.push(`矩形梁受弯仍缺条文证据：${moduleClauseMap.missing.join('、')}。`);
   }
 
   // 指纹只用于识别依据快照变化，不作为规范原文真实性证明。
   const snapshot = JSON.stringify({
     standards,
+    moduleClauseMap,
     changes: changeSets.map(change => ({
       id: change.id, changedClauses: change.changedClauses,
       changedFormulas: change.changedFormulas, changedParameters: change.changedParameters,
@@ -115,5 +127,5 @@ export function resolveCalculationNormativeBasis(
       ? 'REVIEW_REQUIRED'
       : 'VERIFIED';
   return { moduleId, domain, status, fingerprint: `basis_${(hash >>> 0).toString(16)}`,
-    standards, changeSetIds: changeSets.map(change => change.id), warnings };
+    standards, changeSetIds: changeSets.map(change => change.id), moduleClauseMap, warnings };
 }

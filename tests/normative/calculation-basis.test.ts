@@ -9,6 +9,46 @@ const input = {
 };
 
 describe('计算项跟随现行规范融合依据', () => {
+  it('完整地震跨中算例接入逐条映射，但保留项目待复核状态', () => {
+    const result = calculateBeamFlexure({ ...input, beamType: 'frameBeam', seismicGrade: '1',
+      sectionLocation: 'span', designSituation: 'seismic', seismicAction: 'verticalDominant',
+      structuralSafetyGrade: '3' });
+    const basis = resolveCalculationNormativeBasis(result.calculatorType, result.allEvidence);
+    expect(basis.moduleClauseMap?.status).toBe('MAPPED');
+    expect(basis.moduleClauseMap?.missing).toEqual([]);
+    expect(basis.moduleClauseMap?.entries.every(item => item.attached)).toBe(true);
+    expect(basis.status).toBe('REVIEW_REQUIRED');
+    expect(result.overallStatus).toBe('REVIEW_REQUIRED');
+    expect(basis.warnings.some(message => message.includes('逐条融合证据仍待核验'))).toBe(false);
+    const prompt = generateReviewPrompt(buildReviewPackage(result));
+    expect(prompt).toContain('本模块逐条映射: MAPPED');
+    expect(prompt).toContain('GB50010-2010_2015_.pdf#page=50');
+    expect(prompt).toContain('映射不等于项目签核');
+  });
+
+  it('删除原公式条文附件会恢复缺项提示并改变依据快照', () => {
+    const result = calculateBeamFlexure(input);
+    const before = resolveCalculationNormativeBasis(result.calculatorType, result.allEvidence);
+    const evidence = result.allEvidence.filter(item => item.clause !== '6.2.1');
+    const after = resolveCalculationNormativeBasis(result.calculatorType, evidence);
+    expect(before.moduleClauseMap?.status).toBe('MAPPED');
+    expect(after.moduleClauseMap?.status).toBe('INCOMPLETE');
+    expect(after.moduleClauseMap?.missing).toContain('GB 50010 §6.2.1');
+    expect(after.fingerprint).not.toBe(before.fingerprint);
+    expect(after.warnings.some(message => message.includes('仍缺条文证据'))).toBe(true);
+  });
+
+  it.each(['wrong-page', 'wrong-edition'])('不接受页码或版次不匹配的现行依据：%s', mismatch => {
+    const result = calculateBeamFlexure(input);
+    const evidence = result.allEvidence.map(item => item.clause === '4.1.2'
+      ? { ...item, ...(mismatch === 'wrong-page' ? { pdfPage: 7 } : { edition: '2010' }) }
+      : item);
+    const basis = resolveCalculationNormativeBasis(result.calculatorType, evidence);
+    expect(basis.moduleClauseMap?.status).toBe('INCOMPLETE');
+    expect(basis.moduleClauseMap?.missing).toContain('GB 50010 §4.1.2');
+    expect(basis.status).toBe('REVIEW_REQUIRED');
+  });
+
   it('同时列出通用规范、2024 配套标准及 2015 历史公式证据', () => {
     const result = calculateBeamFlexure(input);
     const basis = resolveCalculationNormativeBasis(result.calculatorType, result.allEvidence);

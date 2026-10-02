@@ -80,8 +80,22 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, moduleId }) => 
     <div>
       <h3 className="text-sm font-bold text-gray-700 mb-4">规范依据</h3>
       {basis && <section className="mb-4 rounded border border-blue-200 bg-blue-50 p-4 text-xs text-gray-700">
-        <div className="font-semibold text-blue-800">现行规范融合：{basis.status}</div>
+        <div className="font-semibold text-blue-800">现行规范融合／项目核验：{basis.status}</div>
         <div className="mt-1 text-gray-500">依据快照 {basis.fingerprint}；规范版本或条文变动后需重新生成计算与复核包。</div>
+        {basis.moduleClauseMap && <details className="mt-2 rounded border border-blue-100 bg-white p-2">
+          <summary className="cursor-pointer font-medium text-blue-800">
+            本模块逐条映射：{basis.moduleClauseMap.status === 'MAPPED' ? '已建立' : '有缺项'}
+            （{basis.moduleClauseMap.entries.filter(item => item.attached).length}/{basis.moduleClauseMap.entries.length} 条已接入本次结果；其余为条件条文或待补项）
+          </summary>
+          <p className="mt-1 text-gray-600">条文页码及计算位置已登记。映射状态不代表原始荷载、图纸和独立项目复核已签核。</p>
+          <div className="mt-2 space-y-1">
+            {basis.moduleClauseMap.entries.map(item => <div key={`${item.codeNumber}-${item.edition}-${item.clause}`} className="border-t border-gray-100 py-1">
+              <span className="font-medium">{item.codeNumber} §{item.clause}</span> · {item.edition === '2015' ? '2015 原公式' : '现行依据'} · {item.sourceFile} 第 {item.pdfPage} 页
+              <span className="ml-1 text-gray-500">{item.attached ? '已接入本次证据' : item.appliesWhen === 'always' ? '缺少本次证据' : '按输入条件触发'}</span>
+              <div className="text-gray-500">{item.implementation}</div>
+            </div>)}
+          </div>
+        </details>}
         <div className="mt-3 space-y-2">
           {basis.standards.map(standard => <div key={standard.codeNumber} className="rounded bg-white p-2 border border-blue-100">
             <div className="font-medium">{standard.designation} · {standard.authorityLevel === 'MANDATORY_GENERAL_CODE' ? '强制性通用规范' : '配套设计标准'}</div>

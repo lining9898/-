@@ -120,6 +120,13 @@ export function generateReviewPrompt(pkg: AIReviewPackage): string {
   lines.push('【8. 规范依据】');
   lines.push(`现行规范融合状态: ${pkg.normativeBasis.status}`);
   lines.push(`规范依据快照: ${pkg.normativeBasis.fingerprint}（规范数据变化后应重新生成复核包）`);
+  if (pkg.normativeBasis.moduleClauseMap) {
+    const mapping = pkg.normativeBasis.moduleClauseMap;
+    lines.push(`本模块逐条映射: ${mapping.status}；${mapping.entries.filter(item => item.attached).length}/${mapping.entries.length} 条接入本次结果，其余为条件条文或待补项。映射不等于项目签核。`);
+    for (const item of mapping.entries) {
+      lines.push(`    ${item.codeNumber} §${item.clause} (${item.edition}) — ${item.sourceFile}#page=${item.pdfPage} — ${item.implementation} [${item.attached ? '本次接入' : item.appliesWhen === 'always' ? '缺少证据' : '按条件触发'}]`);
+    }
+  }
   for (const standard of pkg.normativeBasis.standards) {
     lines.push(`  ${standard.authorityLevel === 'MANDATORY_GENERAL_CODE' ? '强制性通用规范' : '配套设计标准'}: ${standard.designation} — ${standard.role}`);
     lines.push(`    当前版本条文: ${standard.currentClauses.length ? standard.currentClauses.join('、') : '尚未建立逐条映射'}`);

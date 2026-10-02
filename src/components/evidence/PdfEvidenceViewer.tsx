@@ -10,11 +10,11 @@ interface PdfEvidenceViewerProps {
 // PDF 完整页面图片映射（从真实 PDF 渲染，避免手机 WebView 触发下载）
 const PAGE_IMAGE_MAP: Record<string, Record<number, string>> = {
   'gb50010-2010-2015.pdf': Object.fromEntries(
-    [34, 35, 38, 39, 40, 52, 53, 55, 56, 124].map(page =>
+    [34, 35, 38, 39, 40, 50, 52, 53, 55, 56, 124].map(page =>
       [page, `evidence-assets/gb50010-2010-2015/pages/p${page}.jpg`])
   ),
   'gb50010-2010_2015_.pdf': Object.fromEntries(
-    [34, 35, 38, 39, 40, 52, 53, 55, 56, 124].map(page =>
+    [34, 35, 38, 39, 40, 50, 52, 53, 55, 56, 124].map(page =>
       [page, `evidence-assets/gb50010-2010-2015/pages/p${page}.jpg`])
   ),
   'gbt50010-2010_2024_amendment.pdf': Object.fromEntries(

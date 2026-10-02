@@ -1,13 +1,13 @@
 /**
  * 矩形梁正截面受弯计算内核
  * 
- * 状态：REVIEW_REQUIRED（2015 年版公式已核对，现行规范差异待复核）
+ * 状态：REVIEW_REQUIRED（本模块条文映射已建立，项目资料及其他验算待复核）
  * 
  * 本模块的计算公式已根据 GB 50010-2010（2015年版）规范原文逐条校核。
  * 已核对的证据引用仓库内 PDF；整体结论仍需复核规范版本与构造要求。
  * 
- * 校核日期：2026-09-24
- * 校核依据：GB50010-2010_2015_.pdf（441页）
+ * 映射更新：2026-10-02
+ * 依据目录：docs/normative/BEAM_FLEXURE_CLAUSE_MAP.md
  */
 
 import {
@@ -145,6 +145,13 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
       });
       return result;
     }
+    allEvidence.push({
+      codeName: '混凝土结构通用规范', codeNumber: 'GB 55008', edition: '2021',
+      chapter: '第4章 构件设计', clause: '4.4.4',
+      originalText: '矩形截面框架梁的截面宽度不应小于 200 mm；本条仅在构件类型为框架梁时执行。',
+      pdfPage: 15, status: 'current', verificationStatus: 'REVIEW_REQUIRED',
+      sourceFile: 'GB55008-2021.pdf',
+    });
   } else if (beamType === 'unknown') {
     result.advisories.push({
       severity: 'warning',
@@ -162,6 +169,14 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     && (!input.sectionLocation || input.sectionLocation === 'unknown')) {
     result.advisories.push({ severity: 'warning', code: 'SEISMIC_LOCATION_UNKNOWN',
       message: '框架梁已声明抗震等级，但未声明梁端或跨中位置；表 4.4.8-1 抗震最小配筋率未执行。' });
+  }
+  if (beamType === 'frameBeam' && ['1', '2', '3'].includes(input.seismicGrade ?? '')) {
+    result.advisories.push({
+      severity: 'warning', code: 'BEAM_END_DEPTH_SCOPE',
+      message: input.sectionLocation === 'span'
+        ? '本次为跨中截面；GB 55008 §4.4.8 第1款的受压区高度附加限值针对计入受压钢筋作用的梁端截面，梁端须另行验算。'
+        : 'GB 55008 §4.4.8 第1款涉及计入受压钢筋作用的梁端截面；本单筋受弯模型未输入受压钢筋，实际梁端须按配筋图另行核对。',
+    });
   }
   const designSituation = input.designSituation ?? 'unknown';
   const seismicAction = input.seismicAction ?? 'unknown';
@@ -320,7 +335,10 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
 
   // 步骤3：界限相对受压区高度 ξb
   const xiB = concrete.beta1 / (1 + steel.fy / (steel.Es * 0.0033));
-  const xiBEvidence = [verifiedEvidence('6.2.7', '第6章', 'ξb = β1 / (1 + fy / (Es εcu))', 53)];
+  const xiBEvidence = [
+    verifiedEvidence('6.2.1', '第6章', '公式（6.2.1-5）：C50 及以下混凝土受压极限应变 εcu 取 0.0033。', 50),
+    verifiedEvidence('6.2.7', '第6章', 'ξb = β1 / (1 + fy / (Es εcu))', 53),
+  ];
   allEvidence.push(...xiBEvidence);
   steps.push({
     name: '计算界限相对受压区高度',
@@ -495,7 +513,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   result.advisories.push({
     severity: 'warning',
     code: 'NORM_UPDATE_REQUIRED',
-    message: '已接入现行材料表、最小配筋、重要性系数及地震承载力调整的对应条文；受弯公式和其余适用条件的现行版核验、项目荷载与图纸来源及独立项目算例尚未闭环，结果保持 REVIEW_REQUIRED。',
+    message: '本模块已建立 2015 公式、2024 修订及强制通用规范的逐条页码映射；项目荷载与图纸来源、适用条件及独立签核尚未闭环，结果保持 REVIEW_REQUIRED。',
   });
   result.advisories.push({
     severity: 'warning', code: 'FLEXURE_ONLY_SCOPE',
