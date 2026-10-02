@@ -34,6 +34,8 @@ export interface BeamFlexureInput {
   seismicGrade?: 'unknown' | 'none' | '1' | '2' | '3' | '4'; // 框架梁抗震等级
   sectionLocation?: 'unknown' | 'support' | 'span'; // 框架梁受拉区所在梁端/跨中
   structuralSafetyGrade?: 'unknown' | '1' | '2' | '3'; // GB 55001 表 3.1.12 结构安全等级
+  designSituation?: 'unknown' | 'persistent' | 'transient' | 'accidental' | 'seismic'; // M 对应的设计状况
+  seismicAction?: 'unknown' | 'general' | 'verticalDominant'; // 地震组合是否由竖向地震控制
   momentBasis?: string; // 上游荷载组合与内力计算的可追溯编号
 }
 
@@ -161,11 +163,28 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     result.advisories.push({ severity: 'warning', code: 'SEISMIC_LOCATION_UNKNOWN',
       message: '框架梁已声明抗震等级，但未声明梁端或跨中位置；表 4.4.8-1 抗震最小配筋率未执行。' });
   }
-  const gamma0 = input.structuralSafetyGrade === '1' ? 1.1
+  const designSituation = input.designSituation ?? 'unknown';
+  const seismicAction = input.seismicAction ?? 'unknown';
+  const persistentGamma0 = input.structuralSafetyGrade === '1' ? 1.1
     : input.structuralSafetyGrade === '3' ? 0.9 : 1.0;
+  // 设计状况未声明时，取两类状况中较大的 γ₀ 展示保守数值，不作为项目收口依据。
+  const gamma0 = designSituation === 'persistent' || designSituation === 'transient'
+    ? persistentGamma0
+    : designSituation === 'unknown' ? Math.max(persistentGamma0, 1.0) : 1.0;
+  // GB 55002 表 4.3.1：混凝土梁受弯取 0.75；竖向地震为主时取 1.0。
+  // 地震作用方向未声明时按 1.0 保守显示，并保留待核警告。
+  const gammaRE = designSituation === 'seismic' && seismicAction === 'general' ? 0.75 : 1.0;
+  if (designSituation === 'unknown') {
+    result.advisories.push({ severity: 'warning', code: 'DESIGN_SITUATION_UNKNOWN',
+      message: '弯矩 M 的设计状况未声明；γ₀ 暂按可能的较大值显示，地震组合的 γRE 无法确定，承载力结论不可正式收口。' });
+  }
+  if (designSituation === 'seismic' && seismicAction === 'unknown') {
+    result.advisories.push({ severity: 'warning', code: 'SEISMIC_ACTION_UNKNOWN',
+      message: '地震组合未声明是否由竖向地震控制；γRE 暂按 1.0 保守显示，需依据荷载组合计算书确认。' });
+  }
   if (!input.structuralSafetyGrade || input.structuralSafetyGrade === 'unknown') {
     result.advisories.push({ severity: 'warning', code: 'SAFETY_GRADE_UNKNOWN',
-      message: '结构安全等级未声明；暂按 γ₀=1.0 显示单项数值，GB 55001 §3.1.10 / 表 3.1.12 的最终承载力判定未闭环。' });
+      message: `结构安全等级未声明；暂按 γ₀=${gamma0.toFixed(1)} 显示单项数值，GB 55001 §3.1.10 / 表 3.1.12 的最终承载力判定未闭环。` });
   }
   if (!input.momentBasis?.trim()) {
     result.advisories.push({ severity: 'warning', code: 'MOMENT_BASIS_MISSING',
@@ -203,6 +222,8 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     { label: '作用组合弯矩设计值 M（未乘 γ₀）', value: input.moment, unit: 'kN·m' },
     { label: '弯矩荷载组合与内力来源', value: input.momentBasis?.trim() || '未提供', unit: '' },
     { label: '结构安全等级', value: input.structuralSafetyGrade && input.structuralSafetyGrade !== 'unknown' ? `${input.structuralSafetyGrade}级` : '未声明', unit: '' },
+    { label: '设计状况', value: designSituation === 'persistent' ? '持久' : designSituation === 'transient' ? '短暂' : designSituation === 'accidental' ? '偶然' : designSituation === 'seismic' ? '地震' : '未声明', unit: '' },
+    { label: '地震作用类别', value: designSituation !== 'seismic' ? '不适用' : seismicAction === 'general' ? '一般地震组合' : seismicAction === 'verticalDominant' ? '竖向地震为主' : '未声明', unit: '' },
     { label: '构件类型', value: beamType === 'frameBeam' ? '框架梁' : beamType === 'nonFrameBeam' ? '非框架梁' : '未声明', unit: '' },
     { label: '抗震等级', value: input.seismicGrade && input.seismicGrade !== 'unknown' ? input.seismicGrade : '未声明', unit: '' },
     { label: '验算位置', value: input.sectionLocation === 'support' ? '梁端' : input.sectionLocation === 'span' ? '跨中' : '未声明', unit: '' },
@@ -355,6 +376,8 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     { label: '受弯承载力 Mu', value: Math.round(Mu * 100) / 100, unit: 'kN·m' },
     { label: '重要性系数 γ₀', value: gamma0, unit: '' },
     { label: '承载力设计弯矩 γ₀M', value: Math.round(gamma0 * input.moment * 100) / 100, unit: 'kN·m' },
+    { label: '承载力抗震调整系数 γRE', value: gammaRE, unit: '' },
+    { label: '调整后受弯承载力 Mu/γRE', value: Math.round(Mu / gammaRE * 100) / 100, unit: 'kN·m' },
   ];
 
   // === 验算项 ===
@@ -390,9 +413,15 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
       pdfPage: 13, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GB55001-2021.pdf' },
     { codeName: '工程结构通用规范', codeNumber: 'GB 55001', edition: '2021',
       chapter: '第3章 结构设计', clause: '3.1.12',
-      originalText: '表 3.1.12：对持久和短暂设计状况，安全等级一、二、三级的结构重要性系数 γ₀ 分别为 1.1、1.0、0.9。',
+      originalText: '表 3.1.12：持久和短暂设计状况下安全等级一、二、三级的 γ₀ 分别为 1.1、1.0、0.9；偶然和地震设计状况为 1.0。',
       pdfPage: 13, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GB55001-2021.pdf' },
   ];
+  const seismicEvidence: Evidence[] = designSituation === 'seismic' ? [{
+    codeName: '建筑与市政工程抗震通用规范', codeNumber: 'GB 55002', edition: '2021',
+    chapter: '第4章 地震作用和结构抗震验算', clause: '4.3.1',
+    originalText: '地震组合内力设计值 S 不应超过承载力设计值 R 除以承载力抗震调整系数 γRE；表 4.3.1 中混凝土梁受弯为 0.75，竖向地震为主的地震组合内力起控制作用时为 1.0。',
+    pdfPage: 18, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GB55002-2021.pdf',
+  }] : [];
   const actionEvidence: Evidence[] = [
     { codeName: '工程结构通用规范', codeNumber: 'GB 55001', edition: '2021',
       chapter: '第3章 结构设计', clause: '3.1.7',
@@ -409,14 +438,15 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   ];
   allEvidence.push(...actionEvidence);
   allEvidence.push(...safetyEvidence);
+  allEvidence.push(...seismicEvidence);
   checks.push({
     name: '承载力验算',
-    calculatedValue: Math.round(Mu * 100) / 100,
+    calculatedValue: Math.round(Mu / gammaRE * 100) / 100,
     limitValue: gamma0 * input.moment,
     comparison: '>=',
-    passed: Mu >= gamma0 * input.moment,
+    passed: Mu / gammaRE >= gamma0 * input.moment,
     unit: 'kN·m',
-    evidence: [...MuEvidence, ...safetyEvidence],
+    evidence: [...MuEvidence, ...safetyEvidence, ...seismicEvidence],
   });
 
   result.checks = checks;
@@ -435,7 +465,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   result.advisories.push({
     severity: 'warning',
     code: 'NORM_UPDATE_REQUIRED',
-    message: '计算公式仍基于 GB 50010-2010（2015年版）。现行 GB 55001-2021、GB 55008-2021 与 GB/T 50010-2010（2024年局部修订）尚未完成逐条 Evidence 映射，结果保持 REVIEW_REQUIRED。',
+    message: '已接入现行材料选用、最小配筋、重要性系数及地震承载力调整的对应条文；历史受弯公式与 2024 修订、其他适用条件的逐条核验及独立项目算例尚未闭环，结果保持 REVIEW_REQUIRED。',
   });
   result.advisories.push({
     severity: 'warning', code: 'FLEXURE_ONLY_SCOPE',

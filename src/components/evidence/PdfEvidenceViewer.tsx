@@ -22,6 +22,7 @@ const PAGE_IMAGE_MAP: Record<string, Record<number, string>> = {
   'gb55001-2021.pdf': Object.fromEntries(
     [12, 13].map(page => [page, `evidence-assets/gb55001-2021/pages/p${page}.jpg`])
   ),
+  'gb55002-2021.pdf': { 18: 'evidence-assets/gb55002-2021/pages/p18.jpg' },
   'gb50009-2012.pdf': { 20: 'evidence-assets/gb50009-2012/pages/p20.jpg' },
 };
 

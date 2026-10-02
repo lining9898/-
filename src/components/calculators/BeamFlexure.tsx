@@ -24,6 +24,8 @@ const BeamFlexure: React.FC = () => {
     seismicGrade: 'unknown',
     sectionLocation: 'unknown',
     structuralSafetyGrade: 'unknown',
+    designSituation: 'unknown',
+    seismicAction: 'unknown',
   });
 
   const [activeTab, setActiveTab] = useState<'result' | 'report' | 'evidence'>('result');
@@ -137,6 +139,28 @@ const BeamFlexure: React.FC = () => {
                   <option value="3">三级（γ₀=0.9）</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">弯矩 M 对应的设计状况</label>
+                <select value={input.designSituation ?? 'unknown'}
+                  onChange={e => updateInput('designSituation', e.target.value as BeamFlexureInput['designSituation'])}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                  <option value="unknown">未声明</option>
+                  <option value="persistent">持久</option>
+                  <option value="transient">短暂</option>
+                  <option value="accidental">偶然</option>
+                  <option value="seismic">地震</option>
+                </select>
+              </div>
+              {input.designSituation === 'seismic' && <div>
+                <label className="block text-xs text-gray-500 mb-1">地震组合类别 (GB 55002 表 4.3.1)</label>
+                <select value={input.seismicAction ?? 'unknown'}
+                  onChange={e => updateInput('seismicAction', e.target.value as BeamFlexureInput['seismicAction'])}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                  <option value="unknown">未声明（暂按 γRE=1.0）</option>
+                  <option value="general">一般地震组合（γRE=0.75）</option>
+                  <option value="verticalDominant">竖向地震为主（γRE=1.0）</option>
+                </select>
+              </div>}
               <div>
                 <label className="block text-xs text-gray-500 mb-1">受拉纵筋外缘距受拉边 c (mm)</label>
                 <input
