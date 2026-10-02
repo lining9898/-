@@ -96,6 +96,21 @@ describe('矩形梁正截面受弯计算', () => {
       });
     });
 
+    it('材料表证据同时指向旧版准确页和 2024 修订原页', () => {
+      const evidence = calculateBeamFlexure(defaultInput).allEvidence;
+      expect(evidence).toEqual(expect.arrayContaining([
+        expect.objectContaining({ clause: '4.1.4', pdfPage: 35, sourceFile: 'GB50010-2010_2015_.pdf' }),
+        expect.objectContaining({ clause: '4.2.3', pdfPage: 39, sourceFile: 'GB50010-2010_2015_.pdf' }),
+        expect.objectContaining({ clause: '表 4.1.4-1', pdfPage: 6, sourceFile: 'GBT50010-2010_2024_amendment.pdf' }),
+        expect.objectContaining({ clause: '表 4.1.4-2', pdfPage: 7, sourceFile: 'GBT50010-2010_2024_amendment.pdf' }),
+        expect.objectContaining({ clause: '表 4.2.3-1', pdfPage: 9, sourceFile: 'GBT50010-2010_2024_amendment.pdf' }),
+        expect.objectContaining({ clause: '表 4.2.5', pdfPage: 11, sourceFile: 'GBT50010-2010_2024_amendment.pdf' }),
+        expect.objectContaining({ clause: '局部修订说明（6.2 节）', pdfPage: 2,
+          sourceFile: 'GBT50010-2010_2024_amendment.pdf' }),
+        expect.objectContaining({ codeNumber: 'GB 55008', clause: '4.4.2', pdfPage: 14 }),
+      ]));
+    });
+
     it('应包含现行规范尚待融合的警告', () => {
       const result = calculateBeamFlexure(defaultInput);
       expect(result.advisories.some(a => a.code === 'NORM_UPDATE_REQUIRED')).toBe(true);

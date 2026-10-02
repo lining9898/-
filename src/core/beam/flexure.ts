@@ -231,13 +231,33 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
 
   // 记录材料参数
   const concreteEvidence = [
-    verifiedEvidence('4.1.4', '第4章', '混凝土轴心抗压强度的设计值 fc 应按表 4.1.4-1 采用；轴心抗拉强度的设计值 ft 应按表 4.1.4-2 采用。', 34),
-    verifiedEvidence('4.1.5', '第4章', '混凝土受压和受拉的弹性模量 Ec 宜按表 4.1.5 采用。', 35)
-  ];
+    verifiedEvidence('4.1.4', '第4章', '混凝土轴心抗压强度的设计值 fc 应按表 4.1.4-1 采用；轴心抗拉强度的设计值 ft 应按表 4.1.4-2 采用。', 35),
+    { codeName: '混凝土结构设计标准', codeNumber: 'GB 50010',
+      edition: '2010（2024年版，GB/T 50010-2010）', chapter: '第4章 材料', clause: '表 4.1.4-1',
+      originalText: '2024 修订表 4.1.4-1 中，本模块 C25—C50 的混凝土抗压强度设计值 fc 与旧版相同；C30 为 14.3 N/mm²。',
+      pdfPage: 6, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GBT50010-2010_2024_amendment.pdf' },
+    { codeName: '混凝土结构设计标准', codeNumber: 'GB 50010',
+      edition: '2010（2024年版，GB/T 50010-2010）', chapter: '第4章 材料', clause: '表 4.1.4-2',
+      originalText: '2024 修订表 4.1.4-2 中，本模块 C25—C50 的混凝土抗拉强度设计值 ft 与旧版相同；C30 为 1.43 N/mm²。',
+      pdfPage: 7, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GBT50010-2010_2024_amendment.pdf' },
+    verifiedEvidence('4.1.5', '第4章', '混凝土受压和受拉的弹性模量 Ec 宜按表 4.1.5 采用。', 35),
+    { codeName: '混凝土结构设计标准', codeNumber: 'GB 50010',
+      edition: '2010（2024年版，GB/T 50010-2010）', chapter: '第4章 材料', clause: '表 4.1.5',
+      originalText: '2024 修订表 4.1.5 中，本模块 C25—C50 的混凝土弹性模量 Ec 与旧版相同；C30 为 3.00×10⁴ N/mm²。',
+      pdfPage: 7, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GBT50010-2010_2024_amendment.pdf' },
+  ] satisfies Evidence[];
   const steelEvidence = [
-    verifiedEvidence('4.2.3', '第4章', '普通钢筋的抗拉强度设计值 fy、抗压强度设计值 fy\' 应按表 4.2.3-1 采用。', 38),
-    verifiedEvidence('4.2.5', '第4章', '普通钢筋和预应力筋的弹性模量 Es 可按表 4.2.5 采用。', 40)
-  ];
+    verifiedEvidence('4.2.3', '第4章', '普通钢筋的抗拉强度设计值 fy、抗压强度设计值 fy\' 应按表 4.2.3-1 采用。', 39),
+    { codeName: '混凝土结构设计标准', codeNumber: 'GB 50010',
+      edition: '2010（2024年版，GB/T 50010-2010）', chapter: '第4章 材料', clause: '表 4.2.3-1',
+      originalText: '2024 修订表 4.2.3-1 中，HPB300、HRB400、HRB500 的抗拉强度设计值 fy 分别为 270、360、435 N/mm²；已删除 HRB335。',
+      pdfPage: 9, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GBT50010-2010_2024_amendment.pdf' },
+    verifiedEvidence('4.2.5', '第4章', '普通钢筋和预应力筋的弹性模量 Es 可按表 4.2.5 采用。', 40),
+    { codeName: '混凝土结构设计标准', codeNumber: 'GB 50010',
+      edition: '2010（2024年版，GB/T 50010-2010）', chapter: '第4章 材料', clause: '表 4.2.5',
+      originalText: '2024 修订表 4.2.5 中，HPB300 的 Es 为 2.10×10⁵ N/mm²，HRB400、HRB500 为 2.00×10⁵ N/mm²，与旧版相同。',
+      pdfPage: 11, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GBT50010-2010_2024_amendment.pdf' },
+  ] satisfies Evidence[];
   const alphaEvidence = [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，α1 取为 1.0', 53)];
   const betaEvidence = [verifiedEvidence('6.2.6', '第6章', '当混凝土强度等级不超过 C50 时，β1 取为 0.80', 52)];
   allEvidence.push(...concreteEvidence, ...steelEvidence, ...alphaEvidence, ...betaEvidence);
@@ -315,7 +335,17 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   // 步骤4：计算受弯承载力 Mu
   const Mu = concrete.alpha1 * concrete.fc * input.b * x * (h0 - x / 2) / 1e6;
   const MuEvidence = [verifiedEvidence('6.2.10', '第6章', "M ≤ α1 fc b x (h0 - x/2) + f'y A's (h0 - a's) - (σ'p0 - f'py) A'p (h0 - a'p)", 55)];
-  allEvidence.push(...MuEvidence);
+  const currentFlexureEvidence: Evidence[] = [
+    { codeName: '混凝土结构设计标准', codeNumber: 'GB 50010',
+      edition: '2010（2024年版，GB/T 50010-2010）', chapter: '局部修订说明', clause: '局部修订说明（6.2 节）',
+      originalText: '2024 局部修订说明列出全部 26 项修订条文，其中没有 6.2.1、6.2.6、6.2.7、6.2.10；这些正截面公式沿用 2015 年版正文，仍须满足现行强制规范。',
+      pdfPage: 2, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GBT50010-2010_2024_amendment.pdf' },
+    { codeName: '混凝土结构通用规范', codeNumber: 'GB 55008', edition: '2021',
+      chapter: '第4章 构件设计', clause: '4.4.2',
+      originalText: '正截面承载力简化计算须满足平截面、混凝土不计抗拉、材料应力应变本构及纵向受拉钢筋应变和应力上限等条件。',
+      pdfPage: 14, status: 'current', verificationStatus: 'REVIEW_REQUIRED', sourceFile: 'GB55008-2021.pdf' },
+  ];
+  allEvidence.push(...MuEvidence, ...currentFlexureEvidence);
   steps.push({
     name: '计算正截面受弯承载力',
     description: '按公式（6.2.10-1）取无受压钢筋、无预应力筋的简化情形，Mu = α1·fc·b·x·(h0 - x/2)',
@@ -446,7 +476,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
     comparison: '>=',
     passed: Mu / gammaRE >= gamma0 * input.moment,
     unit: 'kN·m',
-    evidence: [...MuEvidence, ...safetyEvidence, ...seismicEvidence],
+    evidence: [...MuEvidence, ...currentFlexureEvidence, ...safetyEvidence, ...seismicEvidence],
   });
 
   result.checks = checks;
@@ -465,7 +495,7 @@ export function calculateBeamFlexure(input: BeamFlexureInput): CalculationResult
   result.advisories.push({
     severity: 'warning',
     code: 'NORM_UPDATE_REQUIRED',
-    message: '已接入现行材料选用、最小配筋、重要性系数及地震承载力调整的对应条文；历史受弯公式与 2024 修订、其他适用条件的逐条核验及独立项目算例尚未闭环，结果保持 REVIEW_REQUIRED。',
+    message: '已接入现行材料表、最小配筋、重要性系数及地震承载力调整的对应条文；受弯公式和其余适用条件的现行版核验、项目荷载与图纸来源及独立项目算例尚未闭环，结果保持 REVIEW_REQUIRED。',
   });
   result.advisories.push({
     severity: 'warning', code: 'FLEXURE_ONLY_SCOPE',
