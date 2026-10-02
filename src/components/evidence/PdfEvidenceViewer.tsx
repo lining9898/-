@@ -10,14 +10,18 @@ interface PdfEvidenceViewerProps {
 // PDF 完整页面图片映射（从真实 PDF 渲染，避免手机 WebView 触发下载）
 const PAGE_IMAGE_MAP: Record<string, Record<number, string>> = {
   'gb50010-2010-2015.pdf': Object.fromEntries(
-    [34, 35, 38, 40, 52, 53, 55, 56, 124].map(page =>
+    [34, 35, 38, 39, 40, 52, 53, 55, 56, 124].map(page =>
+      [page, `evidence-assets/gb50010-2010-2015/pages/p${page}.jpg`])
+  ),
+  'gb50010-2010_2015_.pdf': Object.fromEntries(
+    [34, 35, 38, 39, 40, 52, 53, 55, 56, 124].map(page =>
       [page, `evidence-assets/gb50010-2010-2015/pages/p${page}.jpg`])
   ),
   'gbt50010-2010_2024_amendment.pdf': Object.fromEntries(
-    [6, 7, 14].map(page => [page, `evidence-assets/gbt50010-2024/pages/p${page}.jpg`])
+    [2, 6, 7, 9, 11, 14].map(page => [page, `evidence-assets/gbt50010-2024/pages/p${page}.jpg`])
   ),
   'gb55008-2021.pdf': Object.fromEntries(
-    [15, 16, 17].map(page => [page, `evidence-assets/gb55008-2021/pages/p${page}.jpg`])
+    [14, 15, 16, 17].map(page => [page, `evidence-assets/gb55008-2021/pages/p${page}.jpg`])
   ),
   'gb55001-2021.pdf': Object.fromEntries(
     [12, 13].map(page => [page, `evidence-assets/gb55001-2021/pages/p${page}.jpg`])
