@@ -42,7 +42,17 @@ export function resolveCalculationNormativeBasis(
 ): FusedCalculationBasis {
   const domain = domainForCalculation(moduleId);
   const fusion = resolveCurrentStandardFusion(domain);
-  const standards: FusedBasisStandard[] = fusion.standards.map(item => {
+  // 模块的附加规范（例如地震组合才适用的 GB 55002）由本次 Evidence 接入依据快照。
+  const conditionalStandards = [...new Set(evidence.map(ev => ev.codeNumber))]
+    .filter(codeNumber => !fusion.standards.some(item => normalizeCode(item.codeNumber) === normalizeCode(codeNumber)))
+    .map(codeNumber => {
+      const resolved = normativeVersionRegistry.resolve(codeNumber);
+      return { codeNumber, role: '本次计算条件触发的补充规范',
+        authorityLevel: resolved.version?.authorityLevel ?? 'SUPPORTING_STANDARD' as NormativeAuthorityLevel,
+        version: resolved.version, clauseEvidenceStatus: 'REVIEW_REQUIRED' as VerificationStatus,
+        warnings: resolved.warnings };
+    });
+  const standards: FusedBasisStandard[] = [...fusion.standards, ...conditionalStandards].map(item => {
     const matching = evidence.filter(ev => normalizeCode(ev.codeNumber) === normalizeCode(item.codeNumber));
     const current = matching.filter(ev =>
       item.version && (ev.edition === item.version.edition || ev.edition === item.version.designation)
@@ -99,7 +109,7 @@ export function resolveCalculationNormativeBasis(
     hash ^= snapshot.charCodeAt(index);
     hash = Math.imul(hash, 16777619);
   }
-  const status = fusion.status === 'INCOMPLETE'
+  const status = fusion.status === 'INCOMPLETE' || conditionalStandards.some(item => !item.version || item.version.status !== 'CURRENT')
     ? 'INCOMPLETE'
     : fusion.status === 'REVIEW_REQUIRED' || changeSets.some(change => change.verificationStatus !== 'VERIFIED')
       ? 'REVIEW_REQUIRED'

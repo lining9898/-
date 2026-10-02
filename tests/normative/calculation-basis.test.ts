@@ -39,4 +39,21 @@ describe('计算项跟随现行规范融合依据', () => {
     expect(after.fingerprint).not.toBe(before.fingerprint);
     expect(after.status).toBe('REVIEW_REQUIRED');
   });
+
+  it('地震组合将 GB 55002 纳入同一份计算和独立复核依据', () => {
+    const result = calculateBeamFlexure({ ...input, designSituation: 'seismic',
+      seismicAction: 'verticalDominant', structuralSafetyGrade: '3' });
+    const basis = resolveCalculationNormativeBasis(result.calculatorType, result.allEvidence);
+    const seismic = basis.standards.find(item => item.codeNumber === 'GB 55002');
+    expect(seismic?.currentClauses).toContain('4.3.1');
+    expect(seismic?.authorityLevel).toBe('MANDATORY_GENERAL_CODE');
+    const pkg = buildReviewPackage(result);
+    expect(pkg.normativeBasis.standards).toEqual(expect.arrayContaining([
+      expect.objectContaining({ codeNumber: 'GB 55002' }),
+    ]));
+    expect(pkg.normativeVersions).toEqual(expect.arrayContaining([
+      expect.objectContaining({ codeNumber: 'GB 55002', status: 'CURRENT' }),
+    ]));
+    expect(generateReviewPrompt(pkg)).toContain('GB55002-2021.pdf#page=18');
+  });
 });

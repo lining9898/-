@@ -27,5 +27,8 @@ describe('规范 PDF 页图版次隔离', () => {
     rerender(<PdfEvidenceViewer pdfUrl="https://example.com/GB55008-2021.pdf"
       pageNumber={16} clause="4.4.6" codeLabel="GB 55008 2021" />);
     expect(screen.getByRole('img').getAttribute('src')).toContain('/gb55008-2021/pages/p16.jpg');
+    rerender(<PdfEvidenceViewer pdfUrl="https://example.com/GB55002-2021.pdf"
+      pageNumber={18} clause="4.3.1" codeLabel="GB 55002 2021" />);
+    expect(screen.getByRole('img').getAttribute('src')).toContain('/gb55002-2021/pages/p18.jpg');
   });
 });

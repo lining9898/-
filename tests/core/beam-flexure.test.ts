@@ -145,6 +145,55 @@ describe('矩形梁正截面受弯计算', () => {
       expect(important.overallStatus).toBe('REVIEW_REQUIRED');
     });
 
+    it('一级抗震等级不等于地震组合；持久状况三级安全等级仍按 γ₀=0.9', () => {
+      const result = calculateBeamFlexure({ ...defaultInput,
+        beamType: 'frameBeam', seismicGrade: '1', sectionLocation: 'span',
+        structuralSafetyGrade: '3', designSituation: 'persistent',
+      });
+      expect(result.results.find(item => item.label === '重要性系数 γ₀')?.value).toBe(0.9);
+      expect(result.results.find(item => item.label === '承载力抗震调整系数 γRE')?.value).toBe(1);
+      expect(result.results.find(item => item.label === '最小配筋面积 As,min')?.value).toBe(375);
+      expect(result.allEvidence.some(item => item.codeNumber === 'GB 55002')).toBe(false);
+    });
+
+    it('一般地震组合按 GB 55002 表 4.3.1 取 γRE=0.75，γ₀=1.0', () => {
+      const result = calculateBeamFlexure({ ...defaultInput,
+        beamType: 'frameBeam', seismicGrade: '1', sectionLocation: 'span',
+        structuralSafetyGrade: '3', designSituation: 'seismic', seismicAction: 'general',
+      });
+      expect(result.results.find(item => item.label === '重要性系数 γ₀')?.value).toBe(1);
+      expect(result.results.find(item => item.label === '承载力抗震调整系数 γRE')?.value).toBe(0.75);
+      expect(result.results.find(item => item.label === '调整后受弯承载力 Mu/γRE')?.value).toBe(242.32);
+      expect(result.checks.find(item => item.name === '承载力验算')).toMatchObject({
+        passed: true, limitValue: 120,
+      });
+      expect(result.allEvidence).toEqual(expect.arrayContaining([
+        expect.objectContaining({ codeNumber: 'GB 55002', clause: '4.3.1', pdfPage: 18,
+          verificationStatus: 'REVIEW_REQUIRED' }),
+      ]));
+      expect(result.overallStatus).toBe('REVIEW_REQUIRED');
+    });
+
+    it('竖向地震为主时 γRE=1.0，不可把三级安全等级的 γ₀=0.9 用于地震', () => {
+      const result = calculateBeamFlexure({ ...defaultInput, moment: 190,
+        beamType: 'frameBeam', seismicGrade: '1', sectionLocation: 'span',
+        structuralSafetyGrade: '3', designSituation: 'seismic', seismicAction: 'verticalDominant',
+      });
+      expect(result.results.find(item => item.label === '重要性系数 γ₀')?.value).toBe(1);
+      expect(result.results.find(item => item.label === '承载力抗震调整系数 γRE')?.value).toBe(1);
+      expect(result.checks.find(item => item.name === '承载力验算')?.passed).toBe(false);
+      expect(result.conclusion.passed).toBe(false);
+    });
+
+    it('设计状况或地震类别未声明时显示保守数值并给出待核警告', () => {
+      const unknown = calculateBeamFlexure({ ...defaultInput, structuralSafetyGrade: '3' });
+      expect(unknown.results.find(item => item.label === '重要性系数 γ₀')?.value).toBe(1);
+      expect(unknown.advisories.some(item => item.code === 'DESIGN_SITUATION_UNKNOWN')).toBe(true);
+      const seismic = calculateBeamFlexure({ ...defaultInput, designSituation: 'seismic' });
+      expect(seismic.results.find(item => item.label === '承载力抗震调整系数 γRE')?.value).toBe(1);
+      expect(seismic.advisories.some(item => item.code === 'SEISMIC_ACTION_UNKNOWN')).toBe(true);
+    });
+
     it('外部弯矩缺少荷载组合来源时明确待核，并登记两个规范的原页', () => {
       const missing = calculateBeamFlexure(defaultInput);
       expect(missing.advisories.some(item => item.code === 'MOMENT_BASIS_MISSING')).toBe(true);
