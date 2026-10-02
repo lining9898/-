@@ -9,14 +9,14 @@ on:
 
 jobs:
   test-and-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: '22'
         cache: 'npm'
@@ -33,7 +33,11 @@ jobs:
   mirror-to-gitee:
     needs: test-and-build
     if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    concurrency:
+      group: gitee-master-mirror
+      cancel-in-progress: false
     permissions:
       contents: read
     env:
@@ -41,9 +45,15 @@ jobs:
 
     steps:
     - name: Checkout full history
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
+
+    - name: Setup mirror runtime
+      uses: actions/setup-node@v6
+      with:
+        node-version: '22'
+        package-manager-cache: false
 
     - name: Explain missing Gitee credential
       if: env.GITEE_TOKEN == ''
@@ -63,5 +73,6 @@ jobs:
         esac
         EOF
         chmod 700 "$RUNNER_TEMP/gitee-askpass"
+        trap 'rm -f "$RUNNER_TEMP/gitee-askpass"' EXIT
         GIT_ASKPASS="$RUNNER_TEMP/gitee-askpass" GIT_TERMINAL_PROMPT=0 \
-          git push https://gitee.com/lining9/cn-structural-toolkit.git HEAD:master
+          node .github/scripts/mirror-to-gitee.mjs
