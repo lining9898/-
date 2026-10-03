@@ -9,7 +9,8 @@ const STORAGE_KEY = 'hide_standard_notice';
 const StandardStatusNotice: React.FC<StandardStatusNoticeProps> = ({ onViewDetails }) => {
   const [hidden, setHidden] = useState<boolean>(() => {
     try {
-      return typeof window !== 'undefined' && window.localStorage.getItem(STORAGE_KEY) === 'true';
+      // 普通用户默认隐藏开发阶段横幅
+      return true;
     } catch {
       return false;
     }

@@ -80,8 +80,8 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, moduleId }) => 
     <div>
       <h3 className="text-sm font-bold text-gray-700 mb-4">规范依据</h3>
       {basis && <section className="mb-4 rounded border border-blue-200 bg-blue-50 p-4 text-xs text-gray-700">
-        <div className="font-semibold text-blue-800">现行规范融合／项目核验：{basis.status}</div>
-        <div className="mt-1 text-gray-500">依据快照 {basis.fingerprint}；规范版本或条文变动后需重新生成计算与复核包。</div>
+        <div className="font-semibold text-blue-800">规范依据说明</div>
+        <div className="mt-1 text-gray-500">规范版本或条文变动后需重新生成计算与复核包。</div>
         {basis.moduleClauseMap && <details className="mt-2 rounded border border-blue-100 bg-white p-2">
           <summary className="cursor-pointer font-medium text-blue-800">
             本模块逐条映射：{basis.moduleClauseMap.status === 'MAPPED' ? '已建立' : '有缺项'}
@@ -168,7 +168,7 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, moduleId }) => 
                         <span className="text-xs text-gray-400">
                           {e.pdfPage ? `PDF 第 ${e.pdfPage} 页` : 'PDF 页码未登记'}
                         </span>
-                        <span className="text-xs text-green-600 font-medium">CLAUSE_LOCATED</span>
+                        <span className="text-xs text-green-600 font-medium">已定位条文</span>
                       </div>
                     </div>
                   ) : (
@@ -188,7 +188,7 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, moduleId }) => 
                   </button>
                 )}
                 {!hasPdf && (
-                  <p className="mt-2 text-xs text-gray-400">PDF_SOURCE_MISSING</p>
+                  <p className="mt-2 text-xs text-gray-400">PDF 原文暂不可用</p>
                 )}
 
                 {isFullOpen && hasPdf && (

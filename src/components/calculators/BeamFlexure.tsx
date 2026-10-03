@@ -291,7 +291,7 @@ const BeamFlexure: React.FC = () => {
                       a.severity === 'warning' ? 'bg-yellow-50 text-yellow-700' :
                       'bg-blue-50 text-blue-700'
                     }`}>
-                      [{a.code}] {a.message}
+                      {a.message}
                     </div>
                   ))}
                 </div>

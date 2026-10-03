@@ -12,9 +12,15 @@ const statusColors: Record<VerificationStatus, string> = {
   UNVERIFIED: 'bg-red-100 text-red-700',
 };
 
+const statusLabels: Record<VerificationStatus, string> = {
+  VERIFIED: '已核验',
+  REVIEW_REQUIRED: '待核验',
+  UNVERIFIED: '未核验',
+};
+
 const VerificationBadge: React.FC<VerificationBadgeProps> = ({ status, className = '' }) => (
   <span className={`px-2 py-0.5 rounded text-xs ${statusColors[status]} ${className}`}>
-    {status}
+    {statusLabels[status]}
   </span>
 );
 
