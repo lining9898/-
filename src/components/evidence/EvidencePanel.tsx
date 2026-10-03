@@ -101,7 +101,7 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({ evidence, moduleId }) => 
             <div className="font-medium">{standard.designation} · {standard.authorityLevel === 'MANDATORY_GENERAL_CODE' ? '强制性通用规范' : '配套设计标准'}</div>
             <div className="mt-1">{standard.role}；现行版条文：{standard.currentClauses.length ? standard.currentClauses.join('、') : '待映射'}</div>
             {standard.historicalClauses.length > 0 && <div className="mt-1 text-amber-700">历史版计算证据：{standard.historicalClauses.join('、')}</div>}
-            <div className="mt-1 text-amber-700">条文融合状态：{standard.clauseEvidenceStatus}</div>
+            <div className="mt-1 text-amber-700">条文融合状态：{standard.clauseEvidenceStatus === 'VERIFIED' ? '已核验' : standard.clauseEvidenceStatus === 'INCOMPLETE' ? '资料不全' : '待核验'}</div>
           </div>)}
         </div>
       </section>}
