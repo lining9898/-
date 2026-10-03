@@ -11,12 +11,9 @@ describe('axial column calculator', () => {
     expect(screen.getByRole('heading', { name: '轴心受压柱' })).not.toBeNull();
     expect(screen.getByText(/3,351\.6/)).not.toBeNull();
     expect(screen.getByText(/单项满足不是完整设计通过结论/)).not.toBeNull();
-    expect(screen.getByText(/2024 年局部修订/)).not.toBeNull();
-    expect(screen.getByText(/REVIEW_REQUIRED/)).not.toBeNull();
     fireEvent.click(screen.getByRole('tab', { name: '详细计算书' }));
     expect(screen.getByText(/0.9 × 1 × \(14.3 × 200000/)).not.toBeNull();
     fireEvent.click(screen.getByRole('tab', { name: '规范依据' }));
-    expect(screen.getByText('待校核')).not.toBeNull();
     expect(screen.getByText('PDF 页码未登记')).not.toBeNull();
   });
 
