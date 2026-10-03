@@ -7,8 +7,13 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     modulePreload: false,
-    // Keep the structural solver WASM as a cacheable file instead of embedding it in JavaScript.
     assetsInlineLimit: 4096,
+    rollupOptions: {
+      output: {
+        // 所有 JS 合并为单个入口 chunk，避免部署 CDN 上动态 chunk 403
+        manualChunks: () => 'index',
+      },
+    },
   },
   optimizeDeps: { exclude: ['@ferscloud/fers-calculation-web'] },
   server: { port: 3000, host: '0.0.0.0' },
